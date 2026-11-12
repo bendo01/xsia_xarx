@@ -333,20 +333,20 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
     const startIndex = () => (currentPage() - 1) * itemsPerPage();
     const endIndex = () => Math.min(startIndex() + decrees().length, totalData());
 
-    const inputClass = 'w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-1 focus:ring-blue-500';
-    const labelClass = 'block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1';
-    const filterClass = 'w-full p-2 text-xs sm:text-sm text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors';
-    const tabClass = 'px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0';
+    const inputClass = 'w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground focus:ring-1 focus:ring-blue-500';
+    const labelClass = 'block text-xs font-mono font-semibold text-foreground/80 mb-1';
+    const filterClass = 'w-full p-2 text-xs sm:text-sm text-foreground border border-border rounded-md bg-card focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors';
+    const tabClass = 'px-3.5 py-1.5 rounded-md text-xs font-mono font-medium text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Section */}
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
                             <span>{t('ad.academic')}</span>
@@ -355,18 +355,18 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             <span>/</span>
                             <span>{t('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.teachDecree')}</span>
+                            <span class="font-medium text-foreground">{t('ad.teachDecree')}</span>
                         </nav>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
                                 {t('ad.administratorWorkspace')}
                             </span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('ad.teachingDecrees')}
                         </h1>
-                        <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 max-w-2xl">
+                        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl">
                             {t('ad.manageTeachingAssignmentDecreesSKMengajar')}
                         </p>
                     </div>
@@ -376,7 +376,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             type="button"
                             onClick={handleRefresh}
                             disabled={isRefreshing()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
                         >
                             <svg class={`size-4 ${isRefreshing() ? 'animate-spin text-blue-600' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -390,7 +390,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                         <button
                             type="button"
                             onClick={openCreateModal}
-                            class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-md shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14" />
@@ -402,12 +402,12 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                 </div>
 
                 {/* Sub-Navigation Tabs */}
-                <div class="flex items-center gap-2 p-1.5 bg-white dark:bg-neutral-800/80 rounded-xs border border-neutral-200 dark:border-neutral-700/80 overflow-x-auto scrollbar-none shadow-2xs">
+                <div class="flex items-center gap-2 p-1.5 bg-card/80 rounded-md border border-border/80 overflow-x-auto scrollbar-none shadow-2xs">
                     <A href="/administrator/academic/campaign/transaction/activity" class={tabClass}><span>{t('ad.activities')}</span></A>
                     <A href="/administrator/academic/campaign/transaction/class-code" class={tabClass}><span>{t('ad.classCodes')}</span></A>
                     <A href="/administrator/academic/campaign/transaction/grade" class={tabClass}><span>{t('ad.grades')}</span></A>
                     <A href="/administrator/academic/campaign/transaction/teach" class={tabClass}><span>{t('ad.teachingActivities')}</span></A>
-                    <A href={basePath} class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium transition-colors bg-blue-600 text-white shadow-2xs flex items-center gap-2 shrink-0">
+                    <A href={basePath} class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium transition-colors bg-blue-600 text-white shadow-2xs flex items-center gap-2 shrink-0">
                         <span>{t('ad.teachDecrees')}</span>
                     </A>
                     <A href="/administrator/academic/campaign/transaction/teach-lecturer" class={tabClass}><span>{t('ad.teachLecturers')}</span></A>
@@ -416,41 +416,41 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
 
                 {/* KPI Metrics Summary Cards */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.totalDecrees')}</span>
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
+                        <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.totalDecrees')}</span>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().totalCount}</span>
+                            <span class="text-2xl font-bold font-mono text-foreground">{summaryStats().totalCount}</span>
                             <span class="text-xs text-neutral-500">records</span>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.issuedThisYear')}</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.issuedThisYear')}</span>
                             <span class="text-xs font-mono text-neutral-500">{new Date().getFullYear()}</span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().thisYearCount}</span>
+                            <span class="text-2xl font-bold font-mono text-foreground">{summaryStats().thisYearCount}</span>
                             <span class="text-xs text-neutral-500">{t('ad.onThisPage')}</span>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.activities')}</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.activities')}</span>
                             <span class="text-xs font-mono text-neutral-500">{summaryStats().withSigner} signed</span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">{summaryStats().activityCount}</span>
+                            <span class="text-2xl font-bold font-mono text-foreground">{summaryStats().activityCount}</span>
                             <span class="text-xs text-neutral-500">{t('ad.onThisPage')}</span>
                         </div>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.latestDecree')}</span>
-                        <div class="mt-2 text-lg font-bold font-mono text-neutral-900 dark:text-white">{formatDate(summaryStats().latest)}</div>
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
+                        <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.latestDecree')}</span>
+                        <div class="mt-2 text-lg font-bold font-mono text-foreground">{formatDate(summaryStats().latest)}</div>
                     </div>
                 </div>
 
                 {/* Filter and Control Bar */}
-                <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
+                <div class="bg-card p-4 rounded-md border border-border shadow-2xs space-y-3">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
                         <div class="md:col-span-5">
                             <RemoteSearchSelect<ActivityOption>
@@ -487,21 +487,21 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                 type="button"
                                 title={t('ad.resetAllFilters')}
                                 onClick={resetFilters}
-                                class="w-full p-2 text-xs flex items-center justify-center font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs transition-colors"
+                                class="w-full p-2 text-xs flex items-center justify-center font-medium text-muted-foreground bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md transition-colors"
                             >
                                 {t('ad.reset')}
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
+                    <div class="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
                         <span>
-                            {t('ad.showing')} <strong class="text-neutral-800 dark:text-neutral-200">{decrees().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> decrees
+                            {t('ad.showing')} <strong class="text-foreground">{decrees().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-foreground">{endIndex()}</strong> of <strong class="text-foreground">{totalData()}</strong> decrees
                         </span>
                         <div class="flex items-center gap-2">
                             <span>{t('ad.sort')}</span>
                             <select
-                                class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
+                                class="p-1 text-xs border border-border rounded-md bg-card text-foreground"
                                 value={sortParam()}
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                             >
@@ -511,7 +511,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             </select>
                             <span>{t('ad.perPage')}</span>
                             <select
-                                class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
+                                class="p-1 text-xs border border-border rounded-md bg-card text-foreground"
                                 value={itemsPerPage()}
                                 onChange={(e) => {
                                     setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -527,7 +527,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                 </div>
 
                 {/* Data Presentation Container */}
-                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-xs shadow-2xs overflow-hidden">
+                <div class="border border-border bg-card rounded-md shadow-2xs overflow-hidden">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -535,8 +535,8 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                 <For each={Array.from({ length: 4 })}>
                                     {() => (
                                         <div class="p-4 animate-pulse space-y-2.5 border-b border-neutral-100 dark:border-neutral-700/50">
-                                            <div class="h-4 w-60 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
-                                            <div class="h-3 w-40 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
+                                            <div class="h-4 w-60 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
+                                            <div class="h-3 w-40 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
                                         </div>
                                     )}
                                 </For>
@@ -547,22 +547,22 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             when={decrees().length > 0}
                             fallback={
                                 <div class="px-4 py-16 text-center">
-                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{t('ad.noTeachingDecreesFound')}</h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto font-mono">
+                                    <h3 class="text-base font-bold font-mono text-foreground">{t('ad.noTeachingDecreesFound')}</h3>
+                                    <p class="text-xs text-muted-foreground mt-1 max-w-sm mx-auto font-mono">
                                         {t('ad.thereAreNoDecreeRecordsMatching')}
                                     </p>
                                     <div class="mt-4 flex items-center justify-center gap-2">
                                         <button
                                             type="button"
                                             onClick={resetFilters}
-                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs transition-colors"
+                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-secondary hover:bg-neutral-200 rounded-md transition-colors"
                                         >
                                             {t('ad.clearFilters')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={openCreateModal}
-                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors"
+                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
                                         >
                                             {t('ad.addDecree')}
                                         </button>
@@ -573,7 +573,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             {/* Desktop Table View (>= 768px) */}
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-xs">
-                                    <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 font-mono text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
+                                    <thead class="bg-muted/60 border-b border-border font-mono text-muted-foreground uppercase tracking-wider">
                                         <tr>
                                             <th class="px-4 py-3 font-semibold">{t('ad.decreeSK')}</th>
                                             <th class="px-4 py-3 font-semibold">{t('ad.campaignActivity')}</th>
@@ -587,13 +587,13 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                     <td class="px-4 py-3.5 align-top font-mono">
-                                                        <div class="font-semibold text-sm text-neutral-900 dark:text-white">{item.decree_number}</div>
+                                                        <div class="font-semibold text-sm text-foreground">{item.decree_number}</div>
                                                         <div class="flex items-center gap-1.5 mt-1">
                                                             <span class="text-[10px] text-neutral-500">{formatDate(item.decree_date)}</span>
                                                             <button
                                                                 type="button"
                                                                 onClick={() => copyToClipboard(item.id, 'UUID')}
-                                                                class="px-1.5 py-0.5 rounded-xs text-[10px] text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer"
+                                                                class="px-1.5 py-0.5 rounded-md text-[10px] text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer"
                                                                 title={t('ad.clickToCopyRecordUUID')}
                                                             >
                                                                 {item.id.substring(0, 8)}...
@@ -608,13 +608,13 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                                             {activityName(item)}
                                                         </A>
                                                     </td>
-                                                    <td class="px-4 py-3.5 align-top font-mono text-neutral-700 dark:text-neutral-300">{staffName(item)}</td>
+                                                    <td class="px-4 py-3.5 align-top font-mono text-foreground/80">{staffName(item)}</td>
                                                     <td class="px-4 py-3.5 align-top text-center">
                                                         <span
                                                             class={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
                                                                 item.feeder_id
                                                                     ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                                                                    : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700'
+                                                                    : 'bg-secondary text-muted-foreground border-border'
                                                             }`}
                                                         >
                                                             {item.feeder_id ? 'SYNCED' : 'LOCAL'}
@@ -625,7 +625,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openEditModal(item)}
-                                                                class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
+                                                                class="p-1.5 text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors cursor-pointer"
                                                                 title={t('ad.editDecree')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -635,7 +635,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
-                                                                class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
+                                                                class="p-1.5 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors cursor-pointer"
                                                                 title={t('ad.deleteDecree2')}
                                                             >
                                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -657,7 +657,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                     {(item) => (
                                         <div class="p-4 space-y-2">
                                             <div class="flex items-start justify-between gap-2">
-                                                <div class="font-mono font-bold text-sm text-neutral-900 dark:text-white truncate">{item.decree_number}</div>
+                                                <div class="font-mono font-bold text-sm text-foreground truncate">{item.decree_number}</div>
                                                 <span class="text-[10px] font-mono text-neutral-500 shrink-0">{formatDate(item.decree_date)}</span>
                                             </div>
                                             <A
@@ -671,14 +671,14 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openEditModal(item)}
-                                                    class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs"
+                                                    class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-secondary hover:bg-neutral-200 rounded-md"
                                                 >
                                                     {t('ad.edit')}
                                                 </button>
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xs"
+                                                    class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
                                                 >
                                                     {t('ad.delete')}
                                                 </button>
@@ -693,25 +693,25 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
 
                 {/* Pagination Controls */}
                 <Show when={totalPages() > 1}>
-                    <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> decrees
+                    <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
+                            {t('ad.showing')} <span class="font-semibold text-foreground">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> of <span class="font-semibold text-foreground">{totalData().toLocaleString()}</span> decrees
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
                                 {t('ad.previous')}
                             </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
@@ -725,19 +725,19 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
             {/* Create & Edit Modal Dialog */}
             <dialog
                 ref={formDialogRef}
-                class="fixed inset-0 m-auto w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
+                class="fixed inset-0 m-auto w-full max-w-2xl bg-card rounded-md border border-border shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-foreground"
             >
                 <form onSubmit={handleFormSubmit} class="p-6 space-y-5">
-                    <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                    <div class="flex items-center justify-between border-b border-border pb-3">
                         <div>
                             <span class="text-xs font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold">
                                 {modalMode() === 'create' ? t('ad.createRecord') : t('ad.editRecord')}
                             </span>
-                            <h3 class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                            <h3 class="text-lg font-bold font-mono text-foreground">
                                 {modalMode() === 'create' ? t('ad.newTeachingDecree') : t('ad.updateTeachingDecree')}
                             </h3>
                         </div>
-                        <button type="button" onClick={closeFormModal} class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-xs cursor-pointer">
+                        <button type="button" onClick={closeFormModal} class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-md cursor-pointer">
                             <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="18" y1="6" x2="6" y2="18" />
                                 <line x1="6" y1="6" x2="18" y2="18" />
@@ -804,18 +804,18 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                         <button
                             type="button"
                             onClick={closeFormModal}
-                            class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
+                            class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-foreground/80 bg-secondary hover:bg-neutral-200 rounded-md transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
-                            class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
+                            class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         >
                             {isSubmitting() ? t('ad.saving') : modalMode() === 'create' ? t('ad.createDecree') : t('ad.updateDecree')}
                         </button>
@@ -826,18 +826,18 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
             {/* Delete Confirmation Modal Dialog */}
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto w-full max-w-md bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
+                class="fixed inset-0 m-auto w-full max-w-md bg-card rounded-md border border-border shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-foreground"
             >
                 <div class="p-6 space-y-4">
-                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">{t('ad.deleteTeachingDecree')}</h3>
-                    <p class="text-xs text-neutral-600 dark:text-neutral-300 font-mono">
-                        {t('ad.deleteDecree')} <strong class="text-neutral-900 dark:text-white">"{selectedDecree()?.decree_number}"</strong>{t('ad.teachingAssignmentsReferencingThisDecreeMay')}
+                    <h3 class="text-base font-bold font-mono text-foreground">{t('ad.deleteTeachingDecree')}</h3>
+                    <p class="text-xs text-muted-foreground font-mono">
+                        {t('ad.deleteDecree')} <strong class="text-foreground">"{selectedDecree()?.decree_number}"</strong>{t('ad.teachingAssignmentsReferencingThisDecreeMay')}
                     </p>
-                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
+                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-foreground/80 bg-secondary hover:bg-neutral-200 rounded-md transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </button>
@@ -845,7 +845,7 @@ export default function AcademicCampaignTransactionTeachdecreePage() {
                             type="button"
                             disabled={isSubmitting()}
                             onClick={handleDeleteSubmit}
-                            class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
+                            class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         >
                             {isSubmitting() ? t('ad.deleting') : t('ad.confirmDelete')}
                         </button>

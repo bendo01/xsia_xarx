@@ -74,7 +74,7 @@ const inputClass = 'block w-full p-2.5 text-sm text-neutral-900 border border-ne
 function Field(props: { label: string; required?: boolean; class?: string; children: JSX.Element }) {
     return (
         <div class={props.class}>
-            <label class="block text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                 {props.label} <Show when={props.required}><span class="text-red-500">*</span></Show>
             </label>
             {props.children}
@@ -84,11 +84,11 @@ function Field(props: { label: string; required?: boolean; class?: string; child
 
 function Section(props: { title: string; description?: string; children: JSX.Element }) {
     return (
-        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{props.title}</h3>
+        <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
+                <h3 class="font-bold text-sm text-foreground">{props.title}</h3>
                 <Show when={props.description}>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{props.description}</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{props.description}</p>
                 </Show>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 p-6">{props.children}</div>
@@ -281,34 +281,34 @@ export default function RectoratEmployeeCreate() {
     const modeButtonClass = (m: CreateMode) =>
         `flex-1 text-left p-4 rounded-xl border-2 transition-all cursor-pointer ${mode() === m
             ? 'border-indigo-500 bg-indigo-50/60 dark:bg-indigo-900/20'
-            : 'border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 hover:border-neutral-300 dark:hover:border-neutral-700'}`;
+            : 'border-border bg-card hover:border-neutral-300 dark:hover:border-neutral-700'}`;
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Page Header */}
-                <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-border pb-6 gap-4">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-indigo-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-indigo-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
                             <A href={listPath()} class="hover:text-indigo-600 transition-colors">{t('rt.pegawai')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.tambah')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.tambah')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{t('rt.tambahPegawai')}</h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground">{t('rt.tambahPegawai')}</h1>
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('rt.daftarkanPegawaiDariIndividuYangSudah')}
                         </p>
                     </div>
                     <A
                         href={listPath()}
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                     >
                         {t('rt.batal')}
                     </A>
@@ -319,21 +319,21 @@ export default function RectoratEmployeeCreate() {
                     {/* Mode Switch */}
                     <div class="flex flex-col sm:flex-row gap-3">
                         <button type="button" id="mode-existing" class={modeButtonClass('existing')} onClick={() => setMode('existing')}>
-                            <p class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.individuSudahTerdaftar')}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('rt.sudahMemilikiDataIndividuDanAkun')}</p>
+                            <p class="font-bold text-sm text-foreground">{t('rt.individuSudahTerdaftar')}</p>
+                            <p class="text-xs text-muted-foreground mt-1">{t('rt.sudahMemilikiDataIndividuDanAkun')}</p>
                         </button>
                         <button type="button" id="mode-new" class={modeButtonClass('new')} onClick={() => setMode('new')}>
-                            <p class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.individuBaru')}</p>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('rt.buatDataIndividuAkunAlamatTelepon')}</p>
+                            <p class="font-bold text-sm text-foreground">{t('rt.individuBaru')}</p>
+                            <p class="text-xs text-muted-foreground mt-1">{t('rt.buatDataIndividuAkunAlamatTelepon')}</p>
                         </button>
                     </div>
 
                     {/* Existing Individual */}
                     <Show when={mode() === 'existing'}>
-                        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                            <div class="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.pilihIndividu')}</h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('rt.cariBerdasarkanNamaNIKAtauEmail')}</p>
+                        <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                            <div class="px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
+                                <h3 class="font-bold text-sm text-foreground">{t('rt.pilihIndividu')}</h3>
+                                <p class="text-xs text-muted-foreground mt-0.5">{t('rt.cariBerdasarkanNamaNIKAtauEmail')}</p>
                             </div>
                             <div class="p-6 space-y-4">
                                 <Show
@@ -356,7 +356,7 @@ export default function RectoratEmployeeCreate() {
                                                     {t('rt.tidakDitemukanGunakanOpsi')} <button type="button" class="text-indigo-600 font-semibold underline cursor-pointer" onClick={() => setMode('new')}>{t('rt.individuBaru')}</button>.
                                                 </p>
                                             </Show>
-                                            <div class="divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-100 dark:border-neutral-800 rounded-lg overflow-hidden empty:hidden">
+                                            <div class="divide-y divide-neutral-100 dark:divide-neutral-800 border border-border rounded-lg overflow-hidden empty:hidden">
                                                 <For each={lookupResults()}>
                                                     {(item) => (
                                                         <button
@@ -366,8 +366,8 @@ export default function RectoratEmployeeCreate() {
                                                             onClick={() => setSelected(item)}
                                                         >
                                                             <div class="min-w-0">
-                                                                <p class="text-sm font-semibold text-neutral-900 dark:text-white truncate">{individualLabel(item)}</p>
-                                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono truncate">
+                                                                <p class="text-sm font-semibold text-foreground truncate">{individualLabel(item)}</p>
+                                                                <p class="text-xs text-muted-foreground font-mono truncate">
                                                                     {item.code} · {item.user_email || 'tanpa akun'}
                                                                 </p>
                                                             </div>
@@ -387,15 +387,15 @@ export default function RectoratEmployeeCreate() {
                                     {(ind) => (
                                         <div class="flex items-center justify-between gap-4 p-4 rounded-lg border border-indigo-200 dark:border-indigo-800/60 bg-indigo-50/50 dark:bg-indigo-900/20">
                                             <div class="min-w-0">
-                                                <p class="font-semibold text-neutral-900 dark:text-white truncate">{individualLabel(ind())}</p>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                                <p class="font-semibold text-foreground truncate">{individualLabel(ind())}</p>
+                                                <p class="text-xs text-muted-foreground mt-0.5">
                                                     {t('rt.nik')} <span class="font-mono">{ind().code}</span> · {ind().birth_place}, {ind().birth_date}
                                                 </p>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('rt.akun')} {ind().user_email || '-'}</p>
+                                                <p class="text-xs text-muted-foreground mt-0.5">{t('rt.akun')} {ind().user_email || '-'}</p>
                                             </div>
                                             <button
                                                 type="button"
-                                                class="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-300 dark:border-neutral-700 hover:bg-white dark:hover:bg-neutral-800 cursor-pointer"
+                                                class="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md border border-border hover:bg-white dark:hover:bg-neutral-800 cursor-pointer"
                                                 onClick={() => setSelected(null)}
                                             >
                                                 {t('rt.ganti')}
@@ -506,7 +506,7 @@ export default function RectoratEmployeeCreate() {
                     <div class="flex items-center justify-end gap-3">
                         <A
                             href={listPath()}
-                            class="px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+                            class="px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
                         >
                             {t('rt.batal')}
                         </A>

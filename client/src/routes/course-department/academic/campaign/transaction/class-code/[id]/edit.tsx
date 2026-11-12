@@ -87,13 +87,13 @@ export default function ClassCodeEditPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
                             <span>{t('cd.courseDepartment')}</span>
@@ -106,15 +106,15 @@ export default function ClassCodeEditPage() {
                             <span>/</span>
                             <a href="/course-department/academic/campaign/transaction/class-code" class="hover:text-blue-600 transition-colors">{t('cd.classCode')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.edit')}</span>
+                            <span class="font-medium text-foreground">{t('cd.edit')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('cd.editClassCode')}
                         </h1>
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded-md shadow-sm p-6">
+                <div class="bg-card border border-border rounded-md shadow-sm p-6">
                     <Show when={isLoading()}>
                         <div class="flex items-center justify-center p-12">
                             <Spinner size="lg" color="blue" aria-hidden={true} />
@@ -125,7 +125,7 @@ export default function ClassCodeEditPage() {
                         <form onSubmit={handleSubmit} class="space-y-6">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-sm font-medium text-foreground/80 mb-1">
                                         {t('cd.code')}
                                     </label>
                                     <input
@@ -133,11 +133,11 @@ export default function ClassCodeEditPage() {
                                         required
                                         value={formData().code}
                                         onInput={(e) => setFormData({ ...formData(), code: parseInt(e.currentTarget.value) || 0 })}
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                     />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-sm font-medium text-foreground/80 mb-1">
                                         {t('cd.alphabetCode')}
                                     </label>
                                     <input
@@ -146,16 +146,16 @@ export default function ClassCodeEditPage() {
                                         value={formData().alphabet_code}
                                         onInput={(e) => setFormData({ ...formData(), alphabet_code: e.currentTarget.value })}
                                         placeholder={t('cd.enterUpTo5Characters')}
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white uppercase"
+                                        class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground uppercase"
                                     />
-                                    <p class="mt-1 text-xs text-neutral-500 dark:text-neutral-400">
+                                    <p class="mt-1 text-xs text-muted-foreground">
                                         {t('cd.maximum5CharactersAllowed')}
                                     </p>
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-sm font-medium text-foreground/80 mb-1">
                                     {t('cd.classCodeName')}
                                 </label>
                                 <input
@@ -163,19 +163,19 @@ export default function ClassCodeEditPage() {
                                     required
                                     value={formData().name}
                                     onInput={(e) => setFormData({ ...formData(), name: e.currentTarget.value })}
-                                    class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-sm font-medium text-foreground/80 mb-1">
                                     {t('cd.activity')}
                                 </label>
                                 <select
                                     required
                                     value={formData().activity_id}
                                     onChange={(e) => setFormData({ ...formData(), activity_id: e.currentTarget.value })}
-                                    class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                 >
                                     <option value="" disabled>{t('cd.selectActivity')}</option>
                                     <For each={activities()}>
@@ -186,31 +186,31 @@ export default function ClassCodeEditPage() {
 
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-sm font-medium text-foreground/80 mb-1">
                                         {t('cd.startEffectiveDate')}
                                     </label>
                                     <input
                                         type="date"
                                         value={formData().start_effective_date}
                                         onInput={(e) => setFormData({ ...formData(), start_effective_date: e.currentTarget.value })}
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                     />
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-sm font-medium text-foreground/80 mb-1">
                                         {t('cd.endEffectiveDate')}
                                     </label>
                                     <input
                                         type="date"
                                         value={formData().end_effective_date}
                                         onInput={(e) => setFormData({ ...formData(), end_effective_date: e.currentTarget.value })}
-                                        class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                     />
                                 </div>
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-sm font-medium text-foreground/80 mb-1">
                                     {t('cd.capacity')}
                                 </label>
                                 <input
@@ -219,15 +219,15 @@ export default function ClassCodeEditPage() {
                                     min="0"
                                     value={formData().capacity}
                                     onInput={(e) => setFormData({ ...formData(), capacity: parseInt(e.currentTarget.value) || 0 })}
-                                    class="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-700 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full px-3 py-2 border border-border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-card text-foreground"
                                 />
                             </div>
 
-                            <div class="flex items-center justify-end gap-3 pt-6 border-t border-neutral-200 dark:border-neutral-700">
+                            <div class="flex items-center justify-end gap-3 pt-6 border-t border-border">
                                 <button
                                     type="button"
                                     onClick={() => navigate('/course-department/academic/campaign/transaction/class-code')}
-                                    class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-md transition-colors cursor-pointer"
+                                    class="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 border border-border rounded-md transition-colors cursor-pointer"
                                 >
                                     {t('cd.cancel')}
                                 </button>

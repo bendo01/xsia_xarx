@@ -56,11 +56,11 @@ export function Loader(rawProps: LoaderProps): JSX.Element {
               <div
                 role="status"
                 aria-label={props.message || "Loading..."}
-                class={`absolute inset-0 z-20 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xs flex flex-col items-center justify-center gap-3 text-center p-4 rounded-xs ${props.class || ""}`}
+                class={`absolute inset-0 z-20 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-xs flex flex-col items-center justify-center gap-3 text-center p-4 rounded-md ${props.class || ""}`}
               >
                 <Spinner size={props.size} color={props.color} aria-hidden={true} />
                 <Show when={props.message}>
-                  <span class="text-xs font-mono text-neutral-600 dark:text-neutral-300">
+                  <span class="text-xs font-mono text-muted-foreground">
                     {props.message}
                   </span>
                 </Show>
@@ -85,7 +85,7 @@ export function Loader(rawProps: LoaderProps): JSX.Element {
               aria-hidden={true}
             />
             <Show when={props.message}>
-              <span class="text-xs font-mono text-neutral-600 dark:text-neutral-400">
+              <span class="text-xs font-mono text-muted-foreground">
                 {props.message}
               </span>
             </Show>
@@ -106,7 +106,7 @@ export function Loader(rawProps: LoaderProps): JSX.Element {
           </span>
         </Show>
         <Show when={props.subtitle}>
-          <span class="text-[11px] text-neutral-500 dark:text-neutral-400">
+          <span class="text-[11px] text-muted-foreground">
             {props.subtitle}
           </span>
         </Show>

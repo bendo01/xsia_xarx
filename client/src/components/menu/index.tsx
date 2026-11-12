@@ -104,14 +104,14 @@ export default function DynamicMenu() {
         <div class="w-full flex flex-col gap-3">
             {/* Authenticated User Role Badge & Multi-Role Switcher
             <Show when={isAuthenticatedSignal()}>
-                <div class="p-3 bg-neutral-100 dark:bg-neutral-800/80 rounded-xl border border-neutral-200/80 dark:border-neutral-700/80 mb-2">
+                <div class="p-3 bg-secondary/80 rounded-xl border border-border/60 mb-2">
                     <div class="flex items-center justify-between gap-2 mb-2">
                         <div class="flex items-center gap-2">
                             <span class="relative flex h-2.5 w-2.5">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                                 <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                             </span>
-                            <span class="text-[11px] font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-mono">
+                            <span class="text-[11px] font-bold uppercase tracking-wider text-muted-foreground font-mono">
                                 {t('nav.activeRole')}
                             </span>
                         </div>
@@ -129,7 +129,7 @@ export default function DynamicMenu() {
 
                     {/* Multi-role Switcher (shown when user has more than 1 role) 
                     <Show when={userRolesSignal().length > 1}>
-                        <div class="mt-2 pt-2 border-t border-neutral-200 dark:border-neutral-700/60">
+                        <div class="mt-2 pt-2 border-t border-border/60">
                             <label class="block text-[10px] font-semibold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-1.5 font-mono">
                                 {t('nav.switchRole')} ({t('nav.rolesAvailable', { count: userRolesSignal().length })})
                             </label>
@@ -155,14 +155,14 @@ export default function DynamicMenu() {
                                                 class={`px-2 py-1.5 text-xs font-medium rounded-lg text-start transition-all flex items-center justify-between border ${
                                                     isCurrent() 
                                                         ? 'bg-blue-600 text-white border-blue-600 shadow-xs font-semibold' 
-                                                        : 'bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700 hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-neutral-800'
+                                                        : 'bg-card text-foreground/80 border-border hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-neutral-800'
                                                 }`}
                                             >
                                                 <div class="flex flex-col min-w-0">
                                                     <span class="truncate">{getRoleDisplayName(roleItem.name, roleItem)}</span>
                                                     <Show when={isStudent() && studentCode()}>
                                                         <span class={`text-[10px] font-mono font-bold truncate ${
-                                                            isCurrent() ? 'text-blue-100' : 'text-neutral-500 dark:text-neutral-400'
+                                                            isCurrent() ? 'text-blue-100' : 'text-muted-foreground'
                                                         }`}>
                                                             {studentCode()}
                                                         </span>

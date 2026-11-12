@@ -85,23 +85,23 @@ export default function InstitutionMasterInstitutionDetailPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 pb-12">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground pb-12">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
                 {/* Page Header with Breadcrumbs */}
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
                             <span class="shrink-0">{t('ad.institution')}</span>
                             <span class="shrink-0">/</span>
                             <a href="/administrator/institution/master/institution" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.masterInstitution')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.profileDetails')}</span>
+                            <span class="font-medium text-foreground shrink-0">{t('ad.profileDetails')}</span>
                         </nav>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex flex-wrap items-center gap-2 sm:gap-3 font-mono">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground flex flex-wrap items-center gap-2 sm:gap-3 font-mono">
                             <span class="break-all sm:break-normal">{institutionData()?.institution.name || 'Institution Details'}</span>
                             <Show when={institutionData()?.institution}>
                                 <span class={`px-2 py-0.5 text-xs font-semibold uppercase tracking-wider shrink-0 ${institutionData()?.institution.is_active ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : 'bg-neutral-200 text-neutral-800 dark:bg-neutral-700 dark:text-neutral-300'}`}>
@@ -109,7 +109,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                 </span>
                             </Show>
                         </h1>
-                        <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-xs sm:text-sm text-muted-foreground mt-0.5">
                             {t('ad.comprehensiveInstitutionalMasterRecordClassificationAnd')}
                         </p>
                     </div>
@@ -118,7 +118,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
                     <div class="w-full sm:w-auto flex items-center gap-2 shrink-0">
                         <a
                             href="/administrator/institution/master/institution"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 shadow-2xs transition-colors cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-muted dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-border shadow-2xs transition-colors cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -129,7 +129,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
                         <button
                             type="button"
                             onClick={() => window.print()}
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 shadow-2xs transition-colors cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-muted dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-border shadow-2xs transition-colors cursor-pointer"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="6 9 6 2 18 2 18 9" />
@@ -142,22 +142,22 @@ export default function InstitutionMasterInstitutionDetailPage() {
                 </div>
 
                 <Show when={isLoading()}>
-                    <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
+                    <div class="p-12 text-center bg-card border border-border shadow-2xs space-y-3">
                         <Spinner size="lg" color="blue" aria-hidden={true} />
                         <p class="text-xs sm:text-sm text-neutral-500">{t('ad.loadingInstitutionProfileDetailsAndRelated')}</p>
                     </div>
                 </Show>
 
                 <Show when={!isLoading() && !institutionData()}>
-                    <div class="p-12 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                        <div class="size-12 rounded-xs bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
+                    <div class="p-12 text-center bg-card border border-border shadow-2xs space-y-4">
+                        <div class="size-12 rounded-md bg-red-100 dark:bg-red-950/50 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <circle cx="12" cy="12" r="10" />
                                 <line x1="12" y1="8" x2="12" y2="12" />
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                             </svg>
                         </div>
-                        <h2 class="text-base font-bold text-neutral-900 dark:text-white">{t('ad.institutionProfileNotFound')}</h2>
+                        <h2 class="text-base font-bold text-foreground">{t('ad.institutionProfileNotFound')}</h2>
                         <p class="text-xs text-neutral-500 max-w-sm mx-auto">
                             {t('ad.theRequestedInstitutionRecordDoesNot')}
                         </p>
@@ -174,7 +174,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Left Column: Quick Profile */}
                         <div class="lg:col-span-1 space-y-6">
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-6 shadow-2xs space-y-4">
+                            <div class="bg-card border border-border p-6 shadow-2xs space-y-4">
                                 <div class="size-16 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-400 mx-auto">
                                     <svg class="size-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M3 21h18" />
@@ -186,7 +186,7 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                 </div>
 
                                 <div class="text-center space-y-1">
-                                    <h2 class="text-base font-bold text-neutral-900 dark:text-white leading-tight font-mono">
+                                    <h2 class="text-base font-bold text-foreground leading-tight font-mono">
                                         {institutionData()?.institution.name || '-'}
                                     </h2>
                                     <p class="text-xs font-mono text-neutral-500">
@@ -194,10 +194,10 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                     </p>
                                 </div>
 
-                                <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 space-y-2.5 text-xs">
+                                <div class="pt-4 border-t border-border space-y-2.5 text-xs">
                                     <div class="flex items-center justify-between">
                                         <span class="text-neutral-500">{t('ad.code')}</span>
-                                        <span class="font-mono font-semibold text-neutral-900 dark:text-white px-2 py-0.5 bg-neutral-100 dark:bg-neutral-700">
+                                        <span class="font-mono font-semibold text-foreground px-2 py-0.5 bg-secondary">
                                             {institutionData()?.institution.code || '-'}
                                         </span>
                                     </div>
@@ -209,25 +209,25 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-neutral-500">{t('ad.country2')}</span>
-                                        <span class="font-medium text-neutral-900 dark:text-white">{countryName()}</span>
+                                        <span class="font-medium text-foreground">{countryName()}</span>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-neutral-500">{t('ad.category2')}</span>
-                                        <span class="font-medium text-neutral-900 dark:text-white">{categoryName()}</span>
+                                        <span class="font-medium text-foreground">{categoryName()}</span>
                                     </div>
                                     <div class="flex items-center justify-between">
                                         <span class="text-neutral-500">{t('ad.variety2')}</span>
-                                        <span class="font-medium text-neutral-900 dark:text-white">{varietyName()}</span>
+                                        <span class="font-medium text-foreground">{varietyName()}</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-6 shadow-2xs space-y-3">
-                                <h3 class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-mono">
+                            <div class="bg-card border border-border p-6 shadow-2xs space-y-3">
+                                <h3 class="text-xs font-semibold uppercase tracking-wider text-muted-foreground font-mono">
                                     {t('ad.identifiersSystem')}
                                 </h3>
                                 <div class="space-y-2 text-xs">
-                                    <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="p-2.5 bg-muted border border-border">
                                         <span class="text-neutral-500 block mb-0.5">{t('ad.uuid')}</span>
                                         <div class="flex items-center justify-between gap-1">
                                             <span class="font-mono truncate">{institutionData()?.institution.id}</span>
@@ -258,8 +258,8 @@ export default function InstitutionMasterInstitutionDetailPage() {
 
                         {/* Right Column: Detailed Panels */}
                         <div class="lg:col-span-2 space-y-6">
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                                <div class="border-b border-neutral-200 dark:border-neutral-700 flex px-6">
+                            <div class="bg-card border border-border shadow-2xs">
+                                <div class="border-b border-border flex px-6">
                                     <button
                                         type="button"
                                         onClick={() => setActiveTab('overview')}
@@ -280,36 +280,36 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                     <Show when={activeTab() === 'overview'}>
                                         <div class="space-y-4">
                                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                                                <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                                <div class="p-4 bg-muted border border-border">
                                                     <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.officialName')}</span>
-                                                    <span class="font-mono font-bold text-neutral-900 dark:text-white">{institutionData()?.institution.name || '-'}</span>
+                                                    <span class="font-mono font-bold text-foreground">{institutionData()?.institution.name || '-'}</span>
                                                 </div>
-                                                <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                                <div class="p-4 bg-muted border border-border">
                                                     <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.acronymAlphabetCode')}</span>
-                                                    <span class="font-mono font-bold text-neutral-900 dark:text-white">{institutionData()?.institution.alphabet_code || '-'}</span>
+                                                    <span class="font-mono font-bold text-foreground">{institutionData()?.institution.alphabet_code || '-'}</span>
                                                 </div>
-                                                <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                                <div class="p-4 bg-muted border border-border">
                                                     <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.institutionCode')}</span>
-                                                    <span class="font-mono font-bold text-neutral-900 dark:text-white">{institutionData()?.institution.code || '-'}</span>
+                                                    <span class="font-mono font-bold text-foreground">{institutionData()?.institution.code || '-'}</span>
                                                 </div>
-                                                <div class="p-4 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                                <div class="p-4 bg-muted border border-border">
                                                     <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('ad.status')}</span>
-                                                    <span class="font-mono font-bold text-neutral-900 dark:text-white">{institutionData()?.institution.is_active ? 'Active' : 'Inactive'}</span>
+                                                    <span class="font-mono font-bold text-foreground">{institutionData()?.institution.is_active ? 'Active' : 'Inactive'}</span>
                                                 </div>
                                             </div>
 
                                             <div class="pt-4">
-                                                <h4 class="text-xs font-bold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                                <h4 class="text-xs font-bold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                                     {t('ad.allEntityFields')}
                                                 </h4>
-                                                <div class="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                                                <div class="border border-border overflow-hidden">
                                                     <table class="w-full text-xs text-left">
                                                         <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                                             <For each={Object.entries(institutionData()?.institution || {})}>
                                                                 {([k, v]) => (
                                                                     <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                                                                        <td class="px-4 py-2 font-mono font-semibold text-neutral-600 dark:text-neutral-400 w-1/3 bg-neutral-50 dark:bg-neutral-900/30">{k}</td>
-                                                                        <td class="px-4 py-2 font-mono text-neutral-900 dark:text-white break-all">{typeof v === 'object' ? JSON.stringify(v) : String(v ?? '-')}</td>
+                                                                        <td class="px-4 py-2 font-mono font-semibold text-muted-foreground w-1/3 bg-muted/30">{k}</td>
+                                                                        <td class="px-4 py-2 font-mono text-foreground break-all">{typeof v === 'object' ? JSON.stringify(v) : String(v ?? '-')}</td>
                                                                     </tr>
                                                                 )}
                                                             </For>
@@ -324,23 +324,23 @@ export default function InstitutionMasterInstitutionDetailPage() {
                                         <div class="space-y-3 text-xs">
                                             <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-700">
                                                 <span class="text-neutral-500 font-mono">{t('ad.createdAt2')}</span>
-                                                <span class="font-mono text-neutral-900 dark:text-white">{institutionData()?.institution.created_at || '-'}</span>
+                                                <span class="font-mono text-foreground">{institutionData()?.institution.created_at || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-700">
                                                 <span class="text-neutral-500 font-mono">{t('ad.updatedAt2')}</span>
-                                                <span class="font-mono text-neutral-900 dark:text-white">{institutionData()?.institution.updated_at || '-'}</span>
+                                                <span class="font-mono text-foreground">{institutionData()?.institution.updated_at || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-700">
                                                 <span class="text-neutral-500 font-mono">{t('ad.createdBy')}</span>
-                                                <span class="font-mono text-neutral-900 dark:text-white">{institutionData()?.institution.created_by || '-'}</span>
+                                                <span class="font-mono text-foreground">{institutionData()?.institution.created_by || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-700">
                                                 <span class="text-neutral-500 font-mono">{t('ad.updatedBy')}</span>
-                                                <span class="font-mono text-neutral-900 dark:text-white">{institutionData()?.institution.updated_by || '-'}</span>
+                                                <span class="font-mono text-foreground">{institutionData()?.institution.updated_by || '-'}</span>
                                             </div>
                                             <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-700">
                                                 <span class="text-neutral-500 font-mono">{t('ad.syncAt')}</span>
-                                                <span class="font-mono text-neutral-900 dark:text-white">{institutionData()?.institution.sync_at || '-'}</span>
+                                                <span class="font-mono text-foreground">{institutionData()?.institution.sync_at || '-'}</span>
                                             </div>
                                         </div>
                                     </Show>

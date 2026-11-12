@@ -254,7 +254,7 @@ export default function StudentCampaignActivityShowPage() {
                 <For each={c.lecturers}>
                     {(lecturer: any) => (
                         <span class="inline-flex items-center gap-1.5 leading-snug">
-                            <span class="size-1 rounded-xs bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                            <span class="size-1 rounded-md bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
                             {typeof lecturer === 'string' ? (
                                 <span>{lecturer}</span>
                             ) : (() => {
@@ -304,22 +304,22 @@ export default function StudentCampaignActivityShowPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-1">
-                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
-                                <span class="size-1.5 rounded-xs bg-blue-500"></span>
+                            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                                <span class="size-1.5 rounded-md bg-blue-500"></span>
                                 <span>{t('st.academicStudentActivityDetail')}</span>
                             </div>
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
                                 {activity()?.name || t('st.academicActivityDetail')}
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                            <p class="text-xs sm:text-sm text-muted-foreground">
                                 {t('st.studyPlanCardKRSAcademicGrade')}
                             </p>
                         </div>
@@ -328,7 +328,7 @@ export default function StudentCampaignActivityShowPage() {
                         <div class="flex flex-wrap items-center gap-3">
                             <A
                                 href="/student/academic/student/campaign/activity"
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors"
                             >
                                 {t('st.backToActivities')}
                             </A>
@@ -336,7 +336,7 @@ export default function StudentCampaignActivityShowPage() {
                                 type="button"
                                 onClick={handlePrintKRS}
                                 disabled={isPrintingKRS()}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title={t('st.printStudyPlanCardKRS')}
                             >
                                 <Show
@@ -351,7 +351,7 @@ export default function StudentCampaignActivityShowPage() {
                                 type="button"
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
-                                class="px-4 py-2.5 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-xs text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-4 py-2.5 bg-blue-50 dark:bg-blue-950/40 hover:bg-blue-100 dark:hover:bg-blue-900/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80 rounded-md text-xs font-bold transition-colors flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title={t('st.printStudyResultCardKHS')}
                             >
                                 <Show
@@ -368,7 +368,7 @@ export default function StudentCampaignActivityShowPage() {
                                     <button
                                         type="button"
                                         disabled
-                                        class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-xs text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
+                                        class="px-5 py-2.5 bg-neutral-200 dark:bg-neutral-700 text-neutral-400 dark:text-neutral-500 rounded-md text-xs font-bold transition-colors cursor-not-allowed flex items-center gap-1.5 opacity-60"
                                         title={t('st.academicActivityIsLocked')}
                                     >
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
@@ -378,7 +378,7 @@ export default function StudentCampaignActivityShowPage() {
                             >
                                 <A
                                     href={`/student/academic/student/campaign/activity/${activity()?.id || ''}/enrollment`}
-                                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+                                    class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
                                     <span>{t('st.addEnrollCourses')}</span>
@@ -389,19 +389,19 @@ export default function StudentCampaignActivityShowPage() {
 
                     {/* Summary KPI Badges */}
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700/50">
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.enrolledCourses')}</span>
-                            <span class="text-xl font-black text-neutral-900 dark:text-white">{detailCourses().length} Classes</span>
+                            <span class="text-xl font-black text-foreground">{detailCourses().length} Classes</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.semesterSKSTaken')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{totalEnrolledSKS()} SKS</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.semesterGPAIPS')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{calculatedIPS()}</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('st.cumulativeGPAIPK')}</span>
                             <span class="text-xl font-black text-emerald-600 dark:text-emerald-400">{calculatedIPK()}</span>
                         </div>
@@ -409,9 +409,9 @@ export default function StudentCampaignActivityShowPage() {
                 </div>
 
                 {/* Enrolled Courses Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                    <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                        <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <h2 class="text-sm font-bold text-foreground">
                             {t('st.enrolledCoursesListRencanaHasilStudi')}
                         </h2>
                         <span class="text-xs text-neutral-400 font-mono">
@@ -428,7 +428,7 @@ export default function StudentCampaignActivityShowPage() {
                         {/* Desktop Table View (md and above) */}
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
-                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
                                         <th class="py-3 px-4 text-start">{t('academic.no')}</th>
                                         <th class="py-3 px-4 text-start">{t('academic.courseCode')}</th>
@@ -455,38 +455,38 @@ export default function StudentCampaignActivityShowPage() {
                                                 <td class="py-3.5 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">
                                                     {c.course_code || '-'}
                                                 </td>
-                                                <td class="py-3.5 px-4 font-bold text-neutral-900 dark:text-white">
+                                                <td class="py-3.5 px-4 font-bold text-foreground">
                                                     {c.course_name || c.name || '-'}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.credit ?? 0}
                                                 </td>
-                                                <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300 text-xs">
+                                                <td class="py-3.5 px-4 text-muted-foreground text-xs">
                                                     {renderLecturers(c)}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center font-mono font-bold">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class={`inline-block px-2 py-0.5 rounded-xs font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
+                                                    <span class={`inline-block px-2 py-0.5 rounded-md font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                         {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-4 text-center font-mono font-bold text-neutral-800 dark:text-neutral-200">
+                                                <td class="py-3.5 px-4 text-center font-mono font-bold text-foreground">
                                                     {c.grade_point != null ? c.grade_point.toFixed(2) : (c.grade?.grade != null ? c.grade.grade.toFixed(2) : '-')}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
                                                     <Show
                                                         when={c.is_lock}
                                                         fallback={
-                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-red-800 dark:text-red-300" title={t('st.unlocked')}>
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold text-red-800 dark:text-red-300" title={t('st.unlocked')}>
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                                                 </svg>
                                                             </span>
                                                         }
                                                     >
-                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-xs text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title={t('st.locked')}>
+                                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold text-emerald-800 dark:text-emerald-300" title={t('st.locked')}>
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                             </svg>
@@ -512,13 +512,13 @@ export default function StudentCampaignActivityShowPage() {
                                         {/* Header Row: Index + Course Code + SKS Badge + Lock Status */}
                                         <div class="flex items-center justify-between gap-2">
                                             <div class="flex items-center gap-2 flex-wrap">
-                                                <span class="px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-md bg-secondary font-mono text-muted-foreground text-[10px] font-bold">
                                                     #{idx() + 1}
                                                 </span>
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {c.course_code || '-'}
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 font-mono text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200/60 dark:border-blue-800/60 font-mono text-[10px] font-bold">
                                                     {c.credit ?? 0} {t('academic.sks')}
                                                 </span>
                                             </div>
@@ -526,14 +526,14 @@ export default function StudentCampaignActivityShowPage() {
                                             <Show
                                                 when={c.is_lock}
                                                 fallback={
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
-                                                        <span class="size-1.5 rounded-xs bg-amber-500"></span>
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/80">
+                                                        <span class="size-1.5 rounded-md bg-amber-500"></span>
                                                         <span>{t('st.unlocked')}</span>
                                                     </span>
                                                 }
                                             >
-                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
-                                                    <span class="size-1.5 rounded-xs bg-emerald-500"></span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                    <span class="size-1.5 rounded-md bg-emerald-500"></span>
                                                     <span>{t('st.locked')}</span>
                                                 </span>
                                             </Show>
@@ -541,13 +541,13 @@ export default function StudentCampaignActivityShowPage() {
 
                                         {/* Course Title */}
                                         <div>
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                            <h3 class="text-sm font-bold text-foreground leading-snug">
                                                 {c.course_name || c.name || '-'}
                                             </h3>
                                         </div>
 
                                         {/* Lecturer */}
-                                        <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                        <div class="text-xs text-muted-foreground flex items-start gap-1.5">
                                             <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{t('academic.lecturer')}:</span>
                                             <div class="flex-1 text-[11px]">
                                                 {renderLecturers(c)}
@@ -556,23 +556,23 @@ export default function StudentCampaignActivityShowPage() {
 
                                         {/* Academic Performance KPI Grid */}
                                         <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.mark')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {c.mark != null ? c.mark.toFixed(1) : '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.grade')}</span>
-                                                <span class={`inline-block px-2 py-0.5 rounded-xs font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
+                                                <span class={`inline-block px-2 py-0.5 rounded-md font-bold text-xs ${getGradeBadgeClass(c.grade_letter || c.grade?.alphabet_code || c.grade?.name)}`}>
                                                     {c.grade_letter || c.grade?.alphabet_code || c.grade?.name || '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('academic.point')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {c.grade_point != null ? c.grade_point.toFixed(2) : (c.grade?.grade != null ? c.grade.grade.toFixed(2) : '-')}
                                                 </span>
                                             </div>

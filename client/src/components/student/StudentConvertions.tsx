@@ -12,13 +12,13 @@ export default function StudentConvertions(props: { items?: StudentConvertionIte
 
     return (
         <Show when={items().length > 0}>
-            <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                <div class="px-4 py-3 border-b border-neutral-200 dark:border-neutral-700 text-sm font-bold">
+            <div class="bg-card rounded-md border border-border shadow-2xs">
+                <div class="px-4 py-3 border-b border-border text-sm font-bold">
                     {t('ad.creditConversion')} ({items().length})
                 </div>
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs text-left">
-                        <thead class="bg-neutral-50 dark:bg-neutral-900/30 text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                        <thead class="bg-muted/30 text-muted-foreground uppercase tracking-wider">
                             <tr>
                                 <th class="px-4 py-2.5 font-semibold" colspan="4">{t('ad.originCourse')}</th>
                                 <th class="px-4 py-2.5 font-semibold" colspan="4">{t('ad.transferredCourse')}</th>
@@ -50,7 +50,7 @@ export default function StudentConvertions(props: { items?: StudentConvertionIte
                                 )}
                             </For>
                         </tbody>
-                        <tfoot class="bg-neutral-50 dark:bg-neutral-900/30 font-semibold">
+                        <tfoot class="bg-muted/30 font-semibold">
                             <tr>
                                 <td class="px-4 py-2" colspan="6">{t('ad.totalTransferredCredits')}</td>
                                 <td class="px-4 py-2 text-right font-mono">{num(total())}</td>

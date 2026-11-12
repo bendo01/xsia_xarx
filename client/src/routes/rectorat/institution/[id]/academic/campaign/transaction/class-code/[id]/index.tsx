@@ -289,13 +289,13 @@ export default function RectoratClassCodeDetail() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Navigation and Breadcrumb */}
                 <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             {tt('rt.rektorat')}
                         </A>
@@ -312,21 +312,21 @@ export default function RectoratClassCodeDetail() {
                             {tt('rt.kodeKelas')}
                         </A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
+                        <span class="text-foreground/80 font-semibold truncate max-w-xs">
                             {classCode()?.name || 'Detail Kode Kelas'}
                         </span>
                     </nav>
 
                     <Show when={!isLoading() && classCode()}>
                         {/* Header Banner */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                        <div class="bg-card rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                             <div class="absolute -right-20 -top-20 w-72 h-72 bg-linear-to-br from-indigo-500/10 via-purple-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                                 <div class="space-y-3">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <A
                                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code`}
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs font-semibold transition-all"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-foreground/80 text-xs font-semibold transition-all"
                                         >
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -356,10 +356,10 @@ export default function RectoratClassCodeDetail() {
                                             {classCode()?.alphabet_code || classCode()?.code || 'KL'}
                                         </div>
                                         <div>
-                                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                                                 {classCode()?.name}
                                             </h1>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-1">
+                                            <p class="text-xs text-muted-foreground font-mono mt-1">
                                                 {tt('rt.idEntitas')} {classCode()?.id}
                                             </p>
                                         </div>
@@ -398,7 +398,7 @@ export default function RectoratClassCodeDetail() {
 
                 {/* Loading State */}
                 <Show when={isLoading()}>
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
+                    <div class="bg-card rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
                         <Spinner size="lg" color="indigo" aria-hidden={true} />
                         <span class="text-sm text-neutral-500 font-medium">{tt('rt.memuatDetailDataKodeKelas')}</span>
                     </div>
@@ -414,7 +414,7 @@ export default function RectoratClassCodeDetail() {
                         <p class="text-xs text-red-700 dark:text-red-300 max-w-md mx-auto">{error()}</p>
                         <A
                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/class-code`}
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:bg-neutral-50"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card text-foreground text-xs font-semibold border border-border shadow-2xs hover:bg-neutral-50"
                         >
                             {tt('rt.kembaliKeDaftarKodeKelas')}
                         </A>
@@ -427,10 +427,10 @@ export default function RectoratClassCodeDetail() {
                         {/* Highlights Grid */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Card 1: Kapasitas */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.dayaTampung')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.dayaTampung')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
-                                    <span class="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
+                                    <span class="text-3xl font-extrabold text-foreground font-mono">
                                         {classCode()?.capacity || 0}
                                     </span>
                                     <span class="text-xs text-neutral-500">{tt('rt.mahasiswaKelas')}</span>
@@ -439,8 +439,8 @@ export default function RectoratClassCodeDetail() {
                             </div>
 
                             {/* Card 2: Kode Huruf & Angka */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.pengidentifikasi')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.pengidentifikasi')}</span>
                                 <div class="mt-3 flex items-baseline gap-3">
                                     <span class="text-2xl font-extrabold text-indigo-600 dark:text-indigo-400 font-mono">
                                         {classCode()?.alphabet_code || '-'}
@@ -453,10 +453,10 @@ export default function RectoratClassCodeDetail() {
                             </div>
 
                             {/* Card 3: Program Studi */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.programStudiUnit')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.programStudiUnit')}</span>
                                 <div class="mt-3">
-                                    <span class="text-base font-bold text-neutral-900 dark:text-white block truncate">
+                                    <span class="text-base font-bold text-foreground block truncate">
                                         {unit()?.name || 'Unit Terdaftar'}
                                     </span>
                                     <span class="text-xs text-neutral-500 font-mono">
@@ -466,10 +466,10 @@ export default function RectoratClassCodeDetail() {
                             </div>
 
                             {/* Card 4: Periode Efektif */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.masaEfektif')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.masaEfektif')}</span>
                                 <div class="mt-3 text-xs font-mono space-y-0.5">
-                                    <div class="text-neutral-800 dark:text-neutral-200 font-medium">
+                                    <div class="text-foreground font-medium">
                                         {formatDate(classCode()?.start_effective_date)}
                                     </div>
                                     <div class="text-neutral-500">
@@ -482,15 +482,15 @@ export default function RectoratClassCodeDetail() {
                         {/* Information Sections Grid */}
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Panel 1: Data Pokok Kode Kelas */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                                <div class="flex items-center gap-2 border-b border-border pb-3">
                                     <div class="p-2 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <rect width="18" height="18" x="3" y="3" rx="2" />
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M3 9h18M9 21V9" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {tt('rt.spesifikasiKodeKelas')}
                                     </h3>
                                 </div>
@@ -498,7 +498,7 @@ export default function RectoratClassCodeDetail() {
                                 <dl class="divide-y divide-neutral-100 dark:divide-neutral-800/80 text-xs">
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.namaKelas')}</dt>
-                                        <dd class="font-semibold text-neutral-900 dark:text-white">{classCode()?.name}</dd>
+                                        <dd class="font-semibold text-foreground">{classCode()?.name}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.kodeHurufAlphabet')}</dt>
@@ -506,7 +506,7 @@ export default function RectoratClassCodeDetail() {
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.kodeAngkaNumeric')}</dt>
-                                        <dd class="font-mono font-semibold text-neutral-800 dark:text-neutral-200">{classCode()?.code ?? '-'}</dd>
+                                        <dd class="font-mono font-semibold text-foreground">{classCode()?.code ?? '-'}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.dayaTampungCapacity')}</dt>
@@ -514,38 +514,38 @@ export default function RectoratClassCodeDetail() {
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.tanggalMulaiEfektif')}</dt>
-                                        <dd class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(classCode()?.start_effective_date)}</dd>
+                                        <dd class="font-mono text-foreground">{formatDate(classCode()?.start_effective_date)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{tt('rt.tanggalSelesaiEfektif')}</dt>
-                                        <dd class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(classCode()?.end_effective_date)}</dd>
+                                        <dd class="font-mono text-foreground">{formatDate(classCode()?.end_effective_date)}</dd>
                                     </div>
                                 </dl>
                             </div>
 
                             {/* Panel 2: Program Studi & Aktivitas Terkait */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                                <div class="flex items-center gap-2 border-b border-border pb-3">
                                     <div class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {tt('rt.unitAktivitasKampanye')}
                                     </h3>
                                 </div>
 
                                 <div class="space-y-4 text-xs">
                                     {/* Program Studi Box */}
-                                    <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
+                                    <div class="p-4 rounded-xl bg-muted/60 border border-border/80 space-y-2">
                                         <div class="flex items-center justify-between">
                                             <span class="text-neutral-500 font-semibold uppercase text-2xs">{tt('rt.programStudiUnitPengelola')}</span>
-                                            <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                                            <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-foreground/80">
                                                 {tt('rt.id')} {classCode()?.unit_id || '-'}
                                             </span>
                                         </div>
-                                        <p class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <p class="text-sm font-bold text-foreground">
                                             {unit()?.name || 'Unit Belum Terhubung'}
                                         </p>
                                         <Show when={unit()?.code}>
@@ -556,7 +556,7 @@ export default function RectoratClassCodeDetail() {
                                     </div>
 
                                     {/* Activity Box */}
-                                    <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
+                                    <div class="p-4 rounded-xl bg-muted/60 border border-border/80 space-y-2">
                                         <div class="flex items-center justify-between">
                                             <span class="text-neutral-500 font-semibold uppercase text-2xs">{tt('rt.aktivitasKampanyeTerkait')}</span>
                                             <Show when={classCode()?.activity_id}>
@@ -568,7 +568,7 @@ export default function RectoratClassCodeDetail() {
                                                 </A>
                                             </Show>
                                         </div>
-                                        <p class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <p class="text-sm font-bold text-foreground">
                                             {activity()?.name || 'Aktivitas Transaksi Kampanye'}
                                         </p>
                                         <div class="flex items-center gap-3 text-2xs text-neutral-500">
@@ -585,17 +585,17 @@ export default function RectoratClassCodeDetail() {
                         </div>
 
                         {/* Teaches in this Class */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                            <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <div class="flex items-center gap-2 border-b border-border pb-3">
                                 <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                                     </svg>
                                 </div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {tt('rt.pengajaranDiKelasIni')}
                                 </h3>
-                                <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                                <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">
                                     {teaches().length} MK · {totalTeachCredit()} SKS
                                 </span>
                             </div>
@@ -603,7 +603,7 @@ export default function RectoratClassCodeDetail() {
                             <div class="overflow-x-auto">
                                 <table class="w-full text-xs">
                                     <thead>
-                                        <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
+                                        <tr class="text-left text-2xs uppercase tracking-wider text-muted-foreground border-b border-border">
                                             <th class="py-2.5 pr-3 font-semibold w-12">{tt('rt.no')}</th>
                                             <th class="py-2.5 pr-3 font-semibold">{tt('rt.kodeMK')}</th>
                                             <th class="py-2.5 pr-3 font-semibold">{tt('rt.mataKuliah')}</th>
@@ -642,13 +642,13 @@ export default function RectoratClassCodeDetail() {
                                                         <td class="py-2.5 pr-3 font-mono font-semibold text-indigo-600 dark:text-indigo-400">
                                                             {teach.course?.code || '-'}
                                                         </td>
-                                                        <td class="py-2.5 pr-3 font-semibold text-neutral-900 dark:text-white">
+                                                        <td class="py-2.5 pr-3 font-semibold text-foreground">
                                                             {teach.course?.name || teach.name || '-'}
                                                         </td>
-                                                        <td class="py-2.5 pr-3 font-mono text-right text-neutral-600 dark:text-neutral-300">
+                                                        <td class="py-2.5 pr-3 font-mono text-right text-muted-foreground">
                                                             {teach.course?.total_credit ?? '-'}
                                                         </td>
-                                                        <td class="py-2.5 pr-3 font-mono text-right text-neutral-600 dark:text-neutral-300">
+                                                        <td class="py-2.5 pr-3 font-mono text-right text-muted-foreground">
                                                             {teach.enrolled_count ?? 0}
                                                             <Show when={teach.max_member}>
                                                                 <span class="text-neutral-400"> / {teach.max_member}</span>
@@ -672,18 +672,18 @@ export default function RectoratClassCodeDetail() {
                         </div>
 
                         {/* Students in this Class */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
                                 <div class="flex items-center gap-2">
                                     <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {tt('rt.mahasiswaDiKelasIni')}
                                     </h3>
-                                    <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                                    <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">
                                         {studentTotal()} / {classCode()?.capacity || 0}
                                     </span>
                                 </div>
@@ -691,14 +691,14 @@ export default function RectoratClassCodeDetail() {
                                     type="search"
                                     placeholder={tt('rt.cariNIMAtauNama')}
                                     onInput={(e) => onStudentSearchInput(e.currentTarget.value)}
-                                    class="w-full sm:w-64 px-3 py-2 rounded-xl bg-neutral-50 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+                                    class="w-full sm:w-64 px-3 py-2 rounded-xl bg-muted border border-border text-xs text-foreground placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                                 />
                             </div>
 
                             <div class="overflow-x-auto">
                                 <table class="w-full text-xs">
                                     <thead>
-                                        <tr class="text-left text-2xs uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800">
+                                        <tr class="text-left text-2xs uppercase tracking-wider text-muted-foreground border-b border-border">
                                             <th class="py-2.5 pr-3 font-semibold w-12">{tt('rt.no')}</th>
                                             <th class="py-2.5 pr-3 font-semibold">{tt('rt.nim')}</th>
                                             <th class="py-2.5 pr-3 font-semibold">{tt('rt.nama')}</th>
@@ -739,14 +739,14 @@ export default function RectoratClassCodeDetail() {
                                                         <td class="py-2.5 pr-3 font-mono font-semibold text-indigo-600 dark:text-indigo-400">
                                                             {student.code || '-'}
                                                         </td>
-                                                        <td class="py-2.5 pr-3 font-semibold text-neutral-900 dark:text-white">
+                                                        <td class="py-2.5 pr-3 font-semibold text-foreground">
                                                             {student.name || '-'}
                                                         </td>
-                                                        <td class="py-2.5 pr-3 font-mono text-neutral-600 dark:text-neutral-300">
+                                                        <td class="py-2.5 pr-3 font-mono text-muted-foreground">
                                                             {student.academic_year_name || '-'}
                                                         </td>
                                                         <td class="py-2.5 pr-3">
-                                                            <span class="inline-flex px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 text-2xs font-semibold">
+                                                            <span class="inline-flex px-2 py-0.5 rounded-md bg-secondary text-foreground/80 text-2xs font-semibold">
                                                                 {student.status_name || '-'}
                                                             </span>
                                                         </td>
@@ -794,22 +794,22 @@ export default function RectoratClassCodeDetail() {
                         </div>
 
                         {/* Audit Trail & Metadata */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-muted-foreground">
                                 {tt('rt.metadataSistemLogAudit')}
                             </h3>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{tt('rt.dibuatPADA')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.created_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(classCode()?.created_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{tt('rt.diperbaruiPADA')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.updated_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(classCode()?.updated_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{tt('rt.sinkronisasi')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(classCode()?.sync_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(classCode()?.sync_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{tt('rt.statusPENGHAPUSAN')}</span>

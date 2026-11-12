@@ -75,7 +75,7 @@ export default function RemoteSearchSelect<T extends { id: string }>(props: Remo
 
     const inputClass = () =>
         props.class ||
-        'w-full p-2 pr-8 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-1 focus:ring-blue-500 disabled:opacity-60';
+        'w-full p-2 pr-8 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground focus:ring-1 focus:ring-blue-500 disabled:opacity-60';
 
     return (
         <div class="relative">
@@ -108,7 +108,7 @@ export default function RemoteSearchSelect<T extends { id: string }>(props: Remo
             </Show>
 
             <Show when={isOpen()}>
-                <ul class="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xs shadow-lg text-xs">
+                <ul class="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto bg-card border border-border rounded-md shadow-lg text-xs">
                     <Show
                         when={!isSearching()}
                         fallback={<li class="px-3 py-2 font-mono text-neutral-500">Searching...</li>}
@@ -124,7 +124,7 @@ export default function RemoteSearchSelect<T extends { id: string }>(props: Remo
                                         onClick={() => choose(item)}
                                         class={`px-3 py-2 cursor-pointer hover:bg-blue-50 dark:hover:bg-neutral-700 ${item.id === props.value ? 'bg-blue-50 dark:bg-neutral-700/60' : ''}`}
                                     >
-                                        <div class="font-medium text-neutral-900 dark:text-white">{props.getLabel(item)}</div>
+                                        <div class="font-medium text-foreground">{props.getLabel(item)}</div>
                                         <Show when={props.getSublabel?.(item)}>
                                             <div class="text-[10px] font-mono text-neutral-500">{props.getSublabel!(item)}</div>
                                         </Show>

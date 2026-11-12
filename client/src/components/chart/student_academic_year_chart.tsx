@@ -189,17 +189,17 @@ export default function StudentAcademicYearChart(props: {
     });
 
     return (
-        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-6">
+        <div class="p-6 sm:p-7 rounded-3xl bg-card border border-border/60 shadow-2xs space-y-6">
             {/* Header Title & Series Toggles */}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-700/60 pb-4">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
                         <span class="size-2 rounded-full bg-indigo-500"></span>
-                        <h3 class="text-sm font-extrabold text-neutral-900 dark:text-white">
+                        <h3 class="text-sm font-extrabold text-foreground">
                             Tren Jumlah Mahasiswa per Tahun Akademik & Status
                         </h3>
                     </div>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p class="text-xs text-muted-foreground">
                         Visualisasi garis total mahasiswa terdaftar berdasarkan tahun akademik dan status kelulusan/keaktifan di {props.unitName || 'Program Studi'}.
                     </p>
                 </div>
@@ -212,7 +212,7 @@ export default function StudentAcademicYearChart(props: {
                         class={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             showTotal()
                                 ? 'bg-indigo-50 dark:bg-indigo-950/70 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800'
-                                : 'bg-neutral-100 dark:bg-neutral-700/50 text-neutral-400 border border-neutral-200 dark:border-neutral-700 opacity-60'
+                                : 'bg-secondary/50 text-neutral-400 border border-border opacity-60'
                         }`}
                         title="Toggle Total Mahasiswa"
                     >
@@ -226,7 +226,7 @@ export default function StudentAcademicYearChart(props: {
                         class={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             showActive()
                                 ? 'bg-emerald-50 dark:bg-emerald-950/70 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
-                                : 'bg-neutral-100 dark:bg-neutral-700/50 text-neutral-400 border border-neutral-200 dark:border-neutral-700 opacity-60'
+                                : 'bg-secondary/50 text-neutral-400 border border-border opacity-60'
                         }`}
                         title="Toggle Status Aktif"
                     >
@@ -240,7 +240,7 @@ export default function StudentAcademicYearChart(props: {
                         class={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             showLeave()
                                 ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
-                                : 'bg-neutral-100 dark:bg-neutral-700/50 text-neutral-400 border border-neutral-200 dark:border-neutral-700 opacity-60'
+                                : 'bg-secondary/50 text-neutral-400 border border-border opacity-60'
                         }`}
                         title="Toggle Status Cuti"
                     >
@@ -254,7 +254,7 @@ export default function StudentAcademicYearChart(props: {
                         class={`px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all cursor-pointer ${
                             showGraduated()
                                 ? 'bg-sky-50 dark:bg-sky-950/70 text-sky-700 dark:text-sky-300 border border-sky-200 dark:border-sky-800'
-                                : 'bg-neutral-100 dark:bg-neutral-700/50 text-neutral-400 border border-neutral-200 dark:border-neutral-700 opacity-60'
+                                : 'bg-secondary/50 text-neutral-400 border border-border opacity-60'
                         }`}
                         title="Toggle Status Lulus"
                     >
@@ -299,7 +299,7 @@ export default function StudentAcademicYearChart(props: {
                 {/* Cohort Breakdown Data Cards */}
                 <div class="overflow-x-auto pt-2">
                     <table class="w-full text-xs text-left">
-                        <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                        <thead class="bg-muted/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                             <tr>
                                 <th class="py-2.5 px-3 rounded-s-xl">Tahun Akademik</th>
                                 <th class="py-2.5 px-3 text-center">Total Mahasiswa</th>
@@ -313,7 +313,7 @@ export default function StudentAcademicYearChart(props: {
                             <For each={props.data}>
                                 {(row) => (
                                     <tr class="hover:bg-neutral-50/70 dark:hover:bg-neutral-900/30 transition-colors">
-                                        <td class="py-2.5 px-3 font-mono font-bold text-neutral-900 dark:text-white">
+                                        <td class="py-2.5 px-3 font-mono font-bold text-foreground">
                                             {row.yearName}
                                         </td>
                                         <td class="py-2.5 px-3 text-center font-mono font-bold text-indigo-600 dark:text-indigo-400">

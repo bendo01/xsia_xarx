@@ -137,28 +137,28 @@ export default function CourseCategoryPieChart(props: {
     });
 
     return (
-        <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-6">
+        <div class="p-6 sm:p-7 rounded-3xl bg-card border border-border/60 shadow-2xs space-y-6">
             {/* Header Title & Mode Toggle */}
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-700/60 pb-4">
                 <div class="space-y-1">
                     <div class="flex items-center gap-2">
                         <span class="size-2 rounded-full bg-teal-500"></span>
-                        <h3 class="text-sm font-extrabold text-neutral-900 dark:text-white">
+                        <h3 class="text-sm font-extrabold text-foreground">
                             Distribusi Kategori Mata Kuliah
                         </h3>
                     </div>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                    <p class="text-xs text-muted-foreground">
                         Proporsi mata kuliah berdasarkan kelompok dan variasi jenis mata kuliah di {props.unitName || 'Program Studi'}.
                     </p>
                 </div>
 
-                <div class="flex items-center gap-1.5 p-1 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 self-start sm:self-auto">
+                <div class="flex items-center gap-1.5 p-1 rounded-xl bg-neutral-100 dark:bg-neutral-900 border border-border self-start sm:self-auto">
                     <button
                         type="button"
                         onClick={() => setChartMode('donut')}
                         class={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                             chartMode() === 'donut'
-                                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-2xs'
+                                ? 'bg-card text-foreground shadow-2xs'
                                 : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
                         }`}
                     >
@@ -169,7 +169,7 @@ export default function CourseCategoryPieChart(props: {
                         onClick={() => setChartMode('pie')}
                         class={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                             chartMode() === 'pie'
-                                ? 'bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white shadow-2xs'
+                                ? 'bg-card text-foreground shadow-2xs'
                                 : 'text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200'
                         }`}
                     >
@@ -210,7 +210,7 @@ export default function CourseCategoryPieChart(props: {
                             {/* Center Donut Label */}
                             <Show when={chartMode() === 'donut'}>
                                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none text-center p-2">
-                                    <span class="text-2xl font-black font-mono text-neutral-900 dark:text-white leading-none">
+                                    <span class="text-2xl font-black font-mono text-foreground leading-none">
                                         {activeItem() ? activeItem()!.count : totalCourses()}
                                     </span>
                                     <span class="text-[10px] font-mono font-medium text-neutral-400 dark:text-neutral-400 mt-1 uppercase tracking-wider">
@@ -243,8 +243,8 @@ export default function CourseCategoryPieChart(props: {
                                             onMouseLeave={() => setHoveredIndex(null)}
                                             class={`p-2.5 rounded-2xl border transition-all cursor-pointer ${
                                                 isHovered()
-                                                    ? 'bg-neutral-50 dark:bg-neutral-900/80 border-teal-500 shadow-2xs translate-x-1'
-                                                    : 'bg-white dark:bg-neutral-800/60 border-neutral-100 dark:border-neutral-700/60 hover:bg-neutral-50/70 dark:hover:bg-neutral-900/40'
+                                                    ? 'bg-muted/80 border-teal-500 shadow-2xs translate-x-1'
+                                                    : 'bg-card/60 border-neutral-100 dark:border-neutral-700/60 hover:bg-neutral-50/70 dark:hover:bg-neutral-900/40'
                                             }`}
                                         >
                                             <div class="flex items-center justify-between text-xs">
@@ -253,13 +253,13 @@ export default function CourseCategoryPieChart(props: {
                                                         class="size-3 rounded-md shrink-0 shadow-2xs"
                                                         style={{ 'background-color': cat.color }}
                                                     ></span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                    <span class="font-bold text-foreground truncate">
                                                         {cat.name}
                                                     </span>
                                                 </div>
 
                                                 <div class="flex items-center gap-3 shrink-0 font-mono">
-                                                    <span class="font-bold text-neutral-900 dark:text-white">
+                                                    <span class="font-bold text-foreground">
                                                         {cat.count} MK
                                                     </span>
                                                     <span class="text-neutral-400 dark:text-neutral-500">
@@ -278,7 +278,7 @@ export default function CourseCategoryPieChart(props: {
                                             </div>
 
                                             {/* Mini Proportion Bar */}
-                                            <div class="mt-2 w-full h-1.5 rounded-full bg-neutral-100 dark:bg-neutral-700 overflow-hidden">
+                                            <div class="mt-2 w-full h-1.5 rounded-full bg-secondary overflow-hidden">
                                                 <div
                                                     class="h-full rounded-full transition-all duration-300"
                                                     style={{
@@ -297,16 +297,16 @@ export default function CourseCategoryPieChart(props: {
 
                 {/* Footer Highlights */}
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-3 border-t border-neutral-100 dark:border-neutral-700/60">
-                    <div class="p-3 rounded-2xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between">
-                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">Total Mata Kuliah</span>
-                        <span class="text-sm font-black font-mono text-neutral-900 dark:text-white">{totalCourses()} MK</span>
+                    <div class="p-3 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
+                        <span class="text-xs text-muted-foreground font-mono">Total Mata Kuliah</span>
+                        <span class="text-sm font-black font-mono text-foreground">{totalCourses()} MK</span>
                     </div>
-                    <div class="p-3 rounded-2xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between">
-                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">Total Beban SKS</span>
+                    <div class="p-3 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
+                        <span class="text-xs text-muted-foreground font-mono">Total Beban SKS</span>
                         <span class="text-sm font-black font-mono text-teal-600 dark:text-teal-400">{totalCredits()} SKS</span>
                     </div>
-                    <div class="p-3 rounded-2xl bg-neutral-50 dark:bg-neutral-900/40 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between">
-                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">Jumlah Kategori</span>
+                    <div class="p-3 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
+                        <span class="text-xs text-muted-foreground font-mono">Jumlah Kategori</span>
                         <span class="text-sm font-black font-mono text-purple-600 dark:text-purple-400">{enrichedCategories().length} Kategori</span>
                     </div>
                 </div>

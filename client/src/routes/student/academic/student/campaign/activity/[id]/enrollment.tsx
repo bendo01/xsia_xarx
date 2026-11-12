@@ -493,29 +493,29 @@ export default function StudentCourseEnrollmentPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="flex items-center justify-end gap-1.5 text-[11px] text-neutral-500 dark:text-neutral-400" aria-live="polite">
+                <div class="flex items-center justify-end gap-1.5 text-[11px] text-muted-foreground" aria-live="polite">
                     <span class={`size-2 rounded-full ${isRealtimeConnected() ? 'bg-emerald-500' : 'bg-neutral-400'}`} />
                     {isRealtimeConnected() ? 'Live' : 'Offline'}
                 </div>
                 {/* Not Found State if Activity ID is missing/invalid */}
                 <Show when={!isLoading() && !activeActivity()}>
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-10 border border-neutral-200 dark:border-neutral-700 shadow-2xs text-center space-y-4 max-w-xl mx-auto my-12">
-                        <div class="size-14 mx-auto rounded-xs bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl font-bold">
+                    <div class="bg-card rounded-md p-10 border border-border shadow-2xs text-center space-y-4 max-w-xl mx-auto my-12">
+                        <div class="size-14 mx-auto rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 flex items-center justify-center text-2xl font-bold">
                             ⚠️
                         </div>
                         <div class="space-y-1">
-                            <h2 class="text-base font-bold text-neutral-900 dark:text-white">{tt('st.aktivitasSemesterTidakDitemukan')}</h2>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                            <h2 class="text-base font-bold text-foreground">{tt('st.aktivitasSemesterTidakDitemukan')}</h2>
+                            <p class="text-xs text-muted-foreground">
                                 {tt('st.halamanKRSMemerlukanIDAktivitasSemester')}
                             </p>
                         </div>
                         <A
                             href="/student/academic/student/campaign/activity"
-                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs"
+                            class="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold transition-colors shadow-xs"
                         >
                             {tt('st.kembaliKeAktivitasSemester')}
                         </A>
@@ -525,7 +525,7 @@ export default function StudentCourseEnrollmentPage() {
                 <Show when={activeActivity()}>
                     {/* Locked Notice Alert */}
                     <Show when={activeActivity()?.is_lock}>
-                        <div class="p-4 rounded-xs bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
+                        <div class="p-4 rounded-md bg-amber-50/90 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 text-amber-900 dark:text-amber-200 text-xs flex items-start gap-3 shadow-2xs">
                             <span class="text-lg shrink-0">🔒</span>
                             <div class="space-y-0.5">
                                 <h4 class="font-bold">{tt('st.aktivitasPerkuliahanTelahDikunciDifinalisasi')}</h4>
@@ -537,41 +537,41 @@ export default function StudentCourseEnrollmentPage() {
                     </Show>
 
                     {/* Header Card with SKS Allowance Calculator */}
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
+                    <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs relative overflow-hidden">
 
                         <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="space-y-2">
                                 <div class="flex items-center gap-3">
                                     <A
                                         href="/student/academic/student/campaign/activity"
-                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 border border-neutral-200 dark:border-neutral-600 text-neutral-900 dark:text-white text-xs font-semibold transition-colors"
+                                        class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 border border-border text-foreground text-xs font-semibold transition-colors"
                                     >
                                         {tt('st.backToActivities')}
                                     </A>
-                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-semibold">
-                                        <span class="size-2 rounded-xs bg-emerald-400 animate-pulse"></span>
+                                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-700 dark:text-emerald-300 text-xs font-mono font-semibold">
+                                        <span class="size-2 rounded-md bg-emerald-400 animate-pulse"></span>
                                         <span>{tt('st.krsCourseEnrollmentGateway')}</span>
                                     </div>
                                 </div>
                                 <h1 class="text-2xl sm:text-3xl font-black tracking-tight">
                                     {tt('st.semesterCourseEnrollmentKRS')}
                                 </h1>
-                                <p class="text-neutral-600 dark:text-neutral-300 text-xs sm:text-sm max-w-xl">
+                                <p class="text-muted-foreground text-xs sm:text-sm max-w-xl">
                                     {tt('st.selectAndEnrollIntoClassOfferings')} {activeActivity()?.name || tt('st.academicSemester')}.
                                 </p>
                             </div>
 
                         {/* Realtime SKS Meter */}
-                        <div class="p-5 bg-neutral-100 dark:bg-neutral-700 backdrop-blur-md rounded-xs border border-neutral-200 dark:border-neutral-600 min-w-70 space-y-3">
+                        <div class="p-5 bg-secondary backdrop-blur-md rounded-md border border-border min-w-70 space-y-3">
                             <div class="flex justify-between items-center text-xs font-mono">
-                                <span class="text-neutral-600 dark:text-neutral-300">{tt('st.creditLoadSKS')}</span>
-                                <span class="font-bold text-neutral-900 dark:text-white text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>
+                                <span class="text-muted-foreground">{tt('st.creditLoadSKS')}</span>
+                                <span class="font-bold text-foreground text-sm">{totalCurrentSKS()} / {maxAllowedSKS} SKS</span>
                             </div>
 
                             {/* Progress bar */}
-                            <div class="w-full h-2.5 bg-neutral-50 dark:bg-neutral-900/60 rounded-xs overflow-hidden">
+                            <div class="w-full h-2.5 bg-muted/60 rounded-md overflow-hidden">
                                 <div
-                                    class={`h-full transition-all duration-500 rounded-xs ${
+                                    class={`h-full transition-all duration-500 rounded-md ${
                                         totalCurrentSKS() >= maxAllowedSKS
                                             ? 'bg-amber-400'
                                             : 'bg-emerald-400'
@@ -580,7 +580,7 @@ export default function StudentCourseEnrollmentPage() {
                                 ></div>
                             </div>
 
-                            <div class="flex justify-between items-center text-[11px] text-neutral-600 dark:text-neutral-300">
+                            <div class="flex justify-between items-center text-[11px] text-muted-foreground">
                                 <span>{tt('st.remainingAllowance')}</span>
                                 <span class="font-bold text-emerald-700 dark:text-emerald-300">{remainingSKS()} SKS</span>
                             </div>
@@ -589,14 +589,14 @@ export default function StudentCourseEnrollmentPage() {
                 </div>
 
                 {/* My Selected Courses Tray (KRS Card) */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-neutral-100 dark:border-neutral-700/60">
                         <div class="flex items-center gap-2.5">
-                            <div class="size-8 rounded-xs bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black text-xs flex items-center justify-center">
+                            <div class="size-8 rounded-md bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 font-black text-xs flex items-center justify-center">
                                 ✓
                             </div>
                             <div>
-                                <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                <h2 class="text-sm font-bold text-foreground">
                                     My Selected Study Plan ({enrolledCourses().length} Enrolled Courses)
                                 </h2>
                                 <p class="text-[11px] text-neutral-400 font-mono">{tt('st.total')} {totalCurrentSKS()} SKS registered</p>
@@ -606,7 +606,7 @@ export default function StudentCourseEnrollmentPage() {
                         <div class="flex items-center gap-2">
                             <A
                                 href={`/student/academic/student/campaign/activity/${activeActivity()?.id || ''}/show`}
-                                class="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 rounded-md text-xs font-bold transition-colors"
                             >
                                 {tt('st.viewStudyPlanKRSDetail')}
                             </A>
@@ -620,22 +620,22 @@ export default function StudentCourseEnrollmentPage() {
                             </div>
                         }>
                             {(enr) => (
-                                <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-start justify-between gap-3">
+                                <div class="p-3.5 rounded-md bg-muted/60 border border-border/60 flex items-start justify-between gap-3">
                                     <div class="space-y-1 min-w-0">
                                         <div class="flex items-center gap-2 flex-wrap">
                                             <span class="font-mono text-[10px] font-bold text-blue-600 dark:text-blue-400">
                                                 {enr.course_code || '-'}
                                             </span>
-                                            <span class="px-1.5 py-0.5 rounded-xs bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
+                                            <span class="px-1.5 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
                                                 {enr.credit ?? 0} SKS
                                             </span>
                                             <Show when={enr.class_name && enr.class_name !== '-'}>
-                                                <span class="px-1.5 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
+                                                <span class="px-1.5 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
                                                     {tt('st.class')} {enr.class_name}
                                                 </span>
                                             </Show>
                                         </div>
-                                        <h4 class="text-xs font-bold text-neutral-900 dark:text-white truncate">
+                                        <h4 class="text-xs font-bold text-foreground truncate">
                                             {enr.course_name || '-'}
                                         </h4>
                                         <p class="text-[10px] text-neutral-400 truncate">
@@ -655,7 +655,7 @@ export default function StudentCourseEnrollmentPage() {
                                                 lecturerName: enr.lecturer_name,
                                             })}
                                             disabled={droppingDetailId() === enr.id}
-                                            class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-xs text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
+                                            class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-950/50 rounded-md text-xs font-bold transition-colors disabled:opacity-50 shrink-0"
                                             title={tt('st.dropClass')}
                                         >
                                             ✕
@@ -668,14 +668,14 @@ export default function StudentCourseEnrollmentPage() {
                 </div>
 
                 {/* Available Course Offerings Catalog */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
                     {/* Catalog Filter Header */}
-                    <div class="p-6 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="p-6 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div>
-                            <h2 class="text-base font-bold text-neutral-900 dark:text-white">
+                            <h2 class="text-base font-bold text-foreground">
                                 {tt('st.availableClassOfferings')}
                             </h2>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                            <p class="text-xs text-muted-foreground">
                                 {tt('st.courseClassesAvailableForYourActive')}
                             </p>
                         </div>
@@ -687,7 +687,7 @@ export default function StudentCourseEnrollmentPage() {
                                     placeholder={tt('st.filterByCourseCodeClassLecturer')}
                                     value={searchQuery()}
                                     onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                                    class="w-full pl-8 pr-3 py-1.5 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
+                                    class="w-full pl-8 pr-3 py-1.5 text-xs rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-blue-500"
                                 />
                                 <svg class="size-3.5 absolute left-2.5 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                             </div>
@@ -695,7 +695,7 @@ export default function StudentCourseEnrollmentPage() {
                             <select
                                 value={selectedCreditFilter()}
                                 onChange={(e) => setSelectedCreditFilter(e.currentTarget.value)}
-                                class="py-1.5 px-3 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden"
+                                class="py-1.5 px-3 text-xs rounded-md bg-muted border border-border text-foreground focus:outline-hidden"
                             >
                                 <option value="all">{tt('st.allSKS')}</option>
                                 <option value="1">1 SKS</option>
@@ -717,7 +717,7 @@ export default function StudentCourseEnrollmentPage() {
                         {/* Desktop Table View (md and above) */}
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
-                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
                                         <th class="py-3 px-4 text-start">{tt('st.code')}</th>
                                         <th class="py-3 px-4 text-start">{tt('st.courseTitle')}</th>
@@ -752,26 +752,26 @@ export default function StudentCourseEnrollmentPage() {
                                                     <td class="py-3.5 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">
                                                         {t.course_code || '-'}
                                                     </td>
-                                                    <td class="py-3.5 px-4 font-bold text-neutral-900 dark:text-white">
+                                                    <td class="py-3.5 px-4 font-bold text-foreground">
                                                         {t.course_name || t.name || '-'}
                                                     </td>
                                                     <td class="py-3.5 px-4 text-center font-mono font-bold">
-                                                        <span class="px-2 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                                        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                                                             {t.credits ?? 0} SKS
                                                         </span>
                                                     </td>
-                                                    <td class="py-3.5 px-4 text-center font-mono font-semibold text-neutral-700 dark:text-neutral-300">
+                                                    <td class="py-3.5 px-4 text-center font-mono font-semibold text-foreground/80">
                                                         {t.class_name || '-'}
                                                     </td>
-                                                    <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300">
+                                                    <td class="py-3.5 px-4 text-muted-foreground">
                                                         {t.lecturer_name || '-'}
                                                     </td>
-                                                    <td class="py-3.5 px-4 text-neutral-500 dark:text-neutral-400 text-[11px]">
-                                                        <span class="block text-neutral-800 dark:text-neutral-200">{t.schedule_time || '-'}</span>
+                                                    <td class="py-3.5 px-4 text-muted-foreground text-[11px]">
+                                                        <span class="block text-foreground">{t.schedule_time || '-'}</span>
                                                         <span class="text-[10px] font-mono">{t.room_name || '-'}</span>
                                                     </td>
                                                     <td class="py-3.5 px-4 text-center font-mono">
-                                                        <span class={`font-bold ${isFull() ? 'text-red-500' : 'text-neutral-700 dark:text-neutral-300'}`}>
+                                                        <span class={`font-bold ${isFull() ? 'text-red-500' : 'text-foreground/80'}`}>
                                                             {t.enrolled_count ?? 0} / {t.max_member ?? '-'}
                                                         </span>
                                                     </td>
@@ -791,14 +791,14 @@ export default function StudentCourseEnrollmentPage() {
                                                                     });
                                                                 }}
                                                                 disabled={isDroppingThis() || Boolean(activeActivity()?.is_lock)}
-                                                                class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
+                                                                class="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-md text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed inline-flex items-center gap-1"
                                                                 title={activeActivity()?.is_lock ? "Cannot unenroll: activity is locked" : "Unenroll from this class"}
                                                             >
                                                                 {isDroppingThis() ? tt('st.dropping') : '✕ Unenroll'}
                                                             </button>
                                                         }>
                                                             <Show when={!isEnrolledOther()} fallback={
-                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold border border-neutral-200 dark:border-neutral-700 cursor-not-allowed" title={tt('st.alreadyEnrolledInThisCourseIn')}>
+                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-secondary text-neutral-400 dark:text-neutral-500 text-[11px] font-semibold border border-border cursor-not-allowed" title={tt('st.alreadyEnrolledInThisCourseIn')}>
                                                                     {tt('st.otherClassEnrolled')}
                                                                 </span>
                                                             }>
@@ -806,7 +806,7 @@ export default function StudentCourseEnrollmentPage() {
                                                                     type="button"
                                                                     onClick={() => handleEnroll(t)}
                                                                     disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
-                                                                    class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
+                                                                    class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed"
                                                                 >
                                                                     {enrollingTeachId() === t.id ? tt('st.enrolling') : activeActivity()?.is_lock ? tt('st.locked') : isFull() ? tt('st.classFull') : '+ Enroll'}
                                                                 </button>
@@ -846,14 +846,14 @@ export default function StudentCourseEnrollmentPage() {
                                                         <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                             {t.course_code || '-'}
                                                         </span>
-                                                        <span class="px-2 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono text-[10px] font-bold">
+                                                        <span class="px-2 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono text-[10px] font-bold">
                                                             {t.credits ?? 0} SKS
                                                         </span>
-                                                        <span class="px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300 font-mono text-[10px] font-semibold">
+                                                        <span class="px-2 py-0.5 rounded-md bg-secondary text-muted-foreground font-mono text-[10px] font-semibold">
                                                             {tt('st.class')} {t.class_name || '-'}
                                                         </span>
                                                     </div>
-                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                    <h3 class="text-sm font-bold text-foreground leading-snug">
                                                         {t.course_name || t.name || '-'}
                                                     </h3>
                                                 </div>
@@ -873,14 +873,14 @@ export default function StudentCourseEnrollmentPage() {
                                                             });
                                                         }}
                                                         disabled={isDroppingThis() || Boolean(activeActivity()?.is_lock)}
-                                                        class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-xs text-[10px] font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                                        class="px-2.5 py-1 bg-red-50 hover:bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-300 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800/60 rounded-md text-[10px] font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                                         title={activeActivity()?.is_lock ? "Cannot unenroll: activity is locked" : "Unenroll from this class"}
                                                     >
                                                         {isDroppingThis() ? '...' : '✕ Unenroll'}
                                                     </button>
                                                 }>
                                                     <Show when={!isEnrolledOther()} fallback={
-                                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-xs bg-neutral-100 dark:bg-neutral-800 text-neutral-400 dark:text-neutral-500 text-[10px] font-semibold border border-neutral-200 dark:border-neutral-700 shrink-0 cursor-not-allowed">
+                                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-secondary text-neutral-400 dark:text-neutral-500 text-[10px] font-semibold border border-border shrink-0 cursor-not-allowed">
                                                             {tt('st.otherClass')}
                                                         </span>
                                                     }>
@@ -888,7 +888,7 @@ export default function StudentCourseEnrollmentPage() {
                                                             type="button"
                                                             onClick={() => handleEnroll(t)}
                                                             disabled={enrollingTeachId() === t.id || isFull() || remainingSKS() < (t.credits ?? 0) || Boolean(activeActivity()?.is_lock)}
-                                                            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                                                            class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-colors shadow-2xs disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
                                                         >
                                                             {enrollingTeachId() === t.id ? '...' : activeActivity()?.is_lock ? tt('st.locked') : isFull() ? tt('st.full') : '+ Enroll'}
                                                         </button>
@@ -896,23 +896,23 @@ export default function StudentCourseEnrollmentPage() {
                                                 </Show>
                                             </div>
 
-                                            <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                            <div class="text-xs text-muted-foreground flex items-start gap-1.5">
                                                 <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{tt('st.lecturer2')}</span>
                                                 <span class="text-[11px]">{t.lecturer_name || '-'}</span>
                                             </div>
 
                                             <div class="grid grid-cols-2 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-700/40 text-xs">
-                                                <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{tt('st.scheduleRoom2')}</span>
-                                                    <span class="text-[11px] text-neutral-800 dark:text-neutral-200 block truncate">
+                                                    <span class="text-[11px] text-foreground block truncate">
                                                         {t.schedule_time !== '-' ? t.schedule_time : ''} {t.room_name !== '-' ? `(${t.room_name})` : ''}
                                                         {t.schedule_time === '-' && t.room_name === '-' ? '-' : ''}
                                                     </span>
                                                 </div>
 
-                                                <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                                <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                     <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{tt('st.quotaEnrolled')}</span>
-                                                    <span class={`font-mono font-bold text-xs ${isFull() ? 'text-red-500' : 'text-neutral-800 dark:text-neutral-200'}`}>
+                                                    <span class={`font-mono font-bold text-xs ${isFull() ? 'text-red-500' : 'text-foreground'}`}>
                                                         {t.enrolled_count ?? 0} / {t.max_member ?? '-'}
                                                     </span>
                                                 </div>
@@ -936,47 +936,47 @@ export default function StudentCourseEnrollmentPage() {
                             if (e.target === e.currentTarget) closeDropModal();
                         }}
                     >
-                        <div class="w-full max-w-md bg-white dark:bg-neutral-900 rounded-xs border border-neutral-200/80 dark:border-neutral-800 shadow-2xl overflow-hidden p-6 space-y-5 transform animate-in zoom-in-95 duration-150">
+                        <div class="w-full max-w-md bg-card rounded-md border border-neutral-200/80 dark:border-neutral-800 shadow-2xl overflow-hidden p-6 space-y-5 transform animate-in zoom-in-95 duration-150">
                             <div class="flex items-start gap-4">
-                                <div class="size-11 rounded-xs bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
+                                <div class="size-11 rounded-md bg-red-100 dark:bg-red-950/80 text-red-600 dark:text-red-400 flex items-center justify-center shrink-0">
                                     <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                                     </svg>
                                 </div>
                                 <div class="space-y-1 min-w-0">
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {tt('st.confirmUnenrollClass')}
                                     </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                                    <p class="text-xs text-muted-foreground leading-relaxed">
                                         {tt('st.areYouSureYouWantTo')}
                                     </p>
                                 </div>
                             </div>
 
                             {/* Details summary card */}
-                            <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2">
+                            <div class="p-3.5 rounded-md bg-muted/60 border border-border/60 space-y-2">
                                 <div class="flex items-center justify-between gap-2">
                                     <span class="font-mono text-xs font-bold text-blue-600 dark:text-blue-400">
                                         {item().courseCode || '-'}
                                     </span>
                                     <div class="flex items-center gap-1.5">
                                         <Show when={item().credit !== undefined && item().credit !== null}>
-                                            <span class="px-2 py-0.5 rounded-xs bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
+                                            <span class="px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-950 text-blue-800 dark:text-blue-300 text-[10px] font-mono font-bold">
                                                 {item().credit} SKS
                                             </span>
                                         </Show>
                                         <Show when={item().className && item().className !== '-'}>
-                                            <span class="px-2 py-0.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
+                                            <span class="px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 text-[10px] font-mono font-semibold">
                                                 {tt('st.class2')} {item().className}
                                             </span>
                                         </Show>
                                     </div>
                                 </div>
-                                <h4 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                <h4 class="text-sm font-bold text-foreground">
                                     {item().courseName}
                                 </h4>
                                 <Show when={item().lecturerName && item().lecturerName !== '-'}>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                    <p class="text-xs text-muted-foreground">
                                         {item().lecturerName}
                                     </p>
                                 </Show>
@@ -987,7 +987,7 @@ export default function StudentCourseEnrollmentPage() {
                                     type="button"
                                     onClick={closeDropModal}
                                     disabled={droppingDetailId() !== null}
-                                    class="px-4 py-2 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-xs transition-colors disabled:opacity-50"
+                                    class="px-4 py-2 text-xs font-semibold text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md transition-colors disabled:opacity-50"
                                 >
                                     {tt('st.cancel')}
                                 </button>
@@ -995,7 +995,7 @@ export default function StudentCourseEnrollmentPage() {
                                     type="button"
                                     onClick={confirmDrop}
                                     disabled={droppingDetailId() !== null}
-                                    class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 rounded-xs transition-colors shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5"
+                                    class="px-4 py-2 text-xs font-bold text-white bg-red-600 hover:bg-red-700 dark:bg-red-600 dark:hover:bg-red-700 rounded-md transition-colors shadow-xs disabled:opacity-50 inline-flex items-center gap-1.5"
                                 >
                                     {droppingDetailId() ? tt('st.unenrolling') : tt('st.yesUnenroll')}
                                 </button>

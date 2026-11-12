@@ -80,7 +80,7 @@ describe("Loader Component Suite (White-Box Component Tests)", () => {
 
       const retryBtn = screen.getByRole("button", { name: /Coba Muat Ulang/i });
       expect(retryBtn).toBeInTheDocument();
-      expect(retryBtn.className).toContain("rounded-xs");
+      expect(retryBtn.className).toContain("rounded-md");
       expect(retryBtn.className).toContain("bg-teal-600");
 
       fireEvent.click(retryBtn);

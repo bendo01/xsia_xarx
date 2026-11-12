@@ -10,11 +10,11 @@ function Card(props: { title: string; children: any; rounded?: boolean }) {
         <div
             class={
                 props.rounded
-                    ? 'bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm'
-                    : 'bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs'
+                    ? 'bg-card rounded-xl border border-border shadow-sm'
+                    : 'bg-card rounded-md border border-border shadow-2xs'
             }
         >
-            <div class={`px-4 py-3 border-b text-sm font-bold ${props.rounded ? 'border-neutral-200 dark:border-neutral-800' : 'border-neutral-200 dark:border-neutral-700'}`}>{props.title}</div>
+            <div class={`px-4 py-3 border-b text-sm font-bold ${props.rounded ? 'border-border' : 'border-border'}`}>{props.title}</div>
             <div class="p-4 text-xs">{props.children}</div>
         </div>
     );
@@ -89,7 +89,7 @@ export default function IndividualContactsFamily(props: {
                                         <div class="font-semibold">
                                             {r.street} <span class="text-neutral-500 font-normal">({t('ad.rtRw')} {r.neighborhood_association}/{r.citizens_association})</span>
                                         </div>
-                                        <div class="text-neutral-600 dark:text-neutral-400">
+                                        <div class="text-muted-foreground">
                                             {[r.village_name, r.sub_district_name, r.regency_name, r.province_name].filter(Boolean).join(', ') || '-'}
                                         </div>
                                         <Show when={r.residence_type_name}>
@@ -105,10 +105,10 @@ export default function IndividualContactsFamily(props: {
                 <For each={cards()}>
                     {(c) => (
                         <Card rounded={props.rounded} title={`${t('ad.familyCards')} · ${t('ad.familyCardNumber')} ${dash(c.code)}`}>
-                            <p class="mb-2 text-neutral-500">{t('ad.familyHead')}: <span class="font-semibold text-neutral-800 dark:text-neutral-100">{dash(c.head_name)}</span></p>
+                            <p class="mb-2 text-neutral-500">{t('ad.familyHead')}: <span class="font-semibold text-foreground">{dash(c.head_name)}</span></p>
                             <div class="overflow-x-auto -mx-4">
                                 <table class="w-full text-left">
-                                    <thead class="bg-neutral-50 dark:bg-neutral-900/30 text-neutral-500 uppercase tracking-wider">
+                                    <thead class="bg-muted/30 text-neutral-500 uppercase tracking-wider">
                                         <tr>
                                             <th class="px-4 py-2 font-semibold">{t('ad.familyMember')}</th>
                                             <th class="px-4 py-2 font-semibold">{t('ad.familyRelationship')}</th>

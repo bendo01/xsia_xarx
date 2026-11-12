@@ -68,14 +68,14 @@ export default function StudentAttendanceScanPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
             <main class="flex-1 w-full max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6">
                 <nav class="text-xs text-neutral-500">
                     <A href="/student/dashboard" class="hover:text-blue-600">Dashboard</A> / <span class="font-medium">Presensi</span>
                 </nav>
 
-                <section class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs p-5 space-y-4">
+                <section class="bg-card rounded-md border border-border shadow-2xs p-5 space-y-4">
                     <div class="flex items-center justify-between">
                         <h1 class="text-lg font-bold">Presensi Perkuliahan</h1>
                         <span class="flex items-center gap-1.5 text-[11px] text-neutral-500" aria-live="polite">
@@ -89,7 +89,7 @@ export default function StudentAttendanceScanPage() {
                         fallback={
                             <button
                                 onClick={() => setScanning(true)}
-                                class="w-full px-4 py-3 rounded-xs bg-blue-600 text-white text-sm font-semibold"
+                                class="w-full px-4 py-3 rounded-md bg-blue-600 text-white text-sm font-semibold"
                             >
                                 Pindai QR-Code dosen
                             </button>
@@ -101,14 +101,14 @@ export default function StudentAttendanceScanPage() {
                         </p>
                         <button
                             onClick={() => setScanning(false)}
-                            class="w-full px-4 py-2 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold"
+                            class="w-full px-4 py-2 rounded-md border border-border text-xs font-semibold"
                         >
                             Batal
                         </button>
                     </Show>
                 </section>
 
-                <section class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs p-5 space-y-3">
+                <section class="bg-card rounded-md border border-border shadow-2xs p-5 space-y-3">
                     <h2 class="text-sm font-bold">Pemberitahuan kehadiran</h2>
                     <ul class="space-y-2">
                         <For each={notices()} fallback={<li class="text-xs text-neutral-500">Belum ada pemberitahuan pada sesi ini.</li>}>

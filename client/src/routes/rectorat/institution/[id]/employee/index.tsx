@@ -105,20 +105,20 @@ export default function RectoratEmployeesIndex() {
     const endIndex = () => Math.min(startIndex() + pagedItems().length, filteredItems().length);
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Page Header */}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div class="space-y-1">
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.pegawai')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.pegawai')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-indigo-200 dark:border-indigo-800/50">
                             <span class="relative flex size-2">
@@ -127,7 +127,7 @@ export default function RectoratEmployeesIndex() {
                             </span>
                             {t('rt.masterData')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-indigo-600 dark:text-indigo-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
@@ -135,16 +135,16 @@ export default function RectoratEmployeesIndex() {
                             </span>
                             {t('rt.daftarPegawai')}
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
+                        <p class="text-sm text-muted-foreground max-w-2xl">
                             {t('rt.kelolaSeluruhDataPegawaiYangTerdaftar')}
                         </p>
                     </div>
 
                     {/* Summary Stats */}
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-20">
-                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{totalData()}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm min-w-20">
+                            <p class="text-2xl font-black text-foreground">{totalData()}</p>
+                            <p class="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-20">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
@@ -177,11 +177,11 @@ export default function RectoratEmployeesIndex() {
                         </div>
 
                         {/* Active Filter */}
-                        <div class="flex items-center gap-1 p-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm shrink-0">
+                        <div class="flex items-center gap-1 p-1 bg-card border border-border rounded-lg shadow-sm shrink-0">
                             <button
                                 type="button"
                                 id="filter-all"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'all' ? 'bg-indigo-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterActive('all'); setCurrentPage(1); }}
                             >
                                 {t('rt.semua')}
@@ -189,7 +189,7 @@ export default function RectoratEmployeesIndex() {
                             <button
                                 type="button"
                                 id="filter-active"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'active' ? 'bg-emerald-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'active' ? 'bg-emerald-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterActive('active'); setCurrentPage(1); }}
                             >
                                 {t('rt.aktif')}
@@ -197,7 +197,7 @@ export default function RectoratEmployeesIndex() {
                             <button
                                 type="button"
                                 id="filter-inactive"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'inactive' ? 'bg-red-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterActive() === 'inactive' ? 'bg-red-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterActive('inactive'); setCurrentPage(1); }}
                             >
                                 {t('rt.nonAktif')}
@@ -216,7 +216,7 @@ export default function RectoratEmployeesIndex() {
                             </svg>
                             {t('rt.tambahPegawai')}
                         </A>
-                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.baris')}</label>
+                        <label class="text-xs text-muted-foreground font-medium">{t('rt.baris')}</label>
                         <select
                             id="employee-rows-per-page"
                             class="p-2.5 text-sm text-neutral-900 border border-neutral-200 rounded-lg bg-white focus:ring-indigo-500 focus:border-indigo-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-colors shadow-sm"
@@ -235,10 +235,10 @@ export default function RectoratEmployeesIndex() {
                 </div>
 
                 {/* Data Table */}
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden transition-all">
+                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-all">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
+                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4">{t('rt.kode')}</th>
                                     <th class="px-6 py-4">{t('rt.namaPegawai')}</th>
@@ -273,7 +273,7 @@ export default function RectoratEmployeesIndex() {
                                         when={pagedItems().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="5" class="px-6 py-16 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="5" class="px-6 py-16 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center gap-3">
                                                         <div class="p-4 rounded-full bg-indigo-50 dark:bg-indigo-900/20 text-indigo-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -283,8 +283,8 @@ export default function RectoratEmployeesIndex() {
                                                                 <path d="M16 3.13a4 4 0 0 1 0 7.75" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaDataPegawaiDitemukan')}</span>
-                                                        <span class="text-sm text-neutral-500 dark:text-neutral-400">{t('rt.silakanUbahKataKunciPencarianAtau')}</span>
+                                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataPegawaiDitemukan')}</span>
+                                                        <span class="text-sm text-muted-foreground">{t('rt.silakanUbahKataKunciPencarianAtau')}</span>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -298,7 +298,7 @@ export default function RectoratEmployeesIndex() {
                                                 };
                                                 return (
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors group">
-                                                        <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                                                        <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-muted-foreground">
                                                             {item.code || '-'}
                                                         </td>
                                                         <td class="px-6 py-4">
@@ -307,11 +307,11 @@ export default function RectoratEmployeesIndex() {
                                                                     {initials()}
                                                                 </div>
                                                                 <div class="min-w-0">
-                                                                    <p class="font-semibold text-neutral-900 dark:text-white truncate leading-tight">
+                                                                    <p class="font-semibold text-foreground truncate leading-tight">
                                                                         {displayName(item)}
                                                                     </p>
                                                                     <Show when={item.individual?.birth_place || item.individual?.birth_date}>
-                                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
+                                                                        <p class="text-xs text-muted-foreground truncate mt-0.5">
                                                                             {item.individual?.birth_place}{item.individual?.birth_place && item.individual?.birth_date ? ', ' : ''}{item.individual?.birth_date || ''}
                                                                         </p>
                                                                     </Show>
@@ -322,10 +322,10 @@ export default function RectoratEmployeesIndex() {
                                                             <Show when={item.decree_number || item.decree_date} fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}>
                                                                 <div class="min-w-0">
                                                                     <Show when={item.decree_number}>
-                                                                        <p class="text-xs font-mono text-neutral-700 dark:text-neutral-300 truncate">{item.decree_number}</p>
+                                                                        <p class="text-xs font-mono text-foreground/80 truncate">{item.decree_number}</p>
                                                                     </Show>
                                                                     <Show when={item.decree_date}>
-                                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{item.decree_date}</p>
+                                                                        <p class="text-xs text-muted-foreground mt-0.5">{item.decree_date}</p>
                                                                     </Show>
                                                                 </div>
                                                             </Show>
@@ -368,28 +368,28 @@ export default function RectoratEmployeesIndex() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
-                        <div class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('rt.menampilkan')} <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length}</span> data
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            {t('rt.menampilkan')} <span class="font-medium text-foreground">{filteredItems().length > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-foreground">{endIndex()}</span> dari <span class="font-medium text-foreground">{filteredItems().length}</span> data
                         </div>
                         <div class="flex justify-center">
                             <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label={t('rt.pagination')}>
                                 <button
                                     type="button"
                                     id="employee-prev-page"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 >
                                     {t('rt.sebelumnya2')}
                                 </button>
-                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-indigo-700 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 border-y border-border">
                                     {currentPage()} / {totalPages()}
                                 </span>
                                 <button
                                     type="button"
                                     id="employee-next-page"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 >

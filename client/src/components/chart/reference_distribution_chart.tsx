@@ -161,15 +161,15 @@ export default function ReferenceDistributionChart(props: {
     };
 
     return (
-        <div class="flex flex-col p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+        <div class="flex flex-col p-5 bg-card border border-border shadow-2xs">
             <div class="flex items-start justify-between gap-3 pb-3 border-b border-neutral-100 dark:border-neutral-700/60">
                 <div class="min-w-0">
-                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{props.title}</h3>
+                    <h3 class="text-sm font-bold text-foreground">{props.title}</h3>
                     <Show when={props.description}>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400">{props.description}</p>
+                        <p class="text-xs text-muted-foreground">{props.description}</p>
                     </Show>
                 </div>
-                <span class="shrink-0 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                <span class="shrink-0 text-xs font-mono text-muted-foreground">
                     {allItems().length} kategori
                 </span>
             </div>

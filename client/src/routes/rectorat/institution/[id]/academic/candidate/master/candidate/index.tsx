@@ -96,33 +96,33 @@ export default function RectoratCandidateIndex() {
     const detailHref = (id: string) => `/rectorat/institution/${institutionId()}/academic/candidate/master/candidate/${id}`;
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">{t('rt.akademik')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.calonMahasiswa')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.calonMahasiswa')}</span>
                         </nav>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                             <span class="text-violet-600 dark:text-violet-400">{t('rt.daftarCalonMahasiswa')}</span>
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('rt.seluruhCalonMahasiswaDalamInstitusi')}
                         </p>
                     </div>
 
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-18">
-                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{allItems().length}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm min-w-18">
+                            <p class="text-2xl font-black text-foreground">{allItems().length}</p>
+                            <p class="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-18">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
@@ -143,7 +143,7 @@ export default function RectoratCandidateIndex() {
                         onInput={handleSearch}
                     />
                     <select
-                        class="w-full sm:w-64 p-3 text-sm border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-800 dark:text-white shadow-sm"
+                        class="w-full sm:w-64 p-3 text-sm border border-neutral-200 rounded-lg bg-card dark:border-neutral-800 dark:text-white shadow-sm"
                         value={filterStatus()}
                         onChange={(e) => {
                             setFilterStatus(e.currentTarget.value);
@@ -155,7 +155,7 @@ export default function RectoratCandidateIndex() {
                         <option value="not">{t('rt.belumJadiMahasiswa')}</option>
                     </select>
                     <select
-                        class="w-full sm:w-64 p-3 text-sm border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-800 dark:text-white shadow-sm"
+                        class="w-full sm:w-64 p-3 text-sm border border-neutral-200 rounded-lg bg-card dark:border-neutral-800 dark:text-white shadow-sm"
                         value={filterAcademicYear()}
                         onChange={(e) => {
                             setFilterAcademicYear(e.currentTarget.value);
@@ -166,7 +166,7 @@ export default function RectoratCandidateIndex() {
                         <For each={academicYears()}>{(y) => <option value={y.id}>{y.name}</option>}</For>
                     </select>
                     <select
-                        class="w-full sm:w-40 p-3 text-sm border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-800 dark:text-white shadow-sm"
+                        class="w-full sm:w-40 p-3 text-sm border border-neutral-200 rounded-lg bg-card dark:border-neutral-800 dark:text-white shadow-sm"
                         value={itemsPerPage()}
                         onChange={(e) => {
                             setItemsPerPage(Number(e.currentTarget.value));
@@ -179,10 +179,10 @@ export default function RectoratCandidateIndex() {
                     </select>
                 </div>
 
-                <div class="border border-neutral-200 dark:border-neutral-800 rounded-xl bg-white dark:bg-neutral-900 shadow-sm overflow-hidden">
+                <div class="border border-border rounded-xl bg-card shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-800">
+                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-950 dark:text-neutral-300 border-b border-border">
                                 <tr>
                                     <th class="px-4 py-3.5 w-36">{t('rt.kode')}</th>
                                     <th class="px-4 py-3.5">{t('rt.calonMahasiswa')}</th>
@@ -209,7 +209,7 @@ export default function RectoratCandidateIndex() {
                                         when={pagedItems().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="6" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="6" class="px-4 py-12 text-center text-muted-foreground">
                                                     <span class="font-semibold">{t('rt.noRecordsFound')}</span>
                                                 </td>
                                             </tr>
@@ -219,12 +219,12 @@ export default function RectoratCandidateIndex() {
                                             {(c) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
                                                     <td class="px-4 py-3 font-mono">
-                                                        <span class="px-2 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 rounded">{c.code || '-'}</span>
+                                                        <span class="px-2 py-0.5 text-xs bg-secondary border border-border rounded">{c.code || '-'}</span>
                                                     </td>
                                                     <td class="px-4 py-3">
                                                         <A href={detailHref(c.id)} class="font-semibold text-violet-600 dark:text-violet-400 hover:underline">{c.name || '-'}</A>
                                                     </td>
-                                                    <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">{c.school_name || '-'}</td>
+                                                    <td class="px-4 py-3 text-muted-foreground">{c.school_name || '-'}</td>
                                                     <td class="px-4 py-3 font-mono">{c.student_national_number || '-'}</td>
                                                     <td class="px-4 py-3">
                                                         <span
@@ -247,14 +247,14 @@ export default function RectoratCandidateIndex() {
                         </table>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
                             {t('rt.showing')} <span class="font-semibold">{filteredItems().length > 0 ? startIndex() : 0}</span>–<span class="font-semibold">{endIndex()}</span> {t('rt.dari')} <span class="font-semibold">{filteredItems().length.toLocaleString()}</span> {t('rt.hasil')}
                         </p>
                         <nav class="inline-flex gap-2" aria-label="pagination">
                             <button
                                 type="button"
-                                class="px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                class="px-3 py-2 text-sm border border-border rounded-lg bg-card disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
@@ -263,7 +263,7 @@ export default function RectoratCandidateIndex() {
                             <span class="px-4 py-2 text-sm font-semibold text-violet-700 dark:text-violet-400">{currentPage()} / {totalPages()}</span>
                             <button
                                 type="button"
-                                class="px-3 py-2 text-sm border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+                                class="px-3 py-2 text-sm border border-border rounded-lg bg-card disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >

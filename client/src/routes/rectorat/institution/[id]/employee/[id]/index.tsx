@@ -84,7 +84,7 @@ function InfoRow(props: { label: string; value?: string | null | boolean; mono?:
             <Show
                 when={props.badge}
                 fallback={
-                    <span class={`text-sm font-medium text-neutral-900 dark:text-white ${props.mono ? 'font-mono' : ''}`}>
+                    <span class={`text-sm font-medium text-foreground ${props.mono ? 'font-mono' : ''}`}>
                         {display()}
                     </span>
                 }
@@ -175,24 +175,24 @@ export default function RectoratEmployeeDetail() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 font-sans">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground font-sans">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Breadcrumb & Header */}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-border pb-6 gap-4">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-indigo-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${getInstitutionId()}`} class="hover:text-indigo-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${getInstitutionId()}/employee`} class="hover:text-indigo-600 transition-colors">{t('rt.pegawai')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detail')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.detail')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-indigo-600 dark:text-indigo-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
@@ -201,7 +201,7 @@ export default function RectoratEmployeeDetail() {
                             {t('rt.detailPegawai')}
                         </h1>
                         <Show when={employee()}>
-                            <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                            <p class="text-sm text-muted-foreground mt-1">
                                 {t('rt.menampilkanInformasiLengkapPegawai')}
                             </p>
                         </Show>
@@ -221,7 +221,7 @@ export default function RectoratEmployeeDetail() {
                         <A
                             href={`/rectorat/institution/${getInstitutionId()}/employee`}
                             id="back-to-employee-list"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -235,7 +235,7 @@ export default function RectoratEmployeeDetail() {
                 <Show when={isLoading()}>
                     <div class="flex flex-col items-center justify-center py-24 gap-4">
                         <Spinner size="xl" color="indigo" aria-hidden={true} />
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.memuatDataPegawai')}</p>
+                        <p class="text-sm text-muted-foreground font-medium">{t('rt.memuatDataPegawai')}</p>
                     </div>
                 </Show>
 
@@ -249,8 +249,8 @@ export default function RectoratEmployeeDetail() {
                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-neutral-700 dark:text-neutral-300">{t('rt.dataTidakDitemukan')}</h2>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">{t('rt.dataPegawaiTidakDapatDitemukanAtau')}</p>
+                        <h2 class="text-xl font-bold text-foreground/80">{t('rt.dataTidakDitemukan')}</h2>
+                        <p class="text-sm text-muted-foreground text-center max-w-sm">{t('rt.dataPegawaiTidakDapatDitemukanAtau')}</p>
                         <A
                             href={`/rectorat/institution/${getInstitutionId()}/employee`}
                             class="mt-2 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm"
@@ -268,7 +268,7 @@ export default function RectoratEmployeeDetail() {
                         <div class="lg:col-span-1 space-y-5">
 
                             {/* Profile Card */}
-                            <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
+                            <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
                                 {/* Header Gradient */}
                                 <div class="h-24 bg-linear-to-br from-indigo-500 via-purple-600 to-indigo-700"></div>
                                 {/* Avatar */}
@@ -276,10 +276,10 @@ export default function RectoratEmployeeDetail() {
                                     <div class="size-24 rounded-full bg-linear-to-br from-indigo-400 to-purple-600 border-4 border-white dark:border-neutral-900 flex items-center justify-center text-white text-2xl font-black shadow-lg">
                                         {initials()}
                                     </div>
-                                    <h2 class="mt-3 text-lg font-bold text-neutral-900 dark:text-white text-center leading-tight">
+                                    <h2 class="mt-3 text-lg font-bold text-foreground text-center leading-tight">
                                         {fullName()}
                                     </h2>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-1">
+                                    <p class="text-xs text-muted-foreground font-mono mt-1">
                                         {employee()?.code || '-'}
                                     </p>
 
@@ -300,7 +300,7 @@ export default function RectoratEmployeeDetail() {
 
                                 {/* Institution Info */}
                                 <Show when={employee()?.institution}>
-                                    <div class="border-t border-neutral-100 dark:border-neutral-800 px-5 py-4">
+                                    <div class="border-t border-border px-5 py-4">
                                         <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">{t('rt.institusi')}</p>
                                         <div class="flex items-start gap-2">
                                             <div class="size-8 rounded-md bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400 shrink-0 mt-0.5">
@@ -309,28 +309,28 @@ export default function RectoratEmployeeDetail() {
                                                 </svg>
                                             </div>
                                             <div class="min-w-0">
-                                                <p class="text-sm font-semibold text-neutral-900 dark:text-white leading-tight">{employee()?.institution?.name || '-'}</p>
-                                                <p class="text-xs font-mono text-neutral-500 dark:text-neutral-400 mt-0.5">{employee()?.institution?.code || ''}</p>
+                                                <p class="text-sm font-semibold text-foreground leading-tight">{employee()?.institution?.name || '-'}</p>
+                                                <p class="text-xs font-mono text-muted-foreground mt-0.5">{employee()?.institution?.code || ''}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </Show>
 
                                 {/* Meta Timestamps */}
-                                <div class="border-t border-neutral-100 dark:border-neutral-800 px-5 py-4 space-y-2">
+                                <div class="border-t border-border px-5 py-4 space-y-2">
                                     <p class="text-[11px] font-bold uppercase tracking-wider text-neutral-400 dark:text-neutral-500 mb-2">{t('rt.metadata')}</p>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-neutral-500 dark:text-neutral-400">{t('rt.dibuat')}</span>
-                                        <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.created_at) || '-'}</span>
+                                        <span class="text-muted-foreground">{t('rt.dibuat')}</span>
+                                        <span class="font-medium text-foreground/80 font-mono">{formatDate(employee()?.created_at) || '-'}</span>
                                     </div>
                                     <div class="flex justify-between text-xs">
-                                        <span class="text-neutral-500 dark:text-neutral-400">{t('rt.diperbarui')}</span>
-                                        <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.updated_at) || '-'}</span>
+                                        <span class="text-muted-foreground">{t('rt.diperbarui')}</span>
+                                        <span class="font-medium text-foreground/80 font-mono">{formatDate(employee()?.updated_at) || '-'}</span>
                                     </div>
                                     <Show when={employee()?.sync_at}>
                                         <div class="flex justify-between text-xs">
-                                            <span class="text-neutral-500 dark:text-neutral-400">{t('rt.sinkronisasi2')}</span>
-                                            <span class="font-medium text-neutral-700 dark:text-neutral-300 font-mono">{formatDate(employee()?.sync_at) || '-'}</span>
+                                            <span class="text-muted-foreground">{t('rt.sinkronisasi2')}</span>
+                                            <span class="font-medium text-foreground/80 font-mono">{formatDate(employee()?.sync_at) || '-'}</span>
                                         </div>
                                     </Show>
                                 </div>
@@ -341,14 +341,14 @@ export default function RectoratEmployeeDetail() {
                         <div class="lg:col-span-2 space-y-5">
 
                             {/* Employee Info Card */}
-                            <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                                <div class="flex items-center gap-3 px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
+                            <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                                <div class="flex items-center gap-3 px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
                                     <div class="size-8 rounded-md bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.informasiPegawai')}</h3>
+                                    <h3 class="font-bold text-sm text-foreground">{t('rt.informasiPegawai')}</h3>
                                 </div>
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                                     <InfoRow label={t('rt.kodePegawai')} value={employee()?.code} mono />
@@ -362,14 +362,14 @@ export default function RectoratEmployeeDetail() {
 
                             {/* Individual / Personal Info */}
                             <Show when={employee()?.individual}>
-                                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                                    <div class="flex items-center gap-3 px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
+                                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                                    <div class="flex items-center gap-3 px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
                                         <div class="size-8 rounded-md bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
                                             </svg>
                                         </div>
-                                        <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.dataIndividuPersonal')}</h3>
+                                        <h3 class="font-bold text-sm text-foreground">{t('rt.dataIndividuPersonal')}</h3>
                                     </div>
                                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 p-6">
                                         <InfoRow label={t('rt.namaLengkap')} value={fullName()} />
@@ -385,14 +385,14 @@ export default function RectoratEmployeeDetail() {
                             </Show>
 
                             {/* Staffes Table */}
-                            <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                                <div class="flex items-center gap-3 px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
+                            <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                                <div class="flex items-center gap-3 px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
                                     <div class="size-8 rounded-md bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.riwayatKepegawaianStaf')}</h3>
+                                    <h3 class="font-bold text-sm text-foreground">{t('rt.riwayatKepegawaianStaf')}</h3>
                                     <span class="ml-auto inline-flex items-center justify-center size-5 text-[10px] font-bold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300">
                                         {employee()?.staffes?.length ?? 0}
                                     </span>
@@ -406,7 +406,7 @@ export default function RectoratEmployeeDetail() {
                                                 <rect width="18" height="18" x="3" y="3" rx="2" />
                                                 <path d="M3 9h18M9 21V9" />
                                             </svg>
-                                            <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">{t('rt.belumAdaDataKepegawaianStaf')}</p>
+                                            <p class="text-sm font-medium text-muted-foreground">{t('rt.belumAdaDataKepegawaianStaf')}</p>
                                         </div>
                                     }
                                 >
@@ -426,14 +426,14 @@ export default function RectoratEmployeeDetail() {
                                                 <For each={employee()?.staffes ?? []}>
                                                     {(staff) => (
                                                         <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors">
-                                                            <td class="px-5 py-3 font-mono text-neutral-600 dark:text-neutral-400">{staff.code || '-'}</td>
-                                                            <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">{staff.name || '-'}</td>
-                                                            <td class="px-5 py-3 font-mono text-neutral-600 dark:text-neutral-400">{staff.decree_number || '-'}</td>
-                                                            <td class="px-5 py-3 text-neutral-600 dark:text-neutral-400">{formatDate(staff.decree_date) || '-'}</td>
-                                                            <td class="px-5 py-3 text-neutral-600 dark:text-neutral-400">{formatDate(staff.start_date) || '-'}</td>
+                                                            <td class="px-5 py-3 font-mono text-muted-foreground">{staff.code || '-'}</td>
+                                                            <td class="px-5 py-3 font-medium text-foreground">{staff.name || '-'}</td>
+                                                            <td class="px-5 py-3 font-mono text-muted-foreground">{staff.decree_number || '-'}</td>
+                                                            <td class="px-5 py-3 text-muted-foreground">{formatDate(staff.decree_date) || '-'}</td>
+                                                            <td class="px-5 py-3 text-muted-foreground">{formatDate(staff.start_date) || '-'}</td>
                                                             <td class="px-5 py-3">
                                                                 {staff.end_date ? (
-                                                                    <span class="text-neutral-600 dark:text-neutral-400">{formatDate(staff.end_date)}</span>
+                                                                    <span class="text-muted-foreground">{formatDate(staff.end_date)}</span>
                                                                 ) : (
                                                                     <span class="inline-flex items-center gap-1 text-emerald-600 dark:text-emerald-400 font-semibold">
                                                                         <span class="size-1.5 rounded-full bg-emerald-500"></span>

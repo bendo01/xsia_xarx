@@ -168,24 +168,24 @@ export default function PersonMasterIndividualDetailPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
                 {/* 1. Header Navigation & Quick Actions */}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-4">
                     <div class="min-w-0">
                         {/* Breadcrumbs */}
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5" aria-label={t('ad.breadcrumb')}>
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5" aria-label={t('ad.breadcrumb')}>
                             <a href="/" class="shrink-0 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0 text-neutral-600 dark:text-neutral-300">{t('ad.person')}</span>
+                            <span class="shrink-0 text-muted-foreground">{t('ad.person')}</span>
                             <span class="shrink-0">/</span>
                             <a href="/administrator/person/master/individual" class="shrink-0 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.masterIndividual')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="shrink-0 font-medium text-neutral-900 dark:text-white">{t('ad.profileDetails')}</span>
+                            <span class="shrink-0 font-medium text-foreground">{t('ad.profileDetails')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex flex-wrap items-center gap-3">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground flex flex-wrap items-center gap-3">
                             <span>{t('ad.individualMasterProfile')}</span>
                             <Show when={individualData()?.individual.is_deceased}>
                                 <span class="px-2 py-0.5 text-xs font-semibold uppercase tracking-wider bg-neutral-800 text-neutral-200 dark:bg-neutral-700">
@@ -193,7 +193,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 </span>
                             </Show>
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-sm text-muted-foreground mt-0.5">
                             {t('ad.comprehensiveBiometricDemographicCivilRegistrationAnd')}
                         </p>
                     </div>
@@ -203,7 +203,7 @@ export default function PersonMasterIndividualDetailPage() {
                         {/* Back Button */}
                         <a
                             href="/administrator/person/master/individual"
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-muted dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-border rounded-md shadow-2xs transition-colors cursor-pointer"
                             id="btn-back-to-list"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -216,7 +216,7 @@ export default function PersonMasterIndividualDetailPage() {
                         <button
                             type="button"
                             onClick={printPage}
-                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
+                            class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-white hover:bg-muted dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 border border-border rounded-md shadow-2xs transition-colors cursor-pointer"
                             id="btn-print-profile"
                             title={t('ad.printProfileSheet')}
                         >
@@ -231,7 +231,7 @@ export default function PersonMasterIndividualDetailPage() {
                         {/* Edit Button */}
                         <a
                             href={`/administrator/person/master/individual/edit?id=${individualData()?.individual.id || ''}`}
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-2xs transition-colors cursor-pointer"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-2xs transition-colors cursor-pointer"
                             id="btn-edit-individual"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -244,14 +244,14 @@ export default function PersonMasterIndividualDetailPage() {
                 </div>
 
                 {/* 2. Hero Profile Card with Portrait Placeholder */}
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card border border-border shadow-2xs overflow-hidden">
                     <div class="p-6 md:p-8">
                         <div class="flex flex-col md:flex-row items-center md:items-start gap-6 md:gap-8">
 
                             {/* --- PHOTO / PORTRAIT SECTION --- */}
                             <div class="flex flex-col items-center shrink-0">
                                 <div class="relative group cursor-pointer" onClick={openPhotoModal}>
-                                    <div class="size-36 sm:size-44 md:size-48 bg-neutral-100 dark:bg-neutral-900 border-2 border-neutral-300 dark:border-neutral-600 overflow-hidden shadow-md flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
+                                    <div class="size-36 sm:size-44 md:size-48 bg-neutral-100 dark:bg-neutral-900 border-2 border-border overflow-hidden shadow-md flex items-center justify-center transition-transform duration-300 group-hover:scale-[1.02]">
                                         <img
                                             src={photoSrc()}
                                             alt={t('ad.portraitOfName', { name: fullPersonName() })}
@@ -304,7 +304,7 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-1.5">
                                         {/* Status & Role Tags */}
                                         <span class="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
-                                            <span class="size-1.5 rounded-xs bg-emerald-500 animate-pulse"></span>
+                                            <span class="size-1.5 rounded-md bg-emerald-500 animate-pulse"></span>
                                             {t('ad.activeRecord')}
                                         </span>
 
@@ -357,11 +357,11 @@ export default function PersonMasterIndividualDetailPage() {
                                         </Show>
                                     </div>
 
-                                    <h2 class="text-2xl sm:text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight" id="txt-individual-fullname">
+                                    <h2 class="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight" id="txt-individual-fullname">
                                         {fullPersonName()}
                                     </h2>
 
-                                    <div class="mt-1 flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs text-neutral-600 dark:text-neutral-400">
+                                    <div class="mt-1 flex flex-wrap items-center justify-center md:justify-start gap-3 text-xs text-muted-foreground">
                                         <div class="flex items-center gap-1">
                                             <span class="font-semibold text-neutral-500 uppercase">{t('ad.nikCode2')}</span>
                                             <span class="font-mono font-medium text-neutral-900 dark:text-neutral-200">{individualData()?.individual.code || '-'}</span>
@@ -380,23 +380,23 @@ export default function PersonMasterIndividualDetailPage() {
                                         <span>•</span>
                                         <div>
                                             <span class="font-semibold text-neutral-500 uppercase">{t('ad.idType')}</span>{' '}
-                                            <span class="font-medium text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || '-'}</span>
+                                            <span class="font-medium text-foreground">{individualData()?.identification_type?.name || '-'}</span>
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Quick Highlights Grid */}
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-2">
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
+                                    <div class="p-3 bg-muted border border-border text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{t('ad.gender')}</span>
-                                        <span class="text-sm font-semibold text-neutral-900 dark:text-white flex items-center gap-1 mt-0.5">
+                                        <span class="text-sm font-semibold text-foreground flex items-center gap-1 mt-0.5">
                                             {individualData()?.gender?.name || '-'}
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
+                                    <div class="p-3 bg-muted border border-border text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{t('ad.ageBracket')}</span>
-                                        <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block truncate">
+                                        <span class="text-sm font-semibold text-foreground mt-0.5 block truncate">
                                             {calculateAge(individualData()?.individual.birth_date) ? `${calculateAge(individualData()?.individual.birth_date)} Tahun` : '-'}
                                             <span class="text-xs font-normal text-neutral-500 block truncate">
                                                 {individualData()?.age_classification?.name || '-'}
@@ -404,23 +404,23 @@ export default function PersonMasterIndividualDetailPage() {
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
+                                    <div class="p-3 bg-muted border border-border text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{t('ad.religion')}</span>
-                                        <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block">
+                                        <span class="text-sm font-semibold text-foreground mt-0.5 block">
                                             {individualData()?.religion?.name || '-'}
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-left">
+                                    <div class="p-3 bg-muted border border-border text-left">
                                         <span class="block text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">{t('ad.maritalStatus')}</span>
-                                        <span class="text-sm font-semibold text-neutral-900 dark:text-white mt-0.5 block">
+                                        <span class="text-sm font-semibold text-foreground mt-0.5 block">
                                             {individualData()?.marital_status?.name || '-'}
                                         </span>
                                     </div>
                                 </div>
 
                                 {/* Place & Date of Birth Strip */}
-                                <div class="flex flex-wrap items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200 dark:border-neutral-700/80 text-xs">
+                                <div class="flex flex-wrap items-center justify-between p-3 bg-muted/60 border border-border/80 text-xs">
                                     <div class="flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600 dark:text-blue-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
@@ -428,8 +428,8 @@ export default function PersonMasterIndividualDetailPage() {
                                             <line x1="8" y1="2" x2="8" y2="6" />
                                             <line x1="3" y1="10" x2="21" y2="10" />
                                         </svg>
-                                        <span class="text-neutral-600 dark:text-neutral-400">{t('ad.placeDateOfBirth')}</span>
-                                        <span class="font-semibold text-neutral-900 dark:text-white">
+                                        <span class="text-muted-foreground">{t('ad.placeDateOfBirth')}</span>
+                                        <span class="font-semibold text-foreground">
                                             {individualData()?.individual.birth_place || '-'},{' '}
                                             {individualData()?.individual.birth_date ? new Date(individualData()!.individual.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
                                         </span>
@@ -437,7 +437,7 @@ export default function PersonMasterIndividualDetailPage() {
 
                                     <div class="flex items-center gap-2 mt-1 sm:mt-0 text-neutral-500">
                                         <span>{t('ad.profession2')}</span>
-                                        <span class="font-medium text-neutral-800 dark:text-neutral-200">
+                                        <span class="font-medium text-foreground">
                                             {individualData()?.profession?.name || individualData()?.occupation?.name || '-'}
                                         </span>
                                     </div>
@@ -447,12 +447,12 @@ export default function PersonMasterIndividualDetailPage() {
                     </div>
 
                     {/* Navigation Tabs */}
-                    <div class="flex border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 overflow-x-auto scrollbar-none">
+                    <div class="flex border-t border-border bg-muted/80 overflow-x-auto scrollbar-none">
                         <button
                             type="button"
                             onClick={() => setActiveTab('demographics')}
                             class={`shrink-0 px-3.5 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 ${activeTab() === 'demographics'
-                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-card'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-demographics"
@@ -470,7 +470,7 @@ export default function PersonMasterIndividualDetailPage() {
                             type="button"
                             onClick={() => setActiveTab('biometrics')}
                             class={`shrink-0 px-3.5 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 ${activeTab() === 'biometrics'
-                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-card'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-biometrics"
@@ -487,7 +487,7 @@ export default function PersonMasterIndividualDetailPage() {
                             type="button"
                             onClick={() => setActiveTab('family')}
                             class={`shrink-0 px-3.5 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 ${activeTab() === 'family'
-                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-card'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-family"
@@ -502,7 +502,7 @@ export default function PersonMasterIndividualDetailPage() {
                             <span class="inline sm:hidden">{t('ad.family')}</span>
                             <span class="hidden sm:inline">{t('ad.n3FamilyCard')}</span>
                             <Show when={(individualData()?.family_card_members || []).length > 0}>
-                                <span class="inline-block px-1.5 py-0.2 text-[10px] rounded-xs bg-neutral-200 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold">
+                                <span class="inline-block px-1.5 py-0.2 text-[10px] rounded-md bg-neutral-200 dark:bg-neutral-700 text-foreground font-bold">
                                     {(individualData()?.family_card_members || []).length}
                                 </span>
                             </Show>
@@ -512,7 +512,7 @@ export default function PersonMasterIndividualDetailPage() {
                             type="button"
                             onClick={() => setActiveTab('roles')}
                             class={`shrink-0 px-3.5 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 ${activeTab() === 'roles'
-                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-card'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-roles"
@@ -525,7 +525,7 @@ export default function PersonMasterIndividualDetailPage() {
                             <span class="inline sm:hidden">{t('ad.roles')}</span>
                             <span class="hidden sm:inline">{t('ad.n4AcademicStaffRoles')}</span>
                             <Show when={totalRolesCount() > 0}>
-                                <span class="inline-block px-1.5 py-0.2 text-[10px] rounded-xs bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 font-bold">
+                                <span class="inline-block px-1.5 py-0.2 text-[10px] rounded-md bg-cyan-100 text-cyan-800 dark:bg-cyan-950 dark:text-cyan-300 font-bold">
                                     {totalRolesCount()}
                                 </span>
                             </Show>
@@ -535,7 +535,7 @@ export default function PersonMasterIndividualDetailPage() {
                             type="button"
                             onClick={() => setActiveTab('audit')}
                             class={`shrink-0 px-3.5 sm:px-6 py-3 text-xs sm:text-sm font-semibold whitespace-nowrap border-b-2 transition-colors cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 sm:gap-2 ${activeTab() === 'audit'
-                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-white dark:bg-neutral-800'
+                                ? 'border-cyan-600 text-cyan-600 dark:text-cyan-400 bg-card'
                                 : 'border-transparent text-neutral-600 hover:text-neutral-900 dark:text-neutral-400 dark:hover:text-white'
                                 }`}
                             id="tab-audit"
@@ -557,9 +557,9 @@ export default function PersonMasterIndividualDetailPage() {
                 <Show when={activeTab() === 'demographics'}>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Civil Identity Card */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
-                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700 mb-4">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                        <div class="bg-card border border-border shadow-2xs p-6">
+                            <div class="flex items-center justify-between pb-3 border-b border-border mb-4">
+                                <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <rect width="20" height="14" x="2" y="5" rx="2" />
                                         <line x1="2" x2="22" y1="10" y2="10" />
@@ -571,20 +571,20 @@ export default function PersonMasterIndividualDetailPage() {
 
                             <dl class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.fullLegalName')}</dt>
-                                    <dd class="col-span-2 font-semibold text-neutral-900 dark:text-white">{individualData()?.individual.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.fullLegalName')}</dt>
+                                    <dd class="col-span-2 font-semibold text-foreground">{individualData()?.individual.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.frontTitleGelarDepan')}</dt>
-                                    <dd class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.individual.front_title || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.frontTitleGelarDepan')}</dt>
+                                    <dd class="col-span-2 font-mono text-foreground">{individualData()?.individual.front_title || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.lastTitleGelarBelakang')}</dt>
-                                    <dd class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.individual.last_title || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.lastTitleGelarBelakang')}</dt>
+                                    <dd class="col-span-2 font-mono text-foreground">{individualData()?.individual.last_title || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.identificationNIK')}</dt>
-                                    <dd class="col-span-2 font-mono font-bold text-neutral-900 dark:text-white flex items-center justify-between">
+                                    <dt class="font-medium text-muted-foreground">{t('ad.identificationNIK')}</dt>
+                                    <dd class="col-span-2 font-mono font-bold text-foreground flex items-center justify-between">
                                         <span>{individualData()?.individual.code || '-'}</span>
                                         <button
                                             type="button"
@@ -596,16 +596,16 @@ export default function PersonMasterIndividualDetailPage() {
                                     </dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.idDocumentType')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.identification_type?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.idDocumentType')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.identification_type?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.placeOfBirth')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.individual.birth_place || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.placeOfBirth')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.individual.birth_place || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.dateOfBirth')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">
+                                    <dt class="font-medium text-muted-foreground">{t('ad.dateOfBirth')}</dt>
+                                    <dd class="col-span-2 text-foreground">
                                         {individualData()?.individual.birth_date ? new Date(individualData()!.individual.birth_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-'}
                                     </dd>
                                 </div>
@@ -613,9 +613,9 @@ export default function PersonMasterIndividualDetailPage() {
                         </div>
 
                         {/* Socio-Demographics & Welfare Card */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
-                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700 mb-4">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                        <div class="bg-card border border-border shadow-2xs p-6">
+                            <div class="flex items-center justify-between pb-3 border-b border-border mb-4">
+                                <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
                                     </svg>
@@ -626,39 +626,39 @@ export default function PersonMasterIndividualDetailPage() {
 
                             <dl class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.gender')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.gender?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.gender')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.gender?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.religion')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.religion?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.religion')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.religion?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.maritalStatus')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.marital_status?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.maritalStatus')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.marital_status?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.occupation')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.occupation?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.occupation')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.occupation?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.profession')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.profession?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.profession')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.profession?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.latestEducation')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || individualData()?.education?.abbreviation || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.latestEducation')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.education?.name || individualData()?.education?.abbreviation || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.incomeBracket')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.income?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.incomeBracket')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.income?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.ageClassification')}</dt>
-                                    <dd class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.age_classification?.name || '-'}</dd>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.ageClassification')}</dt>
+                                    <dd class="col-span-2 text-foreground">{individualData()?.age_classification?.name || '-'}</dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.socialProtectionKPS')}</dt>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.socialProtectionKPS')}</dt>
                                     <dd class="col-span-2">
                                         <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_social_protection_card_recipient
                                             ? 'bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300'
@@ -669,7 +669,7 @@ export default function PersonMasterIndividualDetailPage() {
                                     </dd>
                                 </div>
                                 <div class="py-2.5 grid grid-cols-3">
-                                    <dt class="font-medium text-neutral-500 dark:text-neutral-400">{t('ad.specialNeedsDisabilitas')}</dt>
+                                    <dt class="font-medium text-muted-foreground">{t('ad.specialNeedsDisabilitas')}</dt>
                                     <dd class="col-span-2">
                                         <span class={`inline-flex items-center px-2 py-0.5 text-xs font-semibold ${individualData()?.individual?.is_special_need
                                             ? 'bg-indigo-100 text-indigo-800 dark:bg-indigo-950 dark:text-indigo-300'
@@ -689,29 +689,29 @@ export default function PersonMasterIndividualDetailPage() {
                     <Show
                         when={individualData()?.biodata}
                         fallback={
-                            <div class="p-8 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                            <div class="p-8 bg-card border border-border text-center text-xs text-muted-foreground">
                                 {t('ad.noPhysicalMeasurementsOrBiometricRecords')}
                             </div>
                         }
                     >
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Physical Metrics & BMI */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-1 space-y-4">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
+                            <div class="bg-card border border-border shadow-2xs p-6 md:col-span-1 space-y-4">
+                                <h3 class="font-bold text-sm text-foreground uppercase tracking-wider pb-2 border-b border-border">
                                     {t('ad.heightWeightIndex')}
                                 </h3>
 
                                 <div class="space-y-3">
-                                    <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="flex items-center justify-between p-3 bg-muted border border-border">
                                         <span class="text-xs text-neutral-500">{t('ad.heightTinggi')}</span>
-                                        <span class="text-lg font-bold text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold text-foreground">
                                             {individualData()?.biodata?.height || '-'} <span class="text-xs font-normal text-neutral-500">cm</span>
                                         </span>
                                     </div>
 
-                                    <div class="flex items-center justify-between p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="flex items-center justify-between p-3 bg-muted border border-border">
                                         <span class="text-xs text-neutral-500">{t('ad.weightBerat')}</span>
-                                        <span class="text-lg font-bold text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold text-foreground">
                                             {individualData()?.biodata?.weight || '-'} <span class="text-xs font-normal text-neutral-500">kg</span>
                                         </span>
                                     </div>
@@ -723,14 +723,14 @@ export default function PersonMasterIndividualDetailPage() {
                                         if (!h || !w) return null;
                                         const bmi = calculateBMI(h, w);
                                         return (
-                                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-2">
+                                            <div class="p-3 bg-muted border border-border space-y-2">
                                                 <div class="flex justify-between items-center">
                                                     <span class="text-xs text-neutral-500">{t('ad.bmiCalculation')}</span>
                                                     <span class={`px-2 py-0.5 text-xs font-semibold border ${bmi?.color}`}>
                                                         {bmi?.category}
                                                     </span>
                                                 </div>
-                                                <div class="text-2xl font-black text-neutral-900 dark:text-white">
+                                                <div class="text-2xl font-black text-foreground">
                                                     {bmi?.value} <span class="text-xs font-normal text-neutral-500">{t('ad.kgM')}</span>
                                                 </div>
                                             </div>
@@ -740,39 +740,39 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* Blood Type & Biometric Features */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 md:col-span-2 space-y-4">
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider pb-2 border-b border-neutral-200 dark:border-neutral-700">
+                            <div class="bg-card border border-border shadow-2xs p-6 md:col-span-2 space-y-4">
+                                <h3 class="font-bold text-sm text-foreground uppercase tracking-wider pb-2 border-b border-border">
                                     {t('ad.biologicalMorphologicalFeatures')}
                                 </h3>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs sm:text-sm">
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="p-3 bg-muted border border-border">
                                         <span class="block text-xs text-neutral-500">{t('ad.bloodTypeRhesus')}</span>
                                         <span class="text-base font-bold text-red-600 dark:text-red-400 mt-1 block">
                                             {t('ad.type')} {individualData()?.biodata?.blood_type || '-'}{' '}
-                                            <span class="text-xs font-medium text-neutral-700 dark:text-neutral-300">
+                                            <span class="text-xs font-medium text-foreground/80">
                                                 ({individualData()?.biodata?.is_positive_blood_rhesus ? t('ad.rh') : t('ad.rh2')})
                                             </span>
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="p-3 bg-muted border border-border">
                                         <span class="block text-xs text-neutral-500">{t('ad.eyeColorWarnaMata2')}</span>
-                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                        <span class="text-base font-semibold text-foreground mt-1 block">
                                             {individualData()?.biodata?.eye_color || '-'}
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="p-3 bg-muted border border-border">
                                         <span class="block text-xs text-neutral-500">{t('ad.hairTypeJenisRambut2')}</span>
-                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                        <span class="text-base font-semibold text-foreground mt-1 block">
                                             {individualData()?.biodata?.hair_type || '-'}
                                         </span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                    <div class="p-3 bg-muted border border-border">
                                         <span class="block text-xs text-neutral-500">{t('ad.hairColorWarnaRambut2')}</span>
-                                        <span class="text-base font-semibold text-neutral-900 dark:text-white mt-1 block">
+                                        <span class="text-base font-semibold text-foreground mt-1 block">
                                             {individualData()?.biodata?.hair_color || '-'}
                                         </span>
                                     </div>
@@ -780,25 +780,25 @@ export default function PersonMasterIndividualDetailPage() {
 
                                 {/* Anthropometric Circumferences */}
                                 <div class="pt-2">
-                                    <h4 class="text-xs font-semibold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider mb-2">
+                                    <h4 class="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
                                         {t('ad.bodyCircumferencesLingkarTubuh')}
                                     </h4>
                                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <div class="p-2.5 bg-muted border border-border">
                                             <span class="text-neutral-500 block">{t('ad.bustDada')}</span>
-                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.bust || '-'} cm</span>
+                                            <span class="font-bold text-sm text-foreground">{individualData()?.biodata?.bust || '-'} cm</span>
                                         </div>
-                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <div class="p-2.5 bg-muted border border-border">
                                             <span class="text-neutral-500 block">{t('ad.waistPinggang')}</span>
-                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.waist || '-'} cm</span>
+                                            <span class="font-bold text-sm text-foreground">{individualData()?.biodata?.waist || '-'} cm</span>
                                         </div>
-                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <div class="p-2.5 bg-muted border border-border">
                                             <span class="text-neutral-500 block">{t('ad.hipPinggul')}</span>
-                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.hip || '-'} cm</span>
+                                            <span class="font-bold text-sm text-foreground">{individualData()?.biodata?.hip || '-'} cm</span>
                                         </div>
-                                        <div class="p-2.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                                        <div class="p-2.5 bg-muted border border-border">
                                             <span class="text-neutral-500 block">{t('ad.armLengan')}</span>
-                                            <span class="font-bold text-sm text-neutral-900 dark:text-white">{individualData()?.biodata?.arm_circumference || '-'} cm</span>
+                                            <span class="font-bold text-sm text-foreground">{individualData()?.biodata?.arm_circumference || '-'} cm</span>
                                         </div>
                                     </div>
                                 </div>
@@ -812,15 +812,15 @@ export default function PersonMasterIndividualDetailPage() {
                     <Show
                         when={(individualData()?.family_card_members || []).length > 0}
                         fallback={
-                            <div class="p-8 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                            <div class="p-8 bg-card border border-border text-center text-xs text-muted-foreground">
                                 {t('ad.noFamilyCardOrHouseholdMember')}
                             </div>
                         }
                     >
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                        <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-border">
                                 <div>
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                             <circle cx="9" cy="7" r="4" />
@@ -837,7 +837,7 @@ export default function PersonMasterIndividualDetailPage() {
 
                             <div class="overflow-x-auto">
                                 <table class="w-full text-xs sm:text-sm text-left">
-                                    <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                                    <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-border">
                                         <tr>
                                             <th class="px-4 py-3 font-semibold">{t('ad.relativeName')}</th>
                                             <th class="px-4 py-3 font-semibold">{t('ad.nik2')}</th>
@@ -850,10 +850,10 @@ export default function PersonMasterIndividualDetailPage() {
                                         <For each={individualData()?.family_card_members || []}>
                                             {(member) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                                                    <td class="px-4 py-3 font-medium text-neutral-900 dark:text-white">
+                                                    <td class="px-4 py-3 font-medium text-foreground">
                                                         {member.relative_name}
                                                     </td>
-                                                    <td class="px-4 py-3 font-mono text-neutral-600 dark:text-neutral-300">
+                                                    <td class="px-4 py-3 font-mono text-muted-foreground">
                                                         {member.relative_nik}
                                                     </td>
                                                     <td class="px-4 py-3">
@@ -879,9 +879,9 @@ export default function PersonMasterIndividualDetailPage() {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             {/* 1. Lecturer / Dosen Master Card */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-purple-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
                                             <path d="M6 6h10" />
@@ -899,7 +899,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={individualData()?.lecturer}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noAcademicLecturerProfileLinkedTo')}
                                         </p>
                                     }
@@ -907,29 +907,29 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.lecturerCodeNIDN')}</span>
-                                            <span class="col-span-2 font-mono font-bold text-neutral-900 dark:text-white">{individualData()?.lecturer?.code}</span>
+                                            <span class="col-span-2 font-mono font-bold text-foreground">{individualData()?.lecturer?.code}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.lecturerName2')}</span>
-                                            <span class="col-span-2 font-medium text-neutral-900 dark:text-white">
+                                            <span class="col-span-2 font-medium text-foreground">
                                                 {[individualData()?.lecturer?.front_title, individualData()?.lecturer?.name, individualData()?.lecturer?.last_title].filter(Boolean).join(' ') || '-'}
                                             </span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.nuptk')}</span>
-                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.nuptk || '-'}</span>
+                                            <span class="col-span-2 font-mono text-foreground">{individualData()?.lecturer?.nuptk || '-'}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.accessorNumber')}</span>
-                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.accessor_number || '-'}</span>
+                                            <span class="col-span-2 text-foreground">{individualData()?.lecturer?.accessor_number || '-'}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.identificationNo')}</span>
-                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200">{individualData()?.lecturer?.identification_number || '-'}</span>
+                                            <span class="col-span-2 font-mono text-foreground">{individualData()?.lecturer?.identification_number || '-'}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.appointmentTerm')}</span>
-                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">
+                                            <span class="col-span-2 text-foreground">
                                                 {individualData()?.lecturer?.start_date ? new Date(individualData()!.lecturer!.start_date!).toLocaleDateString('id-ID') : '-'}
                                                 {' to '}
                                                 {individualData()?.lecturer?.end_date ? new Date(individualData()!.lecturer!.end_date!).toLocaleDateString('id-ID') : t('ad.present')}
@@ -940,9 +940,9 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* 2. Employee / Kepegawaian Card */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-blue-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
@@ -957,7 +957,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={(individualData()?.employees || []).length > 0}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noActiveEmployeeAppointmentsOnRecord')}
                                         </p>
                                     }
@@ -965,17 +965,17 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="space-y-3">
                                         <For each={individualData()?.employees || []}>
                                             {(emp) => (
-                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                <div class="p-3.5 bg-muted border border-border space-y-1.5 text-xs sm:text-sm">
                                                     <div class="flex items-center justify-between">
-                                                        <span class="font-bold text-neutral-900 dark:text-white">{emp.name}</span>
+                                                        <span class="font-bold text-foreground">{emp.name}</span>
                                                         <span class={`px-2 py-0.5 text-[11px] font-semibold ${emp.is_active ? 'bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300' : 'bg-neutral-200 text-neutral-700'}`}>
                                                             {emp.is_active ? t('ad.active') : t('ad.inactive')}
                                                         </span>
                                                     </div>
-                                                    <div class="text-xs text-neutral-600 dark:text-neutral-400 font-mono">
+                                                    <div class="text-xs text-muted-foreground font-mono">
                                                         {t('ad.nipCode')} {emp.code}
                                                     </div>
-                                                    <div class="text-xs text-neutral-500 pt-1 border-t border-neutral-200 dark:border-neutral-700">
+                                                    <div class="text-xs text-neutral-500 pt-1 border-t border-border">
                                                         {t('ad.decreeSK2')} {emp.decree_number || '-'} {emp.decree_date ? `(${new Date(emp.decree_date).toLocaleDateString('id-ID')})` : ''}
                                                     </div>
                                                 </div>
@@ -986,9 +986,9 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* 3. Academic Student Enrollments (Mahasiswa) */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
                                             <path d="M6 12v5c3 3 9 3 12 0v-5" />
@@ -1003,7 +1003,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={(individualData()?.students || []).length > 0}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noAcademicStudentEnrollmentsLinkedTo')}
                                         </p>
                                     }
@@ -1011,21 +1011,21 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="space-y-3">
                                         <For each={individualData()?.students || []}>
                                             {(student) => (
-                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                <div class="p-3.5 bg-muted border border-border space-y-1.5 text-xs sm:text-sm">
                                                     <div class="flex items-center justify-between">
-                                                        <span class="font-bold text-neutral-900 dark:text-white">{student.name}</span>
+                                                        <span class="font-bold text-foreground">{student.name}</span>
                                                         <span class="font-mono text-xs font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950 px-2 py-0.5 border border-emerald-200 dark:border-emerald-800">
                                                             {t('ad.nim')} {student.code}
                                                         </span>
                                                     </div>
-                                                    <div class="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-400 pt-1">
-                                                        <div>{t('ad.registered2')} <span class="font-medium text-neutral-800 dark:text-neutral-200">{student.registered ? new Date(student.registered).toLocaleDateString('id-ID') : '-'}</span></div>
-                                                        <div>{t('ad.nisn2')} <span class="font-mono font-medium text-neutral-800 dark:text-neutral-200">{student.nisn || '-'}</span></div>
+                                                    <div class="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-1">
+                                                        <div>{t('ad.registered2')} <span class="font-medium text-foreground">{student.registered ? new Date(student.registered).toLocaleDateString('id-ID') : '-'}</span></div>
+                                                        <div>{t('ad.nisn2')} <span class="font-mono font-medium text-foreground">{student.nisn || '-'}</span></div>
                                                         <Show when={student.transfer_code}>
-                                                            <div>{t('ad.transferCode2')} <span class="font-mono text-neutral-800 dark:text-neutral-200">{student.transfer_code}</span></div>
+                                                            <div>{t('ad.transferCode2')} <span class="font-mono text-foreground">{student.transfer_code}</span></div>
                                                         </Show>
                                                         <Show when={student.finance_fee !== null && student.finance_fee !== undefined}>
-                                                            <div>{t('ad.fee')} <span class="font-medium text-neutral-800 dark:text-neutral-200">{t('ad.rp')} {Number(student.finance_fee).toLocaleString('id-ID')}</span></div>
+                                                            <div>{t('ad.fee')} <span class="font-medium text-foreground">{t('ad.rp')} {Number(student.finance_fee).toLocaleString('id-ID')}</span></div>
                                                         </Show>
                                                     </div>
                                                 </div>
@@ -1036,9 +1036,9 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* 4. PMB Candidate / Admissions */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-amber-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                             <circle cx="9" cy="7" r="4" />
@@ -1055,7 +1055,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={(individualData()?.candidates || []).length > 0}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noAdmissionCandidateApplicationsFound')}
                                         </p>
                                     }
@@ -1063,18 +1063,18 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="space-y-3">
                                         <For each={individualData()?.candidates || []}>
                                             {(candidate) => (
-                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1.5 text-xs sm:text-sm">
+                                                <div class="p-3.5 bg-muted border border-border space-y-1.5 text-xs sm:text-sm">
                                                     <div class="flex items-center justify-between">
-                                                        <span class="font-bold text-neutral-900 dark:text-white">{candidate.name}</span>
+                                                        <span class="font-bold text-foreground">{candidate.name}</span>
                                                         <span class="font-mono text-xs font-medium text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950 px-2 py-0.5 border border-amber-200 dark:border-amber-800">
                                                             {t('ad.no2')} {candidate.code || '-'}
                                                         </span>
                                                     </div>
-                                                    <div class="grid grid-cols-2 gap-2 text-xs text-neutral-600 dark:text-neutral-400 pt-1">
-                                                        <div>{t('ad.school')} <span class="font-medium text-neutral-800 dark:text-neutral-200">{candidate.school_name || '-'}</span></div>
-                                                        <div>{t('ad.nisn2')} <span class="font-mono text-neutral-800 dark:text-neutral-200">{candidate.student_national_number || '-'}</span></div>
-                                                        <div>{t('ad.kipCard')} <span class="font-mono text-neutral-800 dark:text-neutral-200">{candidate.state_smart_card_number || '-'}</span></div>
-                                                        <div>{t('ad.guidance')} <span class="font-medium text-neutral-800 dark:text-neutral-200">{candidate.guidence_name || '-'}</span></div>
+                                                    <div class="grid grid-cols-2 gap-2 text-xs text-muted-foreground pt-1">
+                                                        <div>{t('ad.school')} <span class="font-medium text-foreground">{candidate.school_name || '-'}</span></div>
+                                                        <div>{t('ad.nisn2')} <span class="font-mono text-foreground">{candidate.student_national_number || '-'}</span></div>
+                                                        <div>{t('ad.kipCard')} <span class="font-mono text-foreground">{candidate.state_smart_card_number || '-'}</span></div>
+                                                        <div>{t('ad.guidance')} <span class="font-medium text-foreground">{candidate.guidence_name || '-'}</span></div>
                                                     </div>
                                                 </div>
                                             )}
@@ -1084,9 +1084,9 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* 5. RPL Evaluator Appointments */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-rose-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
                                             <path d="m9 12 2 2 4-4" />
@@ -1101,7 +1101,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={(individualData()?.evaluators || []).length > 0}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noRPLEvaluatorAppointmentsRegisteredFor')}
                                         </p>
                                     }
@@ -1109,12 +1109,12 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="space-y-3">
                                         <For each={individualData()?.evaluators || []}>
                                             {(ev) => (
-                                                <div class="p-3.5 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 space-y-1 text-xs">
-                                                    <div class="font-mono font-medium text-neutral-900 dark:text-white">
+                                                <div class="p-3.5 bg-muted border border-border space-y-1 text-xs">
+                                                    <div class="font-mono font-medium text-foreground">
                                                         {t('ad.evaluatorID')} {ev.id}
                                                     </div>
-                                                    <div class="text-neutral-600 dark:text-neutral-400">
-                                                        {t('ad.recognitionRef')} <span class="font-mono text-neutral-800 dark:text-neutral-200">{ev.recognition_id || '-'}</span>
+                                                    <div class="text-muted-foreground">
+                                                        {t('ad.recognitionRef')} <span class="font-mono text-foreground">{ev.recognition_id || '-'}</span>
                                                     </div>
                                                     <div class="text-neutral-500">
                                                         {t('ad.appointed')} {ev.created_at ? new Date(ev.created_at).toLocaleDateString('id-ID') : '-'}
@@ -1127,9 +1127,9 @@ export default function PersonMasterIndividualDetailPage() {
                             </div>
 
                             {/* 6. System User & Authentication */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-teal-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
                                             <path d="M7 11V7a5 5 0 0 1 10 0v4" />
@@ -1146,7 +1146,7 @@ export default function PersonMasterIndividualDetailPage() {
                                 <Show
                                     when={individualData()?.user}
                                     fallback={
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 py-6 text-center">
+                                        <p class="text-xs text-muted-foreground py-6 text-center">
                                             {t('ad.noSystemAuthenticationLoginAccountLinked')}
                                         </p>
                                     }
@@ -1154,15 +1154,15 @@ export default function PersonMasterIndividualDetailPage() {
                                     <div class="divide-y divide-neutral-100 dark:divide-neutral-700/60 text-xs sm:text-sm">
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.accountEmail')}</span>
-                                            <span class="col-span-2 font-semibold text-neutral-900 dark:text-white font-mono">{individualData()?.user?.email}</span>
+                                            <span class="col-span-2 font-semibold text-foreground font-mono">{individualData()?.user?.email}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.userPID')}</span>
-                                            <span class="col-span-2 font-mono text-neutral-800 dark:text-neutral-200 truncate">{individualData()?.user?.pid}</span>
+                                            <span class="col-span-2 font-mono text-foreground truncate">{individualData()?.user?.pid}</span>
                                         </div>
                                         <div class="py-2 grid grid-cols-3">
                                             <span class="text-neutral-500">{t('ad.emailVerification')}</span>
-                                            <span class="col-span-2 text-neutral-800 dark:text-neutral-200">
+                                            <span class="col-span-2 text-foreground">
                                                 {individualData()?.user?.email_verified_at ? `Verified on ${new Date(individualData()!.user!.email_verified_at!).toLocaleDateString('id-ID')}` : t('ad.unverified')}
                                             </span>
                                         </div>
@@ -1182,9 +1182,9 @@ export default function PersonMasterIndividualDetailPage() {
 
                 {/* --- TAB 5: SYSTEM AUDIT & METADATA --- */}
                 <Show when={activeTab() === 'audit'}>
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                        <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
+                    <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-border">
+                            <h3 class="font-bold text-sm text-foreground uppercase tracking-wider flex items-center gap-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-neutral-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <line x1="12" y1="8" x2="12" y2="12" />
@@ -1196,10 +1196,10 @@ export default function PersonMasterIndividualDetailPage() {
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs sm:text-sm font-mono">
-                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                            <div class="p-3 bg-muted border border-border">
                                 <span class="text-neutral-500 block text-xs">{t('ad.primaryRecordUUID')}</span>
                                 <div class="flex items-center justify-between mt-1">
-                                    <span class="font-bold text-neutral-900 dark:text-white truncate">
+                                    <span class="font-bold text-foreground truncate">
                                         {individualData()?.individual.id || '-'}
                                     </span>
                                     <button
@@ -1212,16 +1212,16 @@ export default function PersonMasterIndividualDetailPage() {
                                 </div>
                             </div>
 
-                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                            <div class="p-3 bg-muted border border-border">
                                 <span class="text-neutral-500 block text-xs">{t('ad.feederPDDIKTISyncTimestamp')}</span>
-                                <span class="font-bold text-neutral-900 dark:text-white mt-1 block">
+                                <span class="font-bold text-foreground mt-1 block">
                                     {individualData()?.individual.sync_at ? new Date(individualData()!.individual.sync_at!).toLocaleString('id-ID') : t('ad.notYetSynchronized')}
                                 </span>
                             </div>
 
-                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                            <div class="p-3 bg-muted border border-border">
                                 <span class="text-neutral-500 block text-xs">{t('ad.createdAt')}</span>
-                                <span class="font-semibold text-neutral-800 dark:text-neutral-200 mt-1 block">
+                                <span class="font-semibold text-foreground mt-1 block">
                                     {individualData()?.individual.created_at ? new Date(individualData()!.individual.created_at!).toLocaleString('id-ID') : '-'}
                                 </span>
                                 <span class="text-[11px] text-neutral-400 block mt-0.5 truncate">
@@ -1229,9 +1229,9 @@ export default function PersonMasterIndividualDetailPage() {
                                 </span>
                             </div>
 
-                            <div class="p-3 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                            <div class="p-3 bg-muted border border-border">
                                 <span class="text-neutral-500 block text-xs">{t('ad.lastUpdatedAt')}</span>
-                                <span class="font-semibold text-neutral-800 dark:text-neutral-200 mt-1 block">
+                                <span class="font-semibold text-foreground mt-1 block">
                                     {individualData()?.individual.updated_at ? new Date(individualData()!.individual.updated_at!).toLocaleString('id-ID') : '-'}
                                 </span>
                                 <span class="text-[11px] text-neutral-400 block mt-0.5 truncate">
@@ -1248,18 +1248,18 @@ export default function PersonMasterIndividualDetailPage() {
             {/* ========================================================= */}
             <dialog
                 ref={photoDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-md bg-card border border-border shadow-2xl text-foreground max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closePhotoModal();
                 }}
             >
-                <div class="p-6 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
-                    <div class="flex items-center justify-between pb-4 border-b border-neutral-200 dark:border-neutral-700">
+                <div class="p-6 bg-card text-foreground">
+                    <div class="flex items-center justify-between pb-4 border-b border-border">
                         <div>
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                            <h3 class="text-base font-bold text-foreground">
                                 {t('ad.individualPortraitPhoto')}
                             </h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">
+                            <p class="text-xs text-muted-foreground mt-0.5">
                                 {t('ad.previewOrUpdatePassportSizePortrait')}
                             </p>
                         </div>
@@ -1276,7 +1276,7 @@ export default function PersonMasterIndividualDetailPage() {
                     </div>
 
                     <div class="py-6 flex flex-col items-center justify-center space-y-4">
-                        <div class="size-56 bg-neutral-100 dark:bg-neutral-950 border-2 border-neutral-300 dark:border-neutral-700 overflow-hidden shadow-inner flex items-center justify-center">
+                        <div class="size-56 bg-neutral-100 dark:bg-neutral-950 border-2 border-border overflow-hidden shadow-inner flex items-center justify-center">
                             <img
                                 src={photoSrc()}
                                 alt={t('ad.fullResolutionPortraitPreview')}
@@ -1300,7 +1300,7 @@ export default function PersonMasterIndividualDetailPage() {
                         onChange={handlePhotoUploadChange}
                     />
 
-                    <div class="flex items-center justify-between gap-2 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                    <div class="flex items-center justify-between gap-2 pt-4 border-t border-border">
                         <button
                             type="button"
                             onClick={handleResetPhoto}
@@ -1313,14 +1313,14 @@ export default function PersonMasterIndividualDetailPage() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.click()}
-                                class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
+                                class="px-4 py-2 text-xs font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors cursor-pointer"
                             >
                                 {t('ad.uploadPhoto')}
                             </button>
                             <button
                                 type="button"
                                 onClick={closePhotoModal}
-                                class="px-4 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-xs border border-neutral-300 dark:border-neutral-600 transition-colors cursor-pointer"
+                                class="px-4 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 rounded-md border border-border transition-colors cursor-pointer"
                             >
                                 {t('ad.close')}
                             </button>

@@ -209,26 +209,26 @@ export default function PersonMasterIndividualCreatePage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header & Breadcrumbs */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4 sm:flex sm:items-center sm:justify-between">
+                <div class="border-b border-border pb-4 sm:flex sm:items-center sm:justify-between">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
                             <span>{t('ad.person')}</span>
                             <span>/</span>
                             <a href="/administrator/person/master/individual" class="hover:text-blue-600 transition-colors">{t('ad.masterIndividual')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.createIndividual')}</span>
+                            <span class="font-medium text-foreground">{t('ad.createIndividual')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
                             {t('ad.addNewIndividualRecord')}
                         </h1>
-                        <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-xs sm:text-sm text-muted-foreground mt-0.5">
                             {t('ad.registerANewCivilIdentityProfile')}
                         </p>
                     </div>
@@ -236,7 +236,7 @@ export default function PersonMasterIndividualCreatePage() {
                     <div class="mt-4 sm:mt-0">
                         <a
                             href="/administrator/person/master/individual"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -249,9 +249,9 @@ export default function PersonMasterIndividualCreatePage() {
                 {/* Form Card */}
                 <form onSubmit={handleSubmit} class="space-y-6">
                     {/* Live Preview Card */}
-                    <div class="p-4 bg-white dark:bg-neutral-800 border-l-4 border-l-blue-600 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                    <div class="p-4 bg-card border-l-4 border-l-blue-600 border border-border shadow-2xs flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                         <div class="flex items-center gap-3">
-                            <div class="size-12 bg-neutral-100 dark:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 overflow-hidden flex items-center justify-center shrink-0">
+                            <div class="size-12 bg-secondary border border-border overflow-hidden flex items-center justify-center shrink-0">
                                 <img
                                     src="/img/Portrait_Placeholder.png"
                                     alt={t('ad.thumbnail')}
@@ -262,15 +262,15 @@ export default function PersonMasterIndividualCreatePage() {
                                 <div class="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
                                     {t('ad.newIndividualProfilePreview')}
                                 </div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {formattedFullNamePreview()}
                                 </h3>
-                                <div class="text-xs font-mono text-neutral-500 dark:text-neutral-400 flex items-center gap-2 mt-0.5">
+                                <div class="text-xs font-mono text-muted-foreground flex items-center gap-2 mt-0.5">
                                     <span>{t('ad.nik')} {formData().code || '—'}</span>
                                     <span>•</span>
                                     <span>{formData().birth_place || 'Birth place'}, {formData().birth_date || 'YYYY-MM-DD'}</span>
                                     <Show when={calculateAge() !== null}>
-                                        <span class="px-1.5 py-0.2 text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold rounded-xs">
+                                        <span class="px-1.5 py-0.2 text-[10px] bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 font-bold rounded-md">
                                             {calculateAge()} yrs
                                         </span>
                                     </Show>
@@ -298,28 +298,28 @@ export default function PersonMasterIndividualCreatePage() {
                     </div>
 
                     {/* SECTION 1: Identity & Primary Demographics */}
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card border border-border shadow-2xs">
+                        <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                 <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="20" height="14" x="2" y="5" rx="2" />
                                     <line x1="2" x2="22" y1="10" y2="10" />
                                 </svg>
                                 <span>{t('ad.n1CivilIdentityBasicDemographics')}</span>
                             </h2>
-                            <span class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.requiredFields')}</span>
+                            <span class="text-xs text-muted-foreground">{t('ad.requiredFields')}</span>
                         </div>
 
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Code / NIK */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.civilIDNIKCode')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                        } text-neutral-900 dark:text-white rounded-xs transition-colors`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().code ? 'border-red-500 focus:ring-red-500' : 'border-border focus:ring-blue-500'
+                                        } text-foreground rounded-md transition-colors`}
                                     placeholder="e.g. 3201012304950001"
                                     value={formData().code}
                                     onInput={(e) => updateField('code', (e.target as HTMLInputElement).value)}
@@ -328,18 +328,18 @@ export default function PersonMasterIndividualCreatePage() {
                                 <Show when={errors().code}>
                                     <p class="text-xs text-red-600 dark:text-red-400 mt-1">{errors().code}</p>
                                 </Show>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('ad.officialNationalIdentificationNumberNIKOr')}
                                 </p>
                             </div>
 
                             {/* Identification Type */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.identificationType')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().identification_type_id}
                                     onChange={(e) => updateField('identification_type_id', (e.target as HTMLSelectElement).value)}
                                 >
@@ -351,13 +351,13 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Full Name */}
                             <div class="md:col-span-2">
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.fullName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                        } text-neutral-900 dark:text-white rounded-xs transition-colors`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().name ? 'border-red-500 focus:ring-red-500' : 'border-border focus:ring-blue-500'
+                                        } text-foreground rounded-md transition-colors`}
                                     placeholder={t('ad.eGJohnDoe')}
                                     value={formData().name}
                                     onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
@@ -370,34 +370,34 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Front Title */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.frontAcademicTitle')}
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     placeholder={t('ad.eGDrProfIrDrs')}
                                     value={formData().front_title || ''}
                                     onInput={(e) => updateField('front_title', (e.target as HTMLInputElement).value)}
                                 />
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('ad.honorificOrDegreePrefixLeaveBlank')}
                                 </p>
                             </div>
 
                             {/* Last Title */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.lastAcademicTitle')}
                                 </label>
                                 <input
                                     type="text"
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     placeholder={t('ad.eGSKomMT')}
                                     value={formData().last_title || ''}
                                     onInput={(e) => updateField('last_title', (e.target as HTMLInputElement).value)}
                                 />
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('ad.postNominalDegreeSuffixLeaveBlank')}
                                 </p>
                             </div>
@@ -405,9 +405,9 @@ export default function PersonMasterIndividualCreatePage() {
                     </div>
 
                     {/* SECTION 2: Birth, Gender, Religion & Civil Status */}
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card border border-border shadow-2xs">
+                        <div class="px-6 py-4 border-b border-border">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                 <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 6v6l4 2" />
@@ -419,13 +419,13 @@ export default function PersonMasterIndividualCreatePage() {
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Birth Place */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.placeOfBirth')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="text"
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                        } text-neutral-900 dark:text-white rounded-xs transition-colors`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().birth_place ? 'border-red-500 focus:ring-red-500' : 'border-border focus:ring-blue-500'
+                                        } text-foreground rounded-md transition-colors`}
                                     placeholder={t('ad.eGJakarta')}
                                     value={formData().birth_place}
                                     onInput={(e) => updateField('birth_place', (e.target as HTMLInputElement).value)}
@@ -438,13 +438,13 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Birth Date */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.dateOfBirth')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
                                     type="date"
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().birth_date ? 'border-red-500 focus:ring-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500'
-                                        } text-neutral-900 dark:text-white rounded-xs transition-colors`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().birth_date ? 'border-red-500 focus:ring-red-500' : 'border-border focus:ring-blue-500'
+                                        } text-foreground rounded-md transition-colors`}
                                     value={formData().birth_date}
                                     onInput={(e) => updateField('birth_date', (e.target as HTMLInputElement).value)}
                                     required
@@ -456,12 +456,12 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Gender */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.gender')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().gender_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                        } text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().gender_id ? 'border-red-500' : 'border-border'
+                                        } text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500`}
                                     value={formData().gender_id}
                                     onChange={(e) => updateField('gender_id', (e.target as HTMLSelectElement).value)}
                                     required
@@ -478,12 +478,12 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Religion */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.religion')} <span class="text-red-500">*</span>
                                 </label>
                                 <select
-                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().religion_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'
-                                        } text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
+                                    class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().religion_id ? 'border-red-500' : 'border-border'
+                                        } text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500`}
                                     value={formData().religion_id}
                                     onChange={(e) => updateField('religion_id', (e.target as HTMLSelectElement).value)}
                                     required
@@ -500,11 +500,11 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Marital Status */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.maritalStatus')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().marital_status_id}
                                     onChange={(e) => updateField('marital_status_id', (e.target as HTMLSelectElement).value)}
                                 >
@@ -517,11 +517,11 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Age Classification */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.ageClassification')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().age_classification_id || ''}
                                     onChange={(e) => updateField('age_classification_id', (e.target as HTMLSelectElement).value || null)}
                                 >
@@ -535,9 +535,9 @@ export default function PersonMasterIndividualCreatePage() {
                     </div>
 
                     {/* SECTION 3: Socio-Economic & Profession */}
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card border border-border shadow-2xs">
+                        <div class="px-6 py-4 border-b border-border">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                 <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <rect width="20" height="14" x="2" y="7" rx="2" ry="2" />
                                     <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
@@ -549,11 +549,11 @@ export default function PersonMasterIndividualCreatePage() {
                         <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Occupation */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.occupation')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().occupation_id || ''}
                                     onChange={(e) => updateField('occupation_id', (e.target as HTMLSelectElement).value || null)}
                                 >
@@ -566,11 +566,11 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Profession */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.profession')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().profession_id}
                                     onChange={(e) => updateField('profession_id', (e.target as HTMLSelectElement).value)}
                                 >
@@ -583,11 +583,11 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Income Level */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.incomeBracket')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().income_id}
                                     onChange={(e) => updateField('income_id', (e.target as HTMLSelectElement).value)}
                                 >
@@ -600,11 +600,11 @@ export default function PersonMasterIndividualCreatePage() {
 
                             {/* Education Level */}
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                     {t('ad.highestEducationLevel')}
                                 </label>
                                 <select
-                                    class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                    class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                     value={formData().education_id || ''}
                                     onChange={(e) => updateField('education_id', (e.target as HTMLSelectElement).value || null)}
                                 >
@@ -618,9 +618,9 @@ export default function PersonMasterIndividualCreatePage() {
                     </div>
 
                     {/* SECTION 4: Special Status Flags */}
-                    <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                            <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card border border-border shadow-2xs">
+                        <div class="px-6 py-4 border-b border-border">
+                            <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                 <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
                                 </svg>
@@ -630,48 +630,48 @@ export default function PersonMasterIndividualCreatePage() {
 
                         <div class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                             {/* Special Need Toggle */}
-                            <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
+                            <label class="relative flex items-start gap-3 p-3.5 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
+                                    class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-md focus:ring-blue-500"
                                     checked={formData().is_special_need}
                                     onChange={(e) => updateField('is_special_need', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.specialNeeds')}</span>
-                                    <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                    <span class="block text-xs font-bold text-foreground">{t('ad.specialNeeds')}</span>
+                                    <span class="block text-[11px] text-muted-foreground mt-0.5">
                                         {t('ad.checkIfIndividualRequiresDisabilityAccommodation')}
                                     </span>
                                 </div>
                             </label>
 
                             {/* Social Protection Card Recipient */}
-                            <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
+                            <label class="relative flex items-start gap-3 p-3.5 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
+                                    class="size-4 mt-0.5 text-blue-600 border-neutral-300 rounded-md focus:ring-blue-500"
                                     checked={formData().is_social_protection_card_recipient}
                                     onChange={(e) => updateField('is_social_protection_card_recipient', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.kpsSocialProtection')}</span>
-                                    <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                    <span class="block text-xs font-bold text-foreground">{t('ad.kpsSocialProtection')}</span>
+                                    <span class="block text-[11px] text-muted-foreground mt-0.5">
                                         {t('ad.recipientOfGovernmentAssistanceOrSmart')}
                                     </span>
                                 </div>
                             </label>
 
                             {/* Deceased */}
-                            <label class="relative flex items-start gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
+                            <label class="relative flex items-start gap-3 p-3.5 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    class="size-4 mt-0.5 text-red-600 border-neutral-300 rounded-xs focus:ring-red-500"
+                                    class="size-4 mt-0.5 text-red-600 border-neutral-300 rounded-md focus:ring-red-500"
                                     checked={formData().is_deceased}
                                     onChange={(e) => updateField('is_deceased', (e.target as HTMLInputElement).checked)}
                                 />
                                 <div>
-                                    <span class="block text-xs font-bold text-neutral-900 dark:text-white">{t('ad.deceasedStatus')}</span>
-                                    <span class="block text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                    <span class="block text-xs font-bold text-foreground">{t('ad.deceasedStatus')}</span>
+                                    <span class="block text-[11px] text-muted-foreground mt-0.5">
                                         {t('ad.checkIfThisIndividualRecordIs')}
                                     </span>
                                 </div>
@@ -680,17 +680,17 @@ export default function PersonMasterIndividualCreatePage() {
                     </div>
 
                     {/* Action Buttons */}
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                         <a
                             href="/administrator/person/master/individual"
-                            class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                            class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </a>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
-                            class="inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                            class="inline-flex items-center gap-2 px-6 py-2.5 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                             id="btn-submit-individual"
                         >
                             <Show

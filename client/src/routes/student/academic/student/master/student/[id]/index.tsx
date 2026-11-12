@@ -63,26 +63,26 @@ export default function StudentMasterShowPage() {
     const ind = () => individual()?.individual;
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="flex items-center gap-5">
-                            <div class="size-16 sm:size-20 rounded-xs bg-linear-to-tr from-blue-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                            <div class="size-16 sm:size-20 rounded-md bg-linear-to-tr from-blue-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                 {(student()?.name || 'S').charAt(0)}
                             </div>
                             <div class="space-y-1">
-                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
-                                    <span class="size-1.5 rounded-xs bg-blue-500"></span>
+                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                                    <span class="size-1.5 rounded-md bg-blue-500"></span>
                                     <span>{t('st.nim')} {student()?.code || '-'}</span>
                                 </div>
-                                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
                                     {student()?.name || t('st.studentDetails')}
                                 </h1>
-                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs sm:text-sm text-muted-foreground">
                                     {student()?.unit_name || '-'} • Cohort {student()?.academic_year_name || '-'}
                                 </p>
                             </div>
@@ -91,13 +91,13 @@ export default function StudentMasterShowPage() {
                         <div class="flex items-center gap-3">
                             <A
                                 href="/student/academic/student/master"
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors"
                             >
                                 {t('st.studentDirectory')}
                             </A>
                             <A
                                 href="/student/academic/student/campaign/activity"
-                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold shadow-xs transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors"
                             >
                                 {t('st.viewAcademicRecords')}
                             </A>
@@ -114,10 +114,10 @@ export default function StudentMasterShowPage() {
                 }>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                         {/* Admission Card */}
-                        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('st.academicAdmissionInformation')}</h3>
-                                <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                        <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-border">
+                                <h3 class="text-sm font-bold text-foreground">{t('st.academicAdmissionInformation')}</h3>
+                                <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                     {student()?.status_name || t('st.admittedRegistered')}
                                 </span>
                             </div>
@@ -125,54 +125,54 @@ export default function StudentMasterShowPage() {
                             <div class="space-y-3">
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.studentNIM2')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.code || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{student()?.code || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.registrationNumber')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.registration_id || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{student()?.registration_id || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.admissionPathType')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.selection_type_name || '-'}</span>
+                                    <span class="font-bold text-foreground">{student()?.selection_type_name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.officialAdmissionDate')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.registered || '-'}</span>
+                                    <span class="font-bold text-foreground">{student()?.registered || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.studyProgramDepartment')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.unit_name || '-'}</span>
+                                    <span class="font-bold text-foreground">{student()?.unit_name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.curriculumCohort')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.curriculum_id || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{student()?.curriculum_id || '-'}</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Personal & Demographics Card */}
-                        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                            <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('st.individualBiodataIdentity')}</h3>
+                        <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
+                            <div class="flex items-center justify-between pb-3 border-b border-border">
+                                <h3 class="text-sm font-bold text-foreground">{t('st.individualBiodataIdentity')}</h3>
                                 <span class="text-xs text-neutral-400 font-mono">{t('st.civilRegistry')}</span>
                             </div>
 
                             <div class="space-y-3">
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.fullLegalName')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{student()?.name || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.nationalIDNIK')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{ind()?.code || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.nisn')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.nisn || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{student()?.nisn || '-'}</span>
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.birthPlaceDate')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                    <span class="font-bold text-foreground">
                                         {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                     </span>
                                 </div>
@@ -184,7 +184,7 @@ export default function StudentMasterShowPage() {
                                 </div>
                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                     <span class="text-neutral-400 font-mono">{t('st.permanentAddress')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-100">{individual()?.biodata?.address || '-'}</span>
+                                    <span class="font-bold text-foreground">{individual()?.biodata?.address || '-'}</span>
                                 </div>
                             </div>
                         </div>

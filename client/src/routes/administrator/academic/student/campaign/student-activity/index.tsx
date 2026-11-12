@@ -478,14 +478,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col font-sans">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header and Breadcrumbs */}
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-border pb-5">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5">
                             <A href="/administrator/dashboard" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.administrator')}</A>
                             <span>/</span>
                             <span>{t('ad.akademik')}</span>
@@ -494,12 +494,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <span>/</span>
                             <span>{t('ad.kampanye')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.aktivitasKuliah')}</span>
+                            <span class="font-medium text-foreground">{t('ad.aktivitasKuliah')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                             {t('ad.aktivitasKuliahMahasiswaAKM')}
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('ad.manajemenDataRiwayatAktivitasSemesterSKS')}
                         </p>
                     </div>
@@ -508,7 +508,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                         <button
                             type="button"
                             onClick={() => fetchData()}
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md border border-border bg-card text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs"
                             title={t('ad.segarkanData')}
                         >
                             <svg class={`size-3.5 ${isLoading() ? 'animate-spin' : ''}`} xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -520,7 +520,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                         <button
                             type="button"
                             onClick={() => exportCsv(items())}
-                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold rounded-md border border-border bg-card text-neutral-700 dark:text-neutral-200 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs"
                         >
                             <svg class="size-3.5 text-emerald-600 dark:text-emerald-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -543,55 +543,55 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                 {/* KPI Metrics Summary */}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs flex items-center gap-3.5">
+                    <div class="bg-card p-4 rounded-lg border border-border shadow-2xs flex items-center gap-3.5">
                         <div class="size-11 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.totalAktivitas')}</span>
-                            <div class="text-xl font-bold text-neutral-900 dark:text-white mt-0.5">{totalData()}</div>
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('ad.totalAktivitas')}</span>
+                            <div class="text-xl font-bold text-foreground mt-0.5">{totalData()}</div>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs flex items-center gap-3.5">
+                    <div class="bg-card p-4 rounded-lg border border-border shadow-2xs flex items-center gap-3.5">
                         <div class="size-11 rounded-md bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/60 flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.statusAktif')}</span>
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('ad.statusAktif')}</span>
                             <div class="text-xl font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                                 {activeCount()} <span class="text-xs font-normal text-neutral-500">{t('ad.diHalamanIni')}</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs flex items-center gap-3.5">
+                    <div class="bg-card p-4 rounded-lg border border-border shadow-2xs flex items-center gap-3.5">
                         <div class="size-11 rounded-md bg-amber-50 dark:bg-amber-950/60 border border-amber-200 dark:border-amber-800/60 flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.terkunciLock')}</span>
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('ad.terkunciLock')}</span>
                             <div class="text-xl font-bold text-amber-600 dark:text-amber-400 mt-0.5">
                                 {lockedCount()} <span class="text-xs font-normal text-neutral-500">aktivitas</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs flex items-center gap-3.5">
+                    <div class="bg-card p-4 rounded-lg border border-border shadow-2xs flex items-center gap-3.5">
                         <div class="size-11 rounded-md bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 flex items-center justify-center text-purple-600 dark:text-purple-400 shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
                         </div>
                         <div>
-                            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">{t('ad.rataRataIPKSKS')}</span>
-                            <div class="text-xl font-bold text-neutral-900 dark:text-white mt-0.5">
+                            <span class="text-xs font-medium text-muted-foreground uppercase tracking-wider">{t('ad.rataRataIPKSKS')}</span>
+                            <div class="text-xl font-bold text-foreground mt-0.5">
                                 {avgIpk()} <span class="text-xs font-normal text-neutral-500">/ {avgSks()} SKS</span>
                             </div>
                         </div>
@@ -599,7 +599,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                 </div>
 
                 {/* Filter and Search Bar */}
-                <div class="bg-white dark:bg-neutral-800 p-4 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
+                <div class="bg-card p-4 rounded-lg border border-border shadow-2xs space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
                         {/* Search Input */}
                         <div class="lg:col-span-2 relative">
@@ -616,7 +616,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setCurrentPage(1);
                                 }}
                                 placeholder={t('ad.cariNamaNIMAtauAktivitas')}
-                                class="w-full pl-9 pr-3 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                class="w-full pl-9 pr-3 py-2 text-xs rounded-md border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400"
                             />
                         </div>
 
@@ -628,7 +628,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setSelectedAcademicYear(e.currentTarget.value);
                                     setCurrentPage(1);
                                 }}
-                                class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-2.5 py-2 text-xs rounded-md border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('ad.semuaPeriodeTA')}</option>
                                 <For each={academicYears()}>
@@ -645,7 +645,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setSelectedUnit(e.currentTarget.value);
                                     setCurrentPage(1);
                                 }}
-                                class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-2.5 py-2 text-xs rounded-md border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('ad.semuaProgramStudi')}</option>
                                 <For each={studyUnits()}>
@@ -662,7 +662,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setSelectedStatus(e.currentTarget.value);
                                     setCurrentPage(1);
                                 }}
-                                class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-2.5 py-2 text-xs rounded-md border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="">{t('ad.semuaStatusKuliah')}</option>
                                 <For each={statuses()}>
@@ -679,7 +679,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setSelectedLockFilter(e.currentTarget.value);
                                     setCurrentPage(1);
                                 }}
-                                class="w-full px-2.5 py-2 text-xs rounded-md border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                class="w-full px-2.5 py-2 text-xs rounded-md border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">{t('ad.statusKunciSemua')}</option>
                                 <option value="locked">{t('ad.hanyaTerkunci')}</option>
@@ -688,13 +688,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between border-t border-neutral-200 dark:border-neutral-700/60 pt-3 text-xs">
+                    <div class="flex items-center justify-between border-t border-border/60 pt-3 text-xs">
                         <div class="flex items-center gap-2">
                             <span class="text-neutral-500">{t('ad.urutkan')}</span>
                             <select
                                 value={sortOption()}
                                 onChange={e => setSortOption(e.currentTarget.value)}
-                                class="px-2 py-1 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                class="px-2 py-1 text-xs rounded border border-border bg-card text-foreground"
                             >
                                 <option value="created_at-desc">{t('ad.tanggalDibuatTerbaru')}</option>
                                 <option value="created_at-asc">{t('ad.tanggalDibuatTerlama')}</option>
@@ -709,7 +709,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     setItemsPerPage(Number(e.currentTarget.value));
                                     setCurrentPage(1);
                                 }}
-                                class="px-2 py-1 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                class="px-2 py-1 text-xs rounded border border-border bg-card text-foreground"
                             >
                                 <option value="10">10</option>
                                 <option value="25">25</option>
@@ -761,7 +761,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     const selectedItems = items().filter(i => selectedIds().includes(i.id));
                                     exportCsv(selectedItems);
                                 }}
-                                class="px-3 py-1.5 text-xs font-semibold rounded bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                class="px-3 py-1.5 text-xs font-semibold rounded bg-card border border-border text-foreground hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 {t('ad.eksporTerpilih')}
                             </button>
@@ -777,17 +777,17 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                 </Show>
 
                 {/* Main Data Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-lg border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-lg border border-border shadow-2xs overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
-                                <tr class="bg-neutral-50 dark:bg-neutral-900/50 border-b border-neutral-200 dark:border-neutral-700 text-neutral-600 dark:text-neutral-300 font-semibold uppercase tracking-wider text-[11px]">
+                                <tr class="bg-muted/50 border-b border-border text-muted-foreground font-semibold uppercase tracking-wider text-[11px]">
                                     <th class="w-10 px-3 py-3 text-center">
                                         <input
                                             type="checkbox"
                                             checked={items().length > 0 && items().every(i => selectedIds().includes(i.id))}
                                             onChange={handleSelectAll}
-                                            class="rounded border-neutral-300 dark:border-neutral-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                            class="rounded border-border text-blue-600 focus:ring-blue-500 cursor-pointer"
                                         />
                                     </th>
                                     <th class="px-4 py-3">{t('ad.mahasiswa')}</th>
@@ -804,7 +804,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     when={!isLoading()}
                                     fallback={
                                         <tr>
-                                            <td colspan="8" class="px-4 py-16 text-center text-neutral-500 dark:text-neutral-400">
+                                            <td colspan="8" class="px-4 py-16 text-center text-muted-foreground">
                                                 <div class="flex flex-col items-center justify-center gap-2">
                                                     <Spinner size="md" color="blue" aria-hidden={true} />
                                                     <span>{t('ad.memuatDataAktivitasMahasiswa')}</span>
@@ -817,14 +817,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="8" class="px-4 py-16 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="8" class="px-4 py-16 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center max-w-sm mx-auto">
-                                                        <div class="size-12 rounded-full bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-2">
+                                                        <div class="size-12 rounded-full bg-secondary flex items-center justify-center text-neutral-400 mb-2">
                                                             <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                                                             </svg>
                                                         </div>
-                                                        <h4 class="font-bold text-neutral-800 dark:text-neutral-200">{t('ad.tidakAdaDataAktivitas')}</h4>
+                                                        <h4 class="font-bold text-foreground">{t('ad.tidakAdaDataAktivitas')}</h4>
                                                         <p class="text-xs text-neutral-500 mt-1">{t('ad.cobaSesuaikanKataKunciPencarianAtau')}</p>
                                                     </div>
                                                 </td>
@@ -853,7 +853,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 type="checkbox"
                                                                 checked={selectedIds().includes(item.id)}
                                                                 onChange={() => handleSelectRow(item.id)}
-                                                                class="rounded border-neutral-300 dark:border-neutral-600 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                                                class="rounded border-border text-blue-600 focus:ring-blue-500 cursor-pointer"
                                                             />
                                                         </td>
                                                         <td class="px-4 py-3">
@@ -864,12 +864,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 <div class="min-w-0">
                                                                     <A
                                                                         href={`/administrator/academic/student/campaign/student-activity/${item.id}`}
-                                                                        class="font-semibold text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors block truncate max-w-[200px]"
+                                                                        class="font-semibold text-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors block truncate max-w-[200px]"
                                                                     >
                                                                         {studentName}
                                                                     </A>
-                                                                    <div class="flex items-center gap-1.5 text-[11px] text-neutral-500 dark:text-neutral-400">
-                                                                        <span class="font-mono text-neutral-600 dark:text-neutral-300 font-medium">{studentCode}</span>
+                                                                    <div class="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                                                                        <span class="font-mono text-muted-foreground font-medium">{studentCode}</span>
                                                                         <span>•</span>
                                                                         <span class="truncate max-w-[130px]">{unitName}</span>
                                                                     </div>
@@ -877,9 +877,9 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                             </div>
                                                         </td>
                                                         <td class="px-4 py-3">
-                                                            <div class="font-medium text-neutral-800 dark:text-neutral-200">{semesterName}</div>
+                                                            <div class="font-medium text-foreground">{semesterName}</div>
                                                             <Show when={item.unit_activity?.name && item.unit_activity?.name !== semesterName}>
-                                                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 truncate max-w-[150px]">
+                                                                <div class="text-[11px] text-muted-foreground truncate max-w-[150px]">
                                                                     {item.unit_activity?.name}
                                                                 </div>
                                                             </Show>
@@ -890,14 +890,14 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                         ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60'
                                                                         : isStatusCuti
                                                                             ? 'bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60'
-                                                                            : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700'
+                                                                            : 'bg-secondary text-foreground/80 border border-border'
                                                                     }`}
                                                             >
                                                                 {status}
                                                             </span>
                                                         </td>
                                                         <td class="px-4 py-3 text-center">
-                                                            <div class="font-mono font-medium text-neutral-900 dark:text-white">
+                                                            <div class="font-mono font-medium text-foreground">
                                                                 {semSks} <span class="text-neutral-400 text-[10px]">sem</span>
                                                             </div>
                                                             <div class="text-[10px] text-neutral-500 font-mono">
@@ -920,7 +920,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                     {ips.toFixed(2)}
                                                                 </span>
                                                                 <span class="text-neutral-400">/</span>
-                                                                <span class="font-semibold text-neutral-700 dark:text-neutral-300" title={t('ad.indeksPrestasiKumulatif')}>
+                                                                <span class="font-semibold text-foreground/80" title={t('ad.indeksPrestasiKumulatif')}>
                                                                     {ipk.toFixed(2)}
                                                                 </span>
                                                             </div>
@@ -935,7 +935,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                                                 onClick={() => handleToggleLock(item)}
                                                                 class={`inline-flex items-center gap-1 px-2 py-1 rounded text-xs font-medium transition-all ${item.is_lock
                                                                         ? 'bg-amber-50 dark:bg-amber-950/70 text-amber-700 dark:text-amber-300 hover:bg-amber-100 border border-amber-200 dark:border-amber-800/80'
-                                                                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 border border-neutral-300 dark:border-neutral-700'
+                                                                        : 'bg-secondary text-muted-foreground hover:bg-neutral-200 border border-border'
                                                                     }`}
                                                                 title={item.is_lock ? t('ad.klikUntukMembukaKunci') : t('ad.klikUntukMengunciAktivitas')}
                                                             >
@@ -1051,11 +1051,11 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="px-4 py-3 bg-neutral-50 dark:bg-neutral-900/40 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
-                        <div class="text-neutral-600 dark:text-neutral-400">
-                            {t('ad.menampilkan')} <span class="font-semibold text-neutral-900 dark:text-white">{items().length ? (currentPage() - 1) * itemsPerPage() + 1 : 0}</span> sampai{' '}
-                            <span class="font-semibold text-neutral-900 dark:text-white">{Math.min(currentPage() * itemsPerPage(), totalData())}</span> dari{' '}
-                            <span class="font-semibold text-neutral-900 dark:text-white">{totalData()}</span> {t('ad.totalAktivitas2')}
+                    <div class="px-4 py-3 bg-muted/40 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div class="text-muted-foreground">
+                            {t('ad.menampilkan')} <span class="font-semibold text-foreground">{items().length ? (currentPage() - 1) * itemsPerPage() + 1 : 0}</span> sampai{' '}
+                            <span class="font-semibold text-foreground">{Math.min(currentPage() * itemsPerPage(), totalData())}</span> dari{' '}
+                            <span class="font-semibold text-foreground">{totalData()}</span> {t('ad.totalAktivitas2')}
                         </div>
 
                         <div class="flex items-center gap-1.5">
@@ -1063,12 +1063,12 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 type="button"
                                 disabled={currentPage() <= 1}
                                 onClick={() => setCurrentPage(p => Math.max(p - 1, 1))}
-                                class="px-2.5 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
+                                class="px-2.5 py-1.5 rounded border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
                             >
                                 {t('ad.sebelumnya')}
                             </button>
 
-                            <span class="px-3 py-1 font-mono text-neutral-700 dark:text-neutral-300">
+                            <span class="px-3 py-1 font-mono text-foreground/80">
                                 {currentPage()} / {totalPages()}
                             </span>
 
@@ -1076,7 +1076,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 type="button"
                                 disabled={currentPage() >= totalPages()}
                                 onClick={() => setCurrentPage(p => Math.min(p + 1, totalPages()))}
-                                class="px-2.5 py-1.5 rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
+                                class="px-2.5 py-1.5 rounded border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed text-xs transition-colors"
                             >
                                 {t('ad.selanjutnya')}
                             </button>
@@ -1088,9 +1088,9 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             {/* Modal: Tambah Aktivitas Mahasiswa */}
             <Show when={showCreateModal()}>
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-700 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card rounded-lg shadow-xl border border-border w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+                        <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+                            <h3 class="text-base font-bold text-foreground flex items-center gap-2">
                                 <svg class="size-5 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                                 </svg>
@@ -1110,7 +1110,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                         <form onSubmit={handleCreateSubmit} class="p-6 overflow-y-auto space-y-4 text-xs">
                             {/* Search and Select Student */}
                             <div class="space-y-1.5">
-                                <label class="block font-semibold text-neutral-700 dark:text-neutral-300">
+                                <label class="block font-semibold text-foreground/80">
                                     {t('ad.pilihMahasiswa')} <span class="text-rose-500">*</span>
                                 </label>
                                 <div class="relative">
@@ -1123,7 +1123,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                             searchStudents(val);
                                         }}
                                         placeholder={t('ad.ketikNIMAtauNamaMahasiswaMin')}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                     />
                                     <Show when={isSearchingStudents()}>
                                         <div class="absolute right-3 top-2.5 text-neutral-400">
@@ -1133,7 +1133,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 </div>
 
                                 <Show when={studentOptions().length > 0}>
-                                    <div class="max-h-36 overflow-y-auto border border-neutral-200 dark:border-neutral-700 rounded bg-white dark:bg-neutral-850 shadow-xs divide-y divide-neutral-100 dark:divide-neutral-800">
+                                    <div class="max-h-36 overflow-y-auto border border-border rounded bg-white dark:bg-neutral-850 shadow-xs divide-y divide-neutral-100 dark:divide-neutral-800">
                                         <For each={studentOptions()}>
                                             {std => (
                                                 <button
@@ -1169,13 +1169,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {/* Unit Activity / Periode */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.periodeAktivitasSemester')} <span class="text-rose-500">*</span>
                                     </label>
                                     <select
                                         value={formUnitActivityId()}
                                         onChange={e => setFormUnitActivityId(e.currentTarget.value)}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                         required
                                     >
                                         <option value="">{t('ad.pilihPeriodeAktivitas')}</option>
@@ -1187,13 +1187,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                                 {/* Status Mahasiswa */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.statusPerkuliahan')} <span class="text-rose-500">*</span>
                                     </label>
                                     <select
                                         value={formStatusId()}
                                         onChange={e => setFormStatusId(e.currentTarget.value)}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                         required
                                     >
                                         <option value="">{t('ad.pilihStatus')}</option>
@@ -1205,13 +1205,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                                 {/* Program Studi / Unit */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.programStudiUnit')}
                                     </label>
                                     <select
                                         value={formUnitId()}
                                         onChange={e => setFormUnitId(e.currentTarget.value)}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                                     >
                                         <option value="">{t('ad.otomatisDariMahasiswa')}</option>
                                         <For each={studyUnits()}>
@@ -1222,7 +1222,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                                 {/* Biaya Kuliah / SPP */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.biayaKuliahSPPRp')}
                                     </label>
                                     <input
@@ -1230,13 +1230,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         value={formFinanceFee()}
                                         onInput={e => setFormFinanceFee(Number(e.currentTarget.value))}
                                         placeholder="0"
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
 
                                 {/* SKS Semester */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.sksSemester')}
                                     </label>
                                     <input
@@ -1244,13 +1244,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         value={formSks()}
                                         onInput={e => setFormSks(Number(e.currentTarget.value))}
                                         placeholder="0"
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
 
                                 {/* SKS Kumulatif */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.totalSKSKumulatif')}
                                     </label>
                                     <input
@@ -1258,13 +1258,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         value={formGrandSks()}
                                         onInput={e => setFormGrandSks(Number(e.currentTarget.value))}
                                         placeholder="0"
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
 
                                 {/* IPS */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.ipsIndeksPrestasiSemester')}
                                     </label>
                                     <input
@@ -1275,13 +1275,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         value={formIps()}
                                         onInput={e => setFormIps(Number(e.currentTarget.value))}
                                         placeholder="0.00"
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white font-mono"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground font-mono"
                                     />
                                 </div>
 
                                 {/* IPK */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.ipkIndeksPrestasiKumulatif')}
                                     </label>
                                     <input
@@ -1292,7 +1292,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         value={formIpk()}
                                         onInput={e => setFormIpk(Number(e.currentTarget.value))}
                                         placeholder="0.00"
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white font-mono"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground font-mono"
                                     />
                                 </div>
                             </div>
@@ -1306,16 +1306,16 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     onChange={e => setFormIsLock(e.currentTarget.checked)}
                                     class="rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label for="createIsLock" class="font-medium text-neutral-800 dark:text-neutral-200">
+                                <label for="createIsLock" class="font-medium text-foreground">
                                     {t('ad.kunciAktivitasIniKRSDanKHS')}
                                 </label>
                             </div>
 
-                            <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-end gap-2.5">
+                            <div class="pt-4 border-t border-border flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
                                     onClick={() => setShowCreateModal(false)}
-                                    class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                                    class="px-4 py-2 text-xs font-semibold rounded border border-border text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
                                     {t('ad.batal')}
                                 </button>
@@ -1338,9 +1338,9 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             {/* Modal: Edit Aktivitas Mahasiswa */}
             <Show when={showEditModal()}>
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-700 w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
-                        <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                    <div class="bg-card rounded-lg shadow-xl border border-border w-full max-w-xl max-h-[90vh] flex flex-col overflow-hidden">
+                        <div class="px-6 py-4 border-b border-border flex items-center justify-between">
+                            <h3 class="text-base font-bold text-foreground flex items-center gap-2">
                                 <svg class="size-5 text-amber-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
@@ -1358,8 +1358,8 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                         </div>
 
                         <form onSubmit={handleEditSubmit} class="p-6 overflow-y-auto space-y-4 text-xs">
-                            <div class="bg-neutral-50 dark:bg-neutral-850 p-3 rounded border border-neutral-200 dark:border-neutral-700">
-                                <div class="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+                            <div class="bg-neutral-50 dark:bg-neutral-850 p-3 rounded border border-border">
+                                <div class="text-xs font-semibold text-foreground">
                                     {selectedActivity()?.student_name || selectedActivity()?.name}
                                 </div>
                                 <div class="text-[11px] text-neutral-500 font-mono mt-0.5">
@@ -1370,13 +1370,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 {/* Status Mahasiswa */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.statusPerkuliahan')}
                                     </label>
                                     <select
                                         value={formStatusId()}
                                         onChange={e => setFormStatusId(e.currentTarget.value)}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     >
                                         <For each={statuses()}>
                                             {s => <option value={s.id}>{s.name}</option>}
@@ -1386,13 +1386,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                                 {/* Program Studi */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.programStudi')}
                                     </label>
                                     <select
                                         value={formUnitId()}
                                         onChange={e => setFormUnitId(e.currentTarget.value)}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     >
                                         <option value="">{t('ad.default')}</option>
                                         <For each={studyUnits()}>
@@ -1403,33 +1403,33 @@ export default function AcademicStudentCampaignStudentActivityPage() {
 
                                 {/* SKS Semester */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.sksSemester')}
                                     </label>
                                     <input
                                         type="number"
                                         value={formSks()}
                                         onInput={e => setFormSks(Number(e.currentTarget.value))}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
 
                                 {/* SKS Kumulatif */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.totalSKSKumulatif')}
                                     </label>
                                     <input
                                         type="number"
                                         value={formGrandSks()}
                                         onInput={e => setFormGrandSks(Number(e.currentTarget.value))}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
 
                                 {/* IPS */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.ipsIndeksPrestasiSemester')}
                                     </label>
                                     <input
@@ -1439,13 +1439,13 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         max="4"
                                         value={formIps()}
                                         onInput={e => setFormIps(Number(e.currentTarget.value))}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white font-mono"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground font-mono"
                                     />
                                 </div>
 
                                 {/* IPK */}
                                 <div>
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.ipkIndeksPrestasiKumulatif')}
                                     </label>
                                     <input
@@ -1455,20 +1455,20 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                         max="4"
                                         value={formIpk()}
                                         onInput={e => setFormIpk(Number(e.currentTarget.value))}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white font-mono"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground font-mono"
                                     />
                                 </div>
 
                                 {/* Biaya Kuliah */}
                                 <div class="sm:col-span-2">
-                                    <label class="block font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block font-semibold text-foreground/80 mb-1">
                                         {t('ad.biayaTagihanSPPRp')}
                                     </label>
                                     <input
                                         type="number"
                                         value={formFinanceFee()}
                                         onInput={e => setFormFinanceFee(Number(e.currentTarget.value))}
-                                        class="w-full px-3 py-2 text-xs rounded border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                        class="w-full px-3 py-2 text-xs rounded border border-border bg-card text-foreground"
                                     />
                                 </div>
                             </div>
@@ -1482,16 +1482,16 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                     onChange={e => setFormIsLock(e.currentTarget.checked)}
                                     class="rounded border-neutral-300 text-blue-600 focus:ring-blue-500"
                                 />
-                                <label for="editIsLock" class="font-medium text-neutral-800 dark:text-neutral-200">
+                                <label for="editIsLock" class="font-medium text-foreground">
                                     {t('ad.kunciAktivitasIniTerkunciDariRevisi')}
                                 </label>
                             </div>
 
-                            <div class="pt-4 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-end gap-2.5">
+                            <div class="pt-4 border-t border-border flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
                                     onClick={() => setShowEditModal(false)}
-                                    class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                                    class="px-4 py-2 text-xs font-semibold rounded border border-border text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                                 >
                                     {t('ad.batal')}
                                 </button>
@@ -1514,7 +1514,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
             {/* Modal: Hapus Aktivitas Mahasiswa */}
             <Show when={showDeleteModal()}>
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-                    <div class="bg-white dark:bg-neutral-800 rounded-lg shadow-xl border border-neutral-200 dark:border-neutral-700 w-full max-w-md p-6 space-y-4">
+                    <div class="bg-card rounded-lg shadow-xl border border-border w-full max-w-md p-6 space-y-4">
                         <div class="flex items-center gap-3">
                             <div class="size-10 rounded-full bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
                                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1522,7 +1522,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {t('ad.hapusAktivitasMahasiswa')}
                                 </h3>
                                 <p class="text-xs text-neutral-500 mt-0.5">
@@ -1531,11 +1531,11 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             </div>
                         </div>
 
-                        <div class="bg-neutral-50 dark:bg-neutral-850 p-3 rounded border border-neutral-200 dark:border-neutral-700 text-xs">
-                            <p class="text-neutral-700 dark:text-neutral-300">
+                        <div class="bg-neutral-50 dark:bg-neutral-850 p-3 rounded border border-border text-xs">
+                            <p class="text-foreground/80">
                                 {t('ad.andaAkanMenghapusDataAktivitasSemester')}
                             </p>
-                            <p class="font-bold text-neutral-900 dark:text-white mt-1">
+                            <p class="font-bold text-foreground mt-1">
                                 {selectedActivity()?.student_name || selectedActivity()?.name}
                             </p>
                             <p class="text-neutral-500 font-mono text-[11px]">
@@ -1547,7 +1547,7 @@ export default function AcademicStudentCampaignStudentActivityPage() {
                             <button
                                 type="button"
                                 onClick={() => setShowDeleteModal(false)}
-                                class="px-4 py-2 text-xs font-semibold rounded border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700"
+                                class="px-4 py-2 text-xs font-semibold rounded border border-border text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700"
                             >
                                 {t('ad.batal')}
                             </button>

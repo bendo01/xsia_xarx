@@ -78,25 +78,25 @@ export default function FeederMasterIndexPage() {
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
                             <span>{t('ad.feeder')}</span>
                             <span>/</span>
                             <span>{t('ad.master')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.pesertaKelasKuliah')}</span>
+                            <span class="font-medium text-foreground">{t('ad.pesertaKelasKuliah')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('ad.pesertaKelasKuliah')}
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-sm text-muted-foreground mt-0.5">
                             {t('ad.synchronizedMasterDatasetFromPDDIKTIFeeder33')}
                         </p>
                     </div>
@@ -113,7 +113,7 @@ export default function FeederMasterIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder={t('ad.searchRecords')}
                                 onInput={handleSearch}
                             />
@@ -122,7 +122,7 @@ export default function FeederMasterIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -134,7 +134,7 @@ export default function FeederMasterIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -148,7 +148,7 @@ export default function FeederMasterIndexPage() {
                     </div>
                 </div>
 
-                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
+                <div class="border border-border bg-card shadow-2xs overflow-hidden">
                     <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
                             when={!isLoading()}
@@ -166,14 +166,14 @@ export default function FeederMasterIndexPage() {
                             <Show
                                 when={items().length > 0}
                                 fallback={
-                                    <div class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                    <div class="px-4 py-12 text-center text-muted-foreground">
                                         <div class="flex flex-col items-center justify-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noFeederRecordsFound')}</span>
+                                            <span class="font-semibold text-sm text-foreground/80">{t('ad.noFeederRecordsFound')}</span>
                                             <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQuery')}</span>
                                         </div>
                                     </div>
@@ -191,14 +191,14 @@ export default function FeederMasterIndexPage() {
                                                         {getItemTitle(item)}
                                                     </a>
                                                     <div class="flex items-center gap-1.5 mt-1">
-                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
+                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-secondary text-foreground border border-border">
                                                             {getItemCode(item)}
                                                         </span>
                                                     </div>
                                                 </div>
                                                 <a
                                                     href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-border transition-colors"
                                                     title={t('ad.viewRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -215,7 +215,7 @@ export default function FeederMasterIndexPage() {
 
                     <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs sm:text-sm text-left">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-border">
                                 <tr>
                                     <th class="px-4 py-3.5 w-40">{t('ad.identifierCode')}</th>
                                     <th class="px-4 py-3.5">{t('ad.nameTitle')}</th>
@@ -241,14 +241,14 @@ export default function FeederMasterIndexPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="3" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="3" class="px-4 py-12 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center gap-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10" />
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noFeederRecordsFound')}</span>
+                                                        <span class="font-semibold text-sm text-foreground/80">{t('ad.noFeederRecordsFound')}</span>
                                                         <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQueryOn')}</span>
                                                     </div>
                                                 </td>
@@ -258,8 +258,8 @@ export default function FeederMasterIndexPage() {
                                         <For each={items()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                                                    <td class="px-4 py-3 font-mono font-medium text-neutral-900 dark:text-white">
-                                                        <span class="px-2 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600">
+                                                    <td class="px-4 py-3 font-mono font-medium text-foreground">
+                                                        <span class="px-2 py-0.5 text-xs bg-secondary border border-border">
                                                             {getItemCode(item)}
                                                         </span>
                                                     </td>
@@ -270,14 +270,14 @@ export default function FeederMasterIndexPage() {
                                                         >
                                                             {getItemTitle(item)}
                                                         </a>
-                                                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono block truncate max-w-sm">
+                                                        <span class="text-xs text-muted-foreground font-mono block truncate max-w-sm">
                                                             {item.id || item.id_feeder || item.uuid}
                                                         </span>
                                                     </td>
                                                     <td class="px-4 py-3 text-right">
                                                         <a
                                                             href={`${basePath}/${encodeURIComponent(item.id || item.id_feeder || item.uuid)}`}
-                                                            class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                            class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 border border-border transition-colors"
                                                             title={t('ad.viewDetails')}
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -294,25 +294,25 @@ export default function FeederMasterIndexPage() {
                         </table>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
+                            {t('ad.showing')} <span class="font-semibold text-foreground">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> of <span class="font-semibold text-foreground">{totalData().toLocaleString()}</span> results
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
                                 {t('ad.previous')}
                             </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >

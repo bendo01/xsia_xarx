@@ -109,20 +109,20 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
         `/course-department/academic/student/master/student/${act.student_id}`;
 
     const linkBtn =
-        'inline-flex items-center px-2.5 py-1 rounded-xs text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors';
+        'inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors';
     const pageBtn =
-        'px-3 py-1.5 text-xs font-semibold rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer';
+        'px-3 py-1.5 text-xs font-semibold rounded-md border border-border disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
                     <div>
-                        <h1 class="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">{t('cd.aktivitasKuliahMahasiswa')}</h1>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                        <h1 class="text-2xl font-black tracking-tight text-foreground">{t('cd.aktivitasKuliahMahasiswa')}</h1>
+                        <p class="text-xs text-muted-foreground">
                             {unitName() ? t('cd.studyProgramName', { name: unitName() }) : t('cd.aktivitasSemesterMahasiswaPadaProgramStudi')}
                         </p>
                     </div>
@@ -133,7 +133,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                             value={search()}
                             onInput={(e) => handleSearchInput(e.currentTarget.value)}
                             placeholder={t('cd.cariNIMNamaMahasiswa')}
-                            class="flex-1 px-3 py-2 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                            class="flex-1 px-3 py-2 text-xs rounded-md border border-border bg-card"
                         />
                         <select
                             value={academicYearId()}
@@ -141,7 +141,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                 setAcademicYearId(e.currentTarget.value);
                                 setPage(1);
                             }}
-                            class="px-3 py-2 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                            class="px-3 py-2 text-xs rounded-md border border-border bg-card"
                         >
                             <option value="">{t('cd.semuaTahunAjaran')}</option>
                             <For each={academicYears()}>{(y) => <option value={y.id}>{y.name}</option>}</For>
@@ -152,7 +152,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                 setSortBy(e.currentTarget.value);
                                 setPage(1);
                             }}
-                            class="px-3 py-2 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900"
+                            class="px-3 py-2 text-xs rounded-md border border-border bg-card"
                         >
                             <option value="student_name-asc">{t('cd.fullNameAZ')}</option>
                             <option value="student_name-desc">{t('cd.fullNameZA')}</option>
@@ -165,7 +165,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
                     <Show
                         when={!isResolvingUnit() && !isLoading()}
                         fallback={<Loader message={t('cd.loadingStudentActivities')} color="teal" size="lg" class="py-20" />}
@@ -173,7 +173,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                         <Show
                             when={unitId()}
                             fallback={
-                                <div class="p-8 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                                <div class="p-8 text-center text-xs text-muted-foreground">
                                     {t('cd.akunAndaTidakTerhubungDenganProgram')}
                                 </div>
                             }
@@ -181,7 +181,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                             <Show
                                 when={activities().length > 0}
                                 fallback={
-                                    <div class="p-8 text-center text-xs text-neutral-500 dark:text-neutral-400">
+                                    <div class="p-8 text-center text-xs text-muted-foreground">
                                         {t('cd.tidakAdaAktivitasMahasiswaDitemukan')}
                                     </div>
                                 }
@@ -189,7 +189,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                 {/* Desktop table */}
                                 <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-xs text-left border-collapse">
-                                        <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-700">
+                                        <thead class="bg-muted/60 text-muted-foreground uppercase font-mono text-[10px] tracking-wider border-b border-border">
                                             <tr>
                                                 <th class="px-5 py-3">{t('cd.nim')}</th>
                                                 <th class="px-5 py-3">{t('cd.mahasiswa')}</th>
@@ -206,7 +206,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                                 {(act) => (
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                         <td class="px-5 py-3 font-mono text-teal-700 dark:text-teal-400">{act.student_code || '-'}</td>
-                                                        <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">
+                                                        <td class="px-5 py-3 font-medium text-foreground">
                                                             <A href={studentHref(act)} class="hover:underline">{act.student_name || '-'}</A>
                                                         </td>
                                                         <td class="px-5 py-3">{activityLabel(act)}</td>
@@ -218,7 +218,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                                             {Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}
                                                         </td>
                                                         <td class="px-5 py-3 text-center">
-                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                                 {act.status_name || '-'}
                                                             </span>
                                                         </td>
@@ -240,26 +240,26 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                                 <div class="flex items-start justify-between gap-3">
                                                     <div class="min-w-0">
                                                         <p class="text-[10px] font-mono text-teal-700 dark:text-teal-400">{act.student_code || '-'}</p>
-                                                        <A href={studentHref(act)} class="text-sm font-medium text-neutral-900 dark:text-white">
+                                                        <A href={studentHref(act)} class="text-sm font-medium text-foreground">
                                                             {act.student_name || '-'}
                                                         </A>
-                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">{activityLabel(act)}</p>
+                                                        <p class="text-xs text-muted-foreground">{activityLabel(act)}</p>
                                                     </div>
-                                                    <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 shrink-0">
+                                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 shrink-0">
                                                         {act.status_name || '-'}
                                                     </span>
                                                 </div>
                                                 <div class="grid grid-cols-3 gap-2 text-center text-xs">
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.sks')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.sks')}</p>
                                                         <p class="font-mono font-bold">{act.total_credit || 0}</p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.ips')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.ips')}</p>
                                                         <p class="font-mono font-bold text-sky-600 dark:text-sky-400">{Number(act.cumulative_index || 0).toFixed(2)}</p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.ipk')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.ipk')}</p>
                                                         <p class="font-mono font-bold text-indigo-600 dark:text-indigo-400">
                                                             {Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}
                                                         </p>
@@ -272,8 +272,8 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                 </div>
 
                                 {/* Pagination */}
-                                <div class="p-4 border-t border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row items-center justify-between gap-3 bg-neutral-50/50 dark:bg-neutral-900/30">
-                                    <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 bg-neutral-50/50 dark:bg-neutral-900/30">
+                                    <span class="text-xs text-muted-foreground font-mono">
                                         {t('cd.page')} {page()} {t('cd.of')} {totalPages()} ({totalItems()} total)
                                     </span>
                                     <div class="flex items-center gap-1.5">
@@ -284,7 +284,7 @@ export default function CourseDepartmentStudentCampaignActivityPage() {
                                                 setPageSize(Number(e.currentTarget.value));
                                                 setPage(1);
                                             }}
-                                            class="px-2.5 py-1.5 text-xs rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700"
+                                            class="px-2.5 py-1.5 text-xs rounded-md bg-card border border-border"
                                         >
                                             <For each={[10, 25, 50, 100]}>{(n) => <option value={n}>{n}</option>}</For>
                                         </select>

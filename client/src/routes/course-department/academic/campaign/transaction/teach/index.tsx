@@ -233,23 +233,23 @@ export default function CourseDepartmentTeachIndex() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Header & Breadcrumb */}
                 <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400 overflow-x-auto scrollbar-none whitespace-nowrap pb-1">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-muted-foreground overflow-x-auto scrollbar-none whitespace-nowrap pb-1">
                         <A href="/course-department" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             {tt('cd.courseDepartment')}
                         </A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">
+                        <span class="text-foreground/80 font-semibold">
                             {tt('rt.aktivitasMengajar')}
                         </span>
                     </nav>
 
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                    <div class="bg-card rounded-2xl p-5 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                         <div class="absolute -right-16 -top-16 w-64 h-64 bg-linear-to-br from-indigo-500/10 via-blue-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-5 sm:gap-6 relative z-10">
                             <div class="space-y-2">
@@ -257,10 +257,10 @@ export default function CourseDepartmentTeachIndex() {
                                     <span class="size-2 rounded-full bg-blue-500 animate-pulse" />
                                     <span>{tt('rt.academicCampaignTransaction')}</span>
                                 </div>
-                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                <h1 class="text-xl sm:text-2xl lg:text-3xl font-extrabold tracking-tight text-foreground">
                                     {tt('rt.aktivitasMengajarKelasKuliah')}
                                 </h1>
-                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
+                                <p class="text-xs sm:text-sm text-muted-foreground max-w-2xl leading-relaxed">
                                     {tt('rt.manajemenPenugasanKelasKuliahAlokasiMata')}
                                 </p>
                             </div>
@@ -273,7 +273,7 @@ export default function CourseDepartmentTeachIndex() {
                                     title={tt('rt.segarkanData')}
                                 >
                                     <svg
-                                        class={`size-4 text-neutral-600 dark:text-neutral-300 ${isLoading() ? 'animate-spin' : ''}`}
+                                        class={`size-4 text-muted-foreground ${isLoading() ? 'animate-spin' : ''}`}
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
                                         viewBox="0 0 24 24"
@@ -298,9 +298,9 @@ export default function CourseDepartmentTeachIndex() {
                 {/* KPI Metrics Cards */}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
                     {/* Card 1: Total Kelas */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
+                    <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-blue-400 dark:hover:border-blue-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.totalKelasKuliah')}</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.totalKelasKuliah')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
@@ -308,17 +308,17 @@ export default function CourseDepartmentTeachIndex() {
                             </div>
                         </div>
                         <div class="mt-3 sm:mt-4">
-                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground">
                                 {totalData()}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{tt('rt.kelasTerjadwal')}</span>
+                            <span class="text-2xs sm:text-xs text-muted-foreground block mt-0.5">{tt('rt.kelasTerjadwal')}</span>
                         </div>
                     </div>
 
                     {/* Card 2: Total Mahasiswa Terdaftar */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-700 transition-all duration-200">
+                    <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-emerald-400 dark:hover:border-emerald-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.pesertaTerdaftar')}</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.pesertaTerdaftar')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 0 0 2.625.372 9.337 9.337 0 0 0 4.121-.952 4.125 4.125 0 0 0-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 0 1 8.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0 1 11.964-3.07M12 6.375a3.375 3.375 0 1 1-6.75 0 3.375 3.375 0 0 1 6.75 0Zm8.25 2.25a2.625 2.625 0 1 1-5.25 0 2.625 2.625 0 0 1 5.25 0Z" />
@@ -326,17 +326,17 @@ export default function CourseDepartmentTeachIndex() {
                             </div>
                         </div>
                         <div class="mt-3 sm:mt-4">
-                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground font-mono">
                                 {summaryStats().totalEnrolled}
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{tt('rt.mahasiswaMengambil')}</span>
+                            <span class="text-2xs sm:text-xs text-muted-foreground block mt-0.5">{tt('rt.mahasiswaMengambil')}</span>
                         </div>
                     </div>
 
                     {/* Card 3: Rata-rata Keterisian */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-amber-400 dark:hover:border-amber-700 transition-all duration-200">
+                    <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-amber-400 dark:hover:border-amber-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.tingkatKeterisian')}</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.tingkatKeterisian')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 6a7.5 7.5 0 1 0 7.5 7.5h-7.5V6Z" />
@@ -345,17 +345,17 @@ export default function CourseDepartmentTeachIndex() {
                             </div>
                         </div>
                         <div class="mt-3 sm:mt-4">
-                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground font-mono">
                                 {summaryStats().avgCapacityRate}%
                             </span>
-                            <span class="text-2xs sm:text-xs text-neutral-500 dark:text-neutral-400 block mt-0.5">{tt('rt.dariKuotaMaksimal')}</span>
+                            <span class="text-2xs sm:text-xs text-muted-foreground block mt-0.5">{tt('rt.dariKuotaMaksimal')}</span>
                         </div>
                     </div>
 
                     {/* Card 4: Status Kunci */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-700 transition-all duration-200">
+                    <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs relative overflow-hidden group hover:border-purple-400 dark:hover:border-purple-700 transition-all duration-200">
                         <div class="flex items-center justify-between">
-                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{tt('rt.statusKunciNilai')}</span>
+                            <span class="text-2xs sm:text-xs font-semibold uppercase tracking-wider text-muted-foreground">{tt('rt.statusKunciNilai')}</span>
                             <div class="p-2 sm:p-2.5 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 border border-purple-200 dark:border-purple-800/60">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
@@ -363,7 +363,7 @@ export default function CourseDepartmentTeachIndex() {
                             </div>
                         </div>
                         <div class="mt-3 sm:mt-4 flex items-baseline gap-2">
-                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
+                            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-foreground font-mono">
                                 {summaryStats().lockedCount}
                             </span>
                             <span class="text-xs text-neutral-500 font-mono">
@@ -374,11 +374,11 @@ export default function CourseDepartmentTeachIndex() {
                 </div>
 
                 {/* Filter and Search Bar */}
-                <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         {/* Search Input */}
                         <div class="relative">
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                                 {tt('rt.cariKelasKuliah')}
                             </label>
                             <div class="relative">
@@ -387,7 +387,7 @@ export default function CourseDepartmentTeachIndex() {
                                     placeholder={tt('rt.namaKelasAtauKode')}
                                     onInput={handleSearchInput}
                                     value={searchQuery()}
-                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
+                                    class="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-muted/80 border border-border text-foreground placeholder-neutral-400 dark:placeholder-neutral-500 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all"
                                 />
                                 <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-neutral-400">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -400,7 +400,7 @@ export default function CourseDepartmentTeachIndex() {
 
                         {/* Semester / Aktivitas Select */}
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                                 {tt('rt.semesterAktivitas')}
                             </label>
                             <div class="relative">
@@ -410,10 +410,10 @@ export default function CourseDepartmentTeachIndex() {
                                         setSelectedActivityId(e.currentTarget.value);
                                         setCurrentPage(1);
                                     }}
-                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${
+                                    class={`w-full px-3.5 py-2.5 rounded-xl text-sm bg-muted/80 border text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer ${
                                         selectedActivityId()
                                             ? 'border-blue-500 dark:border-blue-400 pr-8 ring-1 ring-blue-500/20'
-                                            : 'border-neutral-300 dark:border-neutral-700'
+                                            : 'border-border'
                                     }`}
                                 >
                                     <option value="">{tt('rt.semuaAktivitas')}</option>
@@ -439,7 +439,7 @@ export default function CourseDepartmentTeachIndex() {
 
                         {/* Status Kunci Nilai Filter */}
                         <div>
-                            <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
+                            <label class="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                                 {tt('rt.statusKunciNilai')}
                             </label>
                             <select
@@ -448,7 +448,7 @@ export default function CourseDepartmentTeachIndex() {
                                     setSelectedLockStatus(e.currentTarget.value as any);
                                     setCurrentPage(1);
                                 }}
-                                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-neutral-800/80 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer"
+                                class="w-full px-3.5 py-2.5 rounded-xl text-sm bg-muted/80 border border-border text-foreground focus:outline-hidden focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500 transition-all cursor-pointer"
                             >
                                 <option value="all">{tt('rt.semuaStatus')}</option>
                                 <option value="unlocked">{tt('rt.terbukaDapatDiinput')}</option>
@@ -459,8 +459,8 @@ export default function CourseDepartmentTeachIndex() {
 
                     {/* Active Filter Tags */}
                     <Show when={searchQuery() || selectedActivityId() || selectedLockStatus() !== 'all'}>
-                        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-neutral-200 dark:border-neutral-800 text-xs">
-                            <span class="text-neutral-500 dark:text-neutral-400 font-medium">{tt('rt.filterAktif')}</span>
+                        <div class="flex flex-wrap items-center gap-2 pt-2 border-t border-border text-xs">
+                            <span class="text-muted-foreground font-medium">{tt('rt.filterAktif')}</span>
                             <Show when={searchQuery()}>
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                     {tt('rt.pencarian')}{searchQuery()}"
@@ -474,7 +474,7 @@ export default function CourseDepartmentTeachIndex() {
                                 </span>
                             </Show>
                             <Show when={selectedLockStatus() !== 'all'}>
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 border border-neutral-300 dark:border-neutral-700">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-secondary text-foreground/80 border border-border">
                                     {tt('rt.status2')} {selectedLockStatus() === 'locked' ? tt('rt.terkunci') : tt('rt.terbuka')}
                                     <button onClick={() => setSelectedLockStatus('all')} class="hover:text-red-500 ml-0.5 cursor-pointer">×</button>
                                 </span>
@@ -495,11 +495,11 @@ export default function CourseDepartmentTeachIndex() {
                 </div>
 
                 {/* Data Table Container */}
-                <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden">
                     {/* Desktop Table View */}
                     <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-left text-sm">
-                            <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-neutral-200 dark:border-neutral-800 text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                            <thead class="bg-neutral-50/80 dark:bg-neutral-800/50 border-b border-border text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                                 <tr>
                                     <th class="px-6 py-4">{tt('rt.kelasMataKuliah')}</th>
                                     <th class="px-6 py-4">{tt('rt.programStudiSemester')}</th>
@@ -517,7 +517,7 @@ export default function CourseDepartmentTeachIndex() {
                                             <td colspan="6" class="px-6 py-16 text-center">
                                                 <div class="flex flex-col items-center justify-center gap-3">
                                                     <Spinner size="lg" color="blue" aria-hidden={true} />
-                                                    <span class="text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+                                                    <span class="text-sm text-muted-foreground font-medium">
                                                         {tt('rt.memuatDataKelasMengajar')}
                                                     </span>
                                                 </div>
@@ -531,15 +531,15 @@ export default function CourseDepartmentTeachIndex() {
                                             <tr>
                                                 <td colspan="6" class="px-6 py-16 text-center">
                                                     <div class="max-w-sm mx-auto flex flex-col items-center">
-                                                        <div class="size-14 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
+                                                        <div class="size-14 rounded-2xl bg-secondary flex items-center justify-center text-neutral-400 mb-3 shadow-inner">
                                                             <svg class="size-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                                             </svg>
                                                         </div>
-                                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-1">
+                                                        <h3 class="text-base font-bold text-foreground mb-1">
                                                             {tt('rt.tidakAdaKelasMengajarDitemukan')}
                                                         </h3>
-                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-4">
+                                                        <p class="text-xs text-muted-foreground mb-4">
                                                             {tt('rt.tidakAdaDataPenugasanKelasYang')}
                                                         </p>
                                                         <Show when={searchQuery() || selectedActivityId() || selectedLockStatus() !== 'all'}>
@@ -580,18 +580,18 @@ export default function CourseDepartmentTeachIndex() {
                                                                 <div class="space-y-0.5">
                                                                     <A
                                                                         href={`/course-department/academic/campaign/transaction/teach/${item.id}`}
-                                                                        class="font-semibold text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors block text-sm"
+                                                                        class="font-semibold text-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors block text-sm"
                                                                     >
                                                                         {item.name || course?.name || 'Kelas Perkuliahan'}
                                                                     </A>
-                                                                    <div class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
-                                                                        <span class="font-mono text-neutral-700 dark:text-neutral-300 font-medium">
+                                                                    <div class="flex items-center gap-2 text-xs text-muted-foreground">
+                                                                        <span class="font-mono text-foreground/80 font-medium">
                                                                             {course?.code || 'KODE-MK'}
                                                                         </span>
                                                                         <span>•</span>
                                                                         <span>{course?.name || 'Mata Kuliah'}</span>
                                                                         <Show when={course?.total_credit}>
-                                                                            <span class="px-1.5 py-0.5 rounded text-2xs bg-neutral-100 dark:bg-neutral-800 font-mono">
+                                                                            <span class="px-1.5 py-0.5 rounded text-2xs bg-secondary font-mono">
                                                                                 {course?.total_credit} SKS
                                                                             </span>
                                                                         </Show>
@@ -603,10 +603,10 @@ export default function CourseDepartmentTeachIndex() {
                                                         {/* Unit & Semester */}
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-1">
-                                                                <div class="text-xs font-semibold text-neutral-800 dark:text-neutral-200">
+                                                                <div class="text-xs font-semibold text-foreground">
                                                                     {unit?.name || 'Program Studi Terdaftar'}
                                                                 </div>
-                                                                <div class="text-2xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1.5 font-mono">
+                                                                <div class="text-2xs text-muted-foreground flex items-center gap-1.5 font-mono">
                                                                     <svg class="size-3 text-neutral-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                                                                     </svg>
@@ -619,14 +619,14 @@ export default function CourseDepartmentTeachIndex() {
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-1.5 w-36">
                                                                 <div class="flex items-center justify-between text-xs font-mono">
-                                                                    <span class="font-bold text-neutral-900 dark:text-white">
+                                                                    <span class="font-bold text-foreground">
                                                                         {enrolled} <span class="text-neutral-400 font-normal">/</span> {maxCapacity}
                                                                     </span>
                                                                     <span class="text-2xs font-semibold text-neutral-500">
                                                                         {fillPercentage}%
                                                                     </span>
                                                                 </div>
-                                                                <div class="w-full h-1.5 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                                                                <div class="w-full h-1.5 bg-secondary rounded-full overflow-hidden">
                                                                     <div
                                                                         class={`h-full rounded-full transition-all duration-300 ${
                                                                             fillPercentage >= 90
@@ -652,7 +652,7 @@ export default function CourseDepartmentTeachIndex() {
                                                                     </span>
                                                                 }
                                                             >
-                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-secondary text-muted-foreground border border-border">
                                                                     <svg class="size-3 text-neutral-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" />
                                                                     </svg>
@@ -668,10 +668,10 @@ export default function CourseDepartmentTeachIndex() {
                                                                     when={item.start_date || item.end_date}
                                                                     fallback={<span class="text-neutral-400">{tt('rt.jadwalReguler')}</span>}
                                                                 >
-                                                                    <div class="text-neutral-800 dark:text-neutral-200">
+                                                                    <div class="text-foreground">
                                                                         {formatDate(item.start_date)}
                                                                     </div>
-                                                                    <div class="text-neutral-500 dark:text-neutral-400 text-2xs">
+                                                                    <div class="text-muted-foreground text-2xs">
                                                                         s/d {item.end_date ? formatDate(item.end_date) : tt('rt.selesai2')}
                                                                     </div>
                                                                 </Show>
@@ -684,7 +684,7 @@ export default function CourseDepartmentTeachIndex() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => setSelectedItemForModal(item)}
-                                                                    class="p-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-300 transition-colors cursor-pointer"
+                                                                    class="p-2 rounded-lg bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-muted-foreground transition-colors cursor-pointer"
                                                                     title={tt('rt.pratinjauCepat')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -721,7 +721,7 @@ export default function CourseDepartmentTeachIndex() {
                                 <div class="p-8 text-center">
                                     <div class="flex flex-col items-center justify-center gap-3">
                                         <Spinner size="lg" color="blue" aria-hidden={true} />
-                                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                                        <span class="text-xs text-muted-foreground font-medium">
                                             {tt('rt.memuatDataKelasMengajar')}
                                         </span>
                                     </div>
@@ -733,15 +733,15 @@ export default function CourseDepartmentTeachIndex() {
                                 fallback={
                                     <div class="p-8 text-center">
                                         <div class="max-w-xs mx-auto flex flex-col items-center">
-                                            <div class="size-12 rounded-2xl bg-neutral-100 dark:bg-neutral-800 flex items-center justify-center text-neutral-400 mb-2.5">
+                                            <div class="size-12 rounded-2xl bg-secondary flex items-center justify-center text-neutral-400 mb-2.5">
                                                 <svg class="size-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                                 </svg>
                                             </div>
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white mb-1">
+                                            <h3 class="text-sm font-bold text-foreground mb-1">
                                                 {tt('rt.tidakAdaKelasDitemukan')}
                                             </h3>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mb-3">
+                                            <p class="text-xs text-muted-foreground mb-3">
                                                 {tt('rt.tidakAdaRekamanDataSesuaiFilter')}
                                             </p>
                                             <Show when={searchQuery() || selectedActivityId() || selectedLockStatus() !== 'all'}>
@@ -781,12 +781,12 @@ export default function CourseDepartmentTeachIndex() {
                                                         <div class="min-w-0">
                                                             <A
                                                                 href={`/course-department/academic/campaign/transaction/teach/${item.id}`}
-                                                                class="font-bold text-sm text-neutral-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-1"
+                                                                class="font-bold text-sm text-foreground hover:text-blue-600 dark:hover:text-blue-400 transition-colors line-clamp-1"
                                                             >
                                                                 {item.name || course?.name || 'Kelas Perkuliahan'}
                                                             </A>
-                                                            <div class="flex items-center gap-1.5 text-2xs text-neutral-500 dark:text-neutral-400 mt-0.5">
-                                                                <span class="font-mono font-semibold text-neutral-700 dark:text-neutral-300">
+                                                            <div class="flex items-center gap-1.5 text-2xs text-muted-foreground mt-0.5">
+                                                                <span class="font-mono font-semibold text-foreground/80">
                                                                     {course?.code || 'KODE-MK'}
                                                                 </span>
                                                                 <span>•</span>
@@ -807,7 +807,7 @@ export default function CourseDepartmentTeachIndex() {
                                                                 </span>
                                                             }
                                                         >
-                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-700">
+                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-2xs font-semibold bg-secondary text-muted-foreground border border-border">
                                                                 {tt('rt.terkunci')}
                                                             </span>
                                                         </Show>
@@ -816,15 +816,15 @@ export default function CourseDepartmentTeachIndex() {
 
                                                 {/* Unit & Semester Metadata */}
                                                 <div class="grid grid-cols-2 gap-2 text-xs">
-                                                    <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800/80 space-y-0.5">
+                                                    <div class="p-2.5 rounded-xl bg-muted/40 border border-border/80 space-y-0.5">
                                                         <span class="text-2xs text-neutral-400 uppercase tracking-wider block font-semibold">{tt('rt.programStudi')}</span>
-                                                        <p class="font-medium text-neutral-800 dark:text-neutral-200 truncate">
+                                                        <p class="font-medium text-foreground truncate">
                                                             {unit?.name || 'Program Studi Terdaftar'}
                                                         </p>
                                                     </div>
-                                                    <div class="p-2.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/40 border border-neutral-100 dark:border-neutral-800/80 space-y-0.5">
+                                                    <div class="p-2.5 rounded-xl bg-muted/40 border border-border/80 space-y-0.5">
                                                         <span class="text-2xs text-neutral-400 uppercase tracking-wider block font-semibold">{tt('rt.semesterAktivitas')}</span>
-                                                        <p class="font-mono text-neutral-800 dark:text-neutral-200 truncate">
+                                                        <p class="font-mono text-foreground truncate">
                                                             {activity?.name || 'Semester Aktif'}
                                                         </p>
                                                     </div>
@@ -834,7 +834,7 @@ export default function CourseDepartmentTeachIndex() {
                                                 <div class="space-y-1.5">
                                                     <div class="flex items-center justify-between text-xs font-mono">
                                                         <span class="text-neutral-500 text-2xs uppercase tracking-wider">{tt('rt.kapasitasMahasiswa2')}</span>
-                                                        <span class="font-bold text-neutral-900 dark:text-white">
+                                                        <span class="font-bold text-foreground">
                                                             {enrolled} / {maxCapacity} ({fillPercentage}%)
                                                         </span>
                                                     </div>
@@ -884,8 +884,8 @@ export default function CourseDepartmentTeachIndex() {
                     </div>
 
                     {/* Pagination Controls */}
-                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/60 dark:bg-neutral-800/40 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
-                        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3 text-xs text-neutral-500 dark:text-neutral-400 w-full sm:w-auto">
+                    <div class="px-4 sm:px-6 py-3.5 sm:py-4 bg-neutral-50/60 dark:bg-neutral-800/40 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4">
+                        <div class="flex flex-wrap items-center justify-between sm:justify-start gap-3 text-xs text-muted-foreground w-full sm:w-auto">
                             <div class="flex items-center gap-1.5">
                                 <span>{tt('rt.perHal')}</span>
                                 <select
@@ -894,7 +894,7 @@ export default function CourseDepartmentTeachIndex() {
                                         setItemsPerPage(Number(e.currentTarget.value));
                                         setCurrentPage(1);
                                     }}
-                                    class="px-2 py-1 rounded-lg bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-xs font-medium cursor-pointer"
+                                    class="px-2 py-1 rounded-lg bg-card border border-border text-xs font-medium cursor-pointer"
                                 >
                                     <option value="10">10</option>
                                     <option value="25">25</option>
@@ -912,7 +912,7 @@ export default function CourseDepartmentTeachIndex() {
                                 type="button"
                                 disabled={currentPage() <= 1}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                                class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                                class="p-2 rounded-xl bg-card border border-border text-foreground/80 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                                 title={tt('rt.halamanSebelumnya')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -920,7 +920,7 @@ export default function CourseDepartmentTeachIndex() {
                                 </svg>
                             </button>
 
-                            <span class="text-xs font-mono font-medium px-3 py-1 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700">
+                            <span class="text-xs font-mono font-medium px-3 py-1 bg-card rounded-xl border border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
 
@@ -928,7 +928,7 @@ export default function CourseDepartmentTeachIndex() {
                                 type="button"
                                 disabled={currentPage() >= totalPages()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
-                                class="p-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                                class="p-2 rounded-xl bg-card border border-border text-foreground/80 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                                 title={tt('rt.halamanSelanjutnya')}
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -952,14 +952,14 @@ export default function CourseDepartmentTeachIndex() {
 
                     return (
                         <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl max-w-lg w-full border border-neutral-200 dark:border-neutral-800 shadow-2xl overflow-y-auto max-h-[90vh] p-5 sm:p-6 space-y-5 sm:space-y-6">
-                                <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                            <div class="bg-card rounded-2xl max-w-lg w-full border border-border shadow-2xl overflow-y-auto max-h-[90vh] p-5 sm:p-6 space-y-5 sm:space-y-6">
+                                <div class="flex items-center justify-between border-b border-border pb-4">
                                     <div class="flex items-center gap-3">
                                         <div class="size-11 rounded-xl bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 flex items-center justify-center font-bold text-base text-blue-700 dark:text-blue-300">
                                             {classCode?.alphabet_code || 'KL'}
                                         </div>
                                         <div>
-                                            <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                            <h3 class="text-base font-bold text-foreground">
                                                 {item().name || course?.name || 'Detail Kelas Kuliah'}
                                             </h3>
                                             <p class="text-xs text-neutral-500 font-mono">
@@ -977,48 +977,48 @@ export default function CourseDepartmentTeachIndex() {
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 text-xs">
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.programStudi')}</span>
-                                        <p class="font-semibold text-neutral-800 dark:text-neutral-200">
+                                        <p class="font-semibold text-foreground">
                                             {unit?.name || 'Tidak tercatat'}
                                         </p>
                                     </div>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.bobotSKS')}</span>
                                         <p class="font-bold text-blue-600 dark:text-blue-400 font-mono">
                                             {course?.total_credit ? `${course.total_credit} SKS` : tt('rt.tidakTercatat')}
                                         </p>
                                     </div>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.mahasiswaTerdaftar')}</span>
                                         <p class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">
                                             {enrolled} / {maxCapacity} Mahasiswa
                                         </p>
                                     </div>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.statusKunciNilai')}</span>
-                                        <p class="font-semibold text-neutral-800 dark:text-neutral-200">
+                                        <p class="font-semibold text-foreground">
                                             {item().is_lock ? tt('rt.terkunciFinal') : tt('rt.terbukaInputAktif')}
                                         </p>
                                     </div>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.mulaiKuliah')}</span>
-                                        <p class="font-mono text-neutral-800 dark:text-neutral-200">
+                                        <p class="font-mono text-foreground">
                                             {formatDate(item().start_date)}
                                         </p>
                                     </div>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.akhirKuliah')}</span>
-                                        <p class="font-mono text-neutral-800 dark:text-neutral-200">
+                                        <p class="font-mono text-foreground">
                                             {formatDate(item().end_date)}
                                         </p>
                                     </div>
                                 </div>
 
                                 <Show when={item().description}>
-                                    <div class="p-3 rounded-xl bg-neutral-50 dark:bg-neutral-800/50 space-y-1 text-xs">
+                                    <div class="p-3 rounded-xl bg-muted/50 space-y-1 text-xs">
                                         <span class="text-neutral-500 text-2xs uppercase">{tt('rt.deskripsiCatatan')}</span>
-                                        <p class="text-neutral-700 dark:text-neutral-300 leading-relaxed">
+                                        <p class="text-foreground/80 leading-relaxed">
                                             {item().description}
                                         </p>
                                     </div>
@@ -1028,7 +1028,7 @@ export default function CourseDepartmentTeachIndex() {
                                     <button
                                         type="button"
                                         onClick={() => setSelectedItemForModal(null)}
-                                        class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-center cursor-pointer transition-colors"
+                                        class="w-full sm:w-auto px-4 py-2.5 sm:py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-foreground/80 text-center cursor-pointer transition-colors"
                                     >
                                         {tt('rt.tutup')}
                                     </button>

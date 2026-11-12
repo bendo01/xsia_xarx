@@ -146,18 +146,18 @@ const getFaqs = (): { question: string; answer: string }[] => [
 function SectionHeading(props: { number: string; title: string; subtitle: string }) {
     return (
         <div class="mb-6">
-            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
+            <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
                 {t('au.bagian')} {props.number}
             </div>
-            <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-wide mb-1">{props.title}</h2>
-            <p class="text-sm text-neutral-500 dark:text-neutral-400 leading-relaxed max-w-3xl">{props.subtitle}</p>
+            <h2 class="text-xl sm:text-2xl font-bold text-foreground tracking-wide mb-1">{props.title}</h2>
+            <p class="text-sm text-muted-foreground leading-relaxed max-w-3xl">{props.subtitle}</p>
         </div>
     );
 }
 
 function Card(props: { children: JSX.Element; class?: string }) {
     return (
-        <div class={`bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-neutral-200 dark:border-slate-800 rounded-xs p-6 sm:p-8 shadow-xl ${props.class ?? ''}`}>
+        <div class={`bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-neutral-200 dark:border-slate-800 rounded-md p-6 sm:p-8 shadow-xl ${props.class ?? ''}`}>
             {props.children}
         </div>
     );
@@ -171,7 +171,7 @@ export default function CandidateAdmissionProcedure() {
     });
 
     return (
-        <div class="min-h-screen flex flex-col bg-neutral-50 dark:bg-[#0A0F1D] text-neutral-800 dark:text-neutral-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+        <div class="min-h-screen flex flex-col bg-neutral-50 dark:bg-[#0A0F1D] text-foreground selection:bg-emerald-500/30 selection:text-emerald-200">
             <TopBar />
 
             <main class="flex-1 relative overflow-hidden">
@@ -194,16 +194,16 @@ export default function CandidateAdmissionProcedure() {
                             <span class="size-2 rounded-full bg-amber-400 animate-pulse"></span>
                             <span>{t('au.penerimaanMahasiswaBaruPanduanPendaftaran')}</span>
                         </div>
-                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 dark:text-white max-w-3xl leading-tight mb-4">
+                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground max-w-3xl leading-tight mb-4">
                             {t('au.persiapanDokumenDanCaraMengisiFormulir')}
                         </h1>
-                        <p class="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl leading-relaxed mb-8">
+                        <p class="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed mb-8">
                             {t('au.pendaftaranCalonMahasiswaBaruDilakukanSepenuhnya')}
                         </p>
                         <div class="flex flex-wrap items-center justify-center gap-3">
                             <A
                                 href="/authentification/candidate-addmission-form"
-                                class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5"
+                                class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:-translate-y-0.5"
                             >
                                 <span>{t('au.isiFormulirPendaftaran')}</span>
                                 <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -213,7 +213,7 @@ export default function CandidateAdmissionProcedure() {
                             </A>
                             <A
                                 href="/authentification/login_with_session"
-                                class="inline-flex items-center gap-2 px-5 py-3.5 rounded-xs bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-neutral-300 dark:border-slate-700 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all"
+                                class="inline-flex items-center gap-2 px-5 py-3.5 rounded-md bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-neutral-300 dark:border-slate-700 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all"
                             >
                                 {t('au.sudahMendaftarMasuk')}
                             </A>
@@ -222,12 +222,12 @@ export default function CandidateAdmissionProcedure() {
 
                     {/* Overview */}
                     <Card>
-                        <h2 class="text-lg font-bold text-neutral-900 dark:text-white mb-4">{t('au.alurPendaftaranSecaraSingkat')}</h2>
+                        <h2 class="text-lg font-bold text-foreground mb-4">{t('au.alurPendaftaranSecaraSingkat')}</h2>
                         <ol class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             <For each={[t('au.siapkanDokumenDanData'), t('au.isiFormulirPendaftaranAkun'), t('au.lengkapiDataDiDasborCalonMahasiswa'), t('au.tungguVerifikasiPanitiaPMB')]}>
                                 {(item, index) => (
-                                    <li class="p-4 rounded-xs bg-neutral-100/80 dark:bg-slate-950/40 border border-neutral-200 dark:border-slate-800/60 flex items-start gap-3">
-                                        <span class="size-6 shrink-0 rounded-xs bg-emerald-600 text-white text-xs font-bold font-mono flex items-center justify-center">
+                                    <li class="p-4 rounded-md bg-neutral-100/80 dark:bg-slate-950/40 border border-neutral-200 dark:border-slate-800/60 flex items-start gap-3">
+                                        <span class="size-6 shrink-0 rounded-md bg-emerald-600 text-white text-xs font-bold font-mono flex items-center justify-center">
                                             {index() + 1}
                                         </span>
                                         <span class="text-sm text-neutral-700 dark:text-neutral-200 leading-snug">{item}</span>
@@ -247,14 +247,14 @@ export default function CandidateAdmissionProcedure() {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <For each={getDocuments()}>
                                 {(doc) => (
-                                    <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5 space-y-3">
+                                    <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-md p-5 space-y-3">
                                         <div class="flex items-start justify-between gap-3">
-                                            <h3 class="text-base font-bold text-neutral-900 dark:text-white">{doc.name}</h3>
-                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap">{t('au.wajib')}</span>
+                                            <h3 class="text-base font-bold text-foreground">{doc.name}</h3>
+                                            <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30 whitespace-nowrap">{t('au.wajib')}</span>
                                         </div>
-                                        <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">{doc.description}</p>
+                                        <p class="text-sm text-muted-foreground leading-relaxed">{doc.description}</p>
                                         <p class="text-xs font-mono text-emerald-700 dark:text-emerald-300">{doc.format}</p>
-                                        <ul class="space-y-1.5 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                                        <ul class="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
                                             <For each={doc.tips}>
                                                 {(tip) => (
                                                     <li class="flex items-start gap-2">
@@ -270,8 +270,8 @@ export default function CandidateAdmissionProcedure() {
                         </div>
 
                         <Card class="mt-4">
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white mb-3">{t('au.dataYangPerluDisiapkan')}</h3>
-                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-neutral-600 dark:text-neutral-300">
+                            <h3 class="text-base font-bold text-foreground mb-3">{t('au.dataYangPerluDisiapkan')}</h3>
+                            <ul class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-muted-foreground">
                                 <For each={getDataChecklist()}>
                                     {(item) => (
                                         <li class="flex items-start gap-2">
@@ -283,7 +283,7 @@ export default function CandidateAdmissionProcedure() {
                                     )}
                                 </For>
                             </ul>
-                            <p class="mt-4 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                            <p class="mt-4 text-xs text-muted-foreground leading-relaxed">
                                 {t('au.formatFileYangDiterimaAdalahJPG')}
                             </p>
                         </Card>
@@ -300,7 +300,7 @@ export default function CandidateAdmissionProcedure() {
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left text-sm">
                                     <thead>
-                                        <tr class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-slate-800">
+                                        <tr class="text-xs font-mono uppercase tracking-wider text-muted-foreground border-b border-neutral-200 dark:border-slate-800">
                                             <th class="py-2 pr-4 font-semibold">{t('au.kolom')}</th>
                                             <th class="py-2 pr-4 font-semibold">{t('au.keterangan')}</th>
                                             <th class="py-2 font-semibold">{t('au.status')}</th>
@@ -310,14 +310,14 @@ export default function CandidateAdmissionProcedure() {
                                         <For each={getFormFields()}>
                                             {(field) => (
                                                 <tr class="border-b border-neutral-200 dark:border-slate-800/60 align-top">
-                                                    <td class="py-3 pr-4 font-semibold text-neutral-900 dark:text-white whitespace-nowrap">{field.label}</td>
-                                                    <td class="py-3 pr-4 text-neutral-600 dark:text-neutral-300 leading-relaxed">{field.description}</td>
+                                                    <td class="py-3 pr-4 font-semibold text-foreground whitespace-nowrap">{field.label}</td>
+                                                    <td class="py-3 pr-4 text-muted-foreground leading-relaxed">{field.description}</td>
                                                     <td class="py-3">
                                                         <span
-                                                            class="text-[10px] font-bold px-2 py-0.5 rounded-xs border whitespace-nowrap"
+                                                            class="text-[10px] font-bold px-2 py-0.5 rounded-md border whitespace-nowrap"
                                                             classList={{
                                                                 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30': field.required,
-                                                                'bg-neutral-200/60 dark:bg-slate-700/40 text-neutral-600 dark:text-neutral-300 border-neutral-400 dark:border-slate-600': !field.required,
+                                                                'bg-neutral-200/60 dark:bg-slate-700/40 text-muted-foreground border-neutral-400 dark:border-slate-600': !field.required,
                                                             }}
                                                         >
                                                             {field.required ? t('au.wajib') : t('au.opsional')}
@@ -329,7 +329,7 @@ export default function CandidateAdmissionProcedure() {
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="mt-5 p-3 bg-neutral-100/80 dark:bg-slate-950/60 border border-neutral-200 dark:border-slate-800/80 rounded-xs flex items-start gap-2.5 text-xs text-neutral-600 dark:text-neutral-300">
+                            <div class="mt-5 p-3 bg-neutral-100/80 dark:bg-slate-950/60 border border-neutral-200 dark:border-slate-800/80 rounded-md flex items-start gap-2.5 text-xs text-muted-foreground">
                                 <svg class="size-4 shrink-0 text-amber-700 dark:text-amber-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <circle cx="12" cy="12" r="10" />
                                     <line x1="12" y1="16" x2="12" y2="12" />
@@ -337,7 +337,7 @@ export default function CandidateAdmissionProcedure() {
                                 </svg>
                                 <span class="leading-relaxed">
                                     {t('au.satuNIKDanSatuEmailHanya')}
-                                    <strong class="text-neutral-900 dark:text-white"> {t('au.daftarSekarang')}</strong>{t('au.karenaDataDiriMenjadiDasarPenerbitan')}
+                                    <strong class="text-foreground"> {t('au.daftarSekarang')}</strong>{t('au.karenaDataDiriMenjadiDasarPenerbitan')}
                                 </span>
                             </div>
                         </Card>
@@ -353,15 +353,15 @@ export default function CandidateAdmissionProcedure() {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <For each={getDashboardSteps()}>
                                 {(step, index) => (
-                                    <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5 space-y-3">
+                                    <div class="bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-md p-5 space-y-3">
                                         <div class="flex items-center gap-3">
-                                            <span class="size-7 shrink-0 rounded-xs bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 text-neutral-900 dark:text-white text-xs font-bold font-mono flex items-center justify-center">
+                                            <span class="size-7 shrink-0 rounded-md bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 text-foreground text-xs font-bold font-mono flex items-center justify-center">
                                                 {index() + 1}
                                             </span>
-                                            <h3 class="text-base font-bold text-neutral-900 dark:text-white">{step.title}</h3>
+                                            <h3 class="text-base font-bold text-foreground">{step.title}</h3>
                                         </div>
-                                        <p class="text-sm text-neutral-600 dark:text-neutral-300">{step.description}</p>
-                                        <ul class="space-y-1.5 text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                                        <p class="text-sm text-muted-foreground">{step.description}</p>
+                                        <ul class="space-y-1.5 text-xs text-muted-foreground leading-relaxed">
                                             <For each={step.points}>
                                                 {(point) => (
                                                     <li class="flex items-start gap-2">
@@ -387,14 +387,14 @@ export default function CandidateAdmissionProcedure() {
                         <div class="space-y-3">
                             <For each={getFaqs()}>
                                 {(faq) => (
-                                    <details class="group bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-xs p-5">
-                                        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-4 text-sm font-semibold text-neutral-900 dark:text-white">
+                                    <details class="group bg-white/80 dark:bg-slate-900/60 border border-neutral-200 dark:border-slate-800 rounded-md p-5">
+                                        <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer flex items-center justify-between gap-4 text-sm font-semibold text-foreground">
                                             <span>{faq.question}</span>
-                                            <svg class="size-4 shrink-0 text-neutral-500 dark:text-neutral-400 transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <svg class="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="m6 9 6 6 6-6" />
                                             </svg>
                                         </summary>
-                                        <p class="mt-3 text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">{faq.answer}</p>
+                                        <p class="mt-3 text-sm text-muted-foreground leading-relaxed">{faq.answer}</p>
                                     </details>
                                 )}
                             </For>
@@ -402,14 +402,14 @@ export default function CandidateAdmissionProcedure() {
                     </section>
 
                     {/* Closing CTA */}
-                    <section class="bg-linear-to-r from-emerald-50 dark:from-emerald-950/40 via-white/60 dark:via-slate-900/60 to-blue-50 dark:to-blue-950/40 border border-emerald-500/20 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <section class="bg-linear-to-r from-emerald-50 dark:from-emerald-950/40 via-white/60 dark:via-slate-900/60 to-blue-50 dark:to-blue-950/40 border border-emerald-500/20 rounded-md p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div>
-                            <h2 class="text-xl font-bold text-neutral-900 dark:text-white mb-1">{t('au.dokumenAndaSudahSiap')}</h2>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-300">{t('au.mulaiPendaftaranSekarangProsesPengisianFormulir')}</p>
+                            <h2 class="text-xl font-bold text-foreground mb-1">{t('au.dokumenAndaSudahSiap')}</h2>
+                            <p class="text-sm text-muted-foreground">{t('au.mulaiPendaftaranSekarangProsesPengisianFormulir')}</p>
                         </div>
                         <A
                             href="/authentification/candidate-addmission-form"
-                            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shrink-0 transition-colors"
+                            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold shrink-0 transition-colors"
                         >
                             {t('au.daftarSekarang')}
                         </A>

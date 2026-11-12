@@ -17,7 +17,7 @@ export default function App() {
         });
 
         return (
-          <main class="min-h-screen max-w-screen bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-100">
+          <main class="min-h-screen max-w-screen bg-background text-foreground antialiased">
             <Toaster position="top-left" />
             <RouteGuard>
               <Suspense>{props.children}</Suspense>

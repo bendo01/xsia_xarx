@@ -64,8 +64,8 @@ export default function CampaignTransactionNavBar(props: CampaignTransactionNavB
                         href={tab.href()}
                         class={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
                             isActive
-                                ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs border border-neutral-200/60 dark:border-neutral-700/80'
-                                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-neutral-800/60'
+                                ? 'bg-card text-blue-600 dark:text-blue-400 shadow-xs border border-border/60'
+                                : 'text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-neutral-800/60'
                         }`}
                     >
                         <span class={isActive ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-400 dark:text-neutral-500'}>

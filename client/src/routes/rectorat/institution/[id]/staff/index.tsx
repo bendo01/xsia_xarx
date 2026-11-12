@@ -152,20 +152,20 @@ export default function RectoratStaffIndex() {
     const endIndex = () => Math.min(startIndex() + pagedItems().length, filteredItems().length);
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Page Header */}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div class="space-y-1">
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.staf')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.staf')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-teal-200 dark:border-teal-800/50">
                             <span class="relative flex size-2">
@@ -174,7 +174,7 @@ export default function RectoratStaffIndex() {
                             </span>
                             {t('rt.masterData')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-teal-600 dark:text-teal-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
@@ -182,16 +182,16 @@ export default function RectoratStaffIndex() {
                             </span>
                             {t('rt.daftarStaf')}
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
+                        <p class="text-sm text-muted-foreground max-w-2xl">
                             {t('rt.seluruhDataKepegawaianStafYangTerdaftar')}
                         </p>
                     </div>
 
                     {/* Summary Stats */}
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-[80px]">
-                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{allStaff().length}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm min-w-[80px]">
+                            <p class="text-2xl font-black text-foreground">{allStaff().length}</p>
+                            <p class="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-800/50 shadow-sm min-w-[80px]">
                             <p class="text-2xl font-black text-teal-700 dark:text-teal-400">{activeCount()}</p>
@@ -224,11 +224,11 @@ export default function RectoratStaffIndex() {
                         </div>
 
                         {/* Status Filter */}
-                        <div class="flex items-center gap-1 p-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm shrink-0">
+                        <div class="flex items-center gap-1 p-1 bg-card border border-border rounded-lg shadow-sm shrink-0">
                             <button
                                 type="button"
                                 id="staff-filter-all"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'all' ? 'bg-teal-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'all' ? 'bg-teal-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('all'); setCurrentPage(1); }}
                             >
                                 {t('rt.semua')}
@@ -236,7 +236,7 @@ export default function RectoratStaffIndex() {
                             <button
                                 type="button"
                                 id="staff-filter-active"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'active' ? 'bg-teal-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'active' ? 'bg-teal-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('active'); setCurrentPage(1); }}
                             >
                                 {t('rt.aktif')}
@@ -244,7 +244,7 @@ export default function RectoratStaffIndex() {
                             <button
                                 type="button"
                                 id="staff-filter-inactive"
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'inactive' ? 'bg-amber-600 text-white shadow-sm' : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === 'inactive' ? 'bg-amber-600 text-white shadow-sm' : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'}`}
                                 onClick={() => { setFilterStatus('inactive'); setCurrentPage(1); }}
                             >
                                 {t('rt.selesai2')}
@@ -263,7 +263,7 @@ export default function RectoratStaffIndex() {
                             </svg>
                             {t('rt.tambahStaf')}
                         </A>
-                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.baris')}</label>
+                        <label class="text-xs text-muted-foreground font-medium">{t('rt.baris')}</label>
                         <select
                             id="staff-rows-per-page"
                             class="p-2.5 text-sm text-neutral-900 border border-neutral-200 rounded-lg bg-white focus:ring-teal-500 focus:border-teal-500 dark:bg-neutral-900 dark:border-neutral-800 dark:text-white transition-colors shadow-sm"
@@ -282,10 +282,10 @@ export default function RectoratStaffIndex() {
                 </div>
 
                 {/* Data Table */}
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
+                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4">{t('rt.kode')}</th>
                                     <th class="px-6 py-4">{t('rt.namaStafPegawai')}</th>
@@ -328,13 +328,13 @@ export default function RectoratStaffIndex() {
                                         fallback={
                                             <tr>
                                                 <td colspan="7" class="px-6 py-16 text-center">
-                                                    <div class="flex flex-col items-center justify-center gap-3 text-neutral-500 dark:text-neutral-400">
+                                                    <div class="flex flex-col items-center justify-center gap-3 text-muted-foreground">
                                                         <div class="p-4 rounded-full bg-teal-50 dark:bg-teal-900/20 text-teal-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                                 <path d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v.894m7.5 0a48.667 48.667 0 0 0-7.5 0M12 12.75h.008v.008H12v-.008Z" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaDataStafDitemukan')}</span>
+                                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataStafDitemukan')}</span>
                                                         <span class="text-sm">{t('rt.silakanUbahKataKunciAtauFilter')}</span>
                                                     </div>
                                                 </td>
@@ -344,7 +344,7 @@ export default function RectoratStaffIndex() {
                                         <For each={pagedItems()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors group">
-                                                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                                                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-muted-foreground">
                                                         {item.code || '-'}
                                                     </td>
                                                     <td class="px-6 py-4">
@@ -353,11 +353,11 @@ export default function RectoratStaffIndex() {
                                                                 {initials(item)}
                                                             </div>
                                                             <div class="min-w-0">
-                                                                <p class="font-semibold text-neutral-900 dark:text-white truncate leading-tight">
+                                                                <p class="font-semibold text-foreground truncate leading-tight">
                                                                     {item.name || displayPersonName(item)}
                                                                 </p>
                                                                 <Show when={item.name && displayPersonName(item) !== item.name}>
-                                                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate mt-0.5">
+                                                                    <p class="text-xs text-muted-foreground truncate mt-0.5">
                                                                         {displayPersonName(item)}
                                                                     </p>
                                                                 </Show>
@@ -369,13 +369,13 @@ export default function RectoratStaffIndex() {
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
                                                         <Show when={item.decree_number} fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}>
-                                                            <span class="text-xs font-mono text-neutral-700 dark:text-neutral-300">{item.decree_number}</span>
+                                                            <span class="text-xs font-mono text-foreground/80">{item.decree_number}</span>
                                                         </Show>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-neutral-600 dark:text-neutral-400">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                                                         {formatDate(item.start_date) || '-'}
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-neutral-600 dark:text-neutral-400">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                                                         {formatDate(item.end_date) || '-'}
                                                     </td>
                                                     <td class="px-6 py-4 text-center">
@@ -415,33 +415,33 @@ export default function RectoratStaffIndex() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
-                        <div class="text-sm text-neutral-600 dark:text-neutral-400">
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
+                        <div class="text-sm text-muted-foreground">
                             {t('rt.menampilkan')}{' '}
-                            <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() + 1 : 0}</span>
+                            <span class="font-medium text-foreground">{filteredItems().length > 0 ? startIndex() + 1 : 0}</span>
                             {' '}sampai{' '}
-                            <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span>
+                            <span class="font-medium text-foreground">{endIndex()}</span>
                             {' '}dari{' '}
-                            <span class="font-medium text-neutral-900 dark:text-white">{filteredItems().length}</span> data
+                            <span class="font-medium text-foreground">{filteredItems().length}</span> data
                         </div>
                         <div class="flex justify-center">
                             <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label={t('rt.pagination')}>
                                 <button
                                     type="button"
                                     id="staff-prev-page"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                                 >
                                     {t('rt.sebelumnya2')}
                                 </button>
-                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-teal-700 dark:text-teal-400 bg-teal-50 dark:bg-teal-900/20 border-y border-border">
                                     {currentPage()} / {totalPages()}
                                 </span>
                                 <button
                                     type="button"
                                     id="staff-next-page"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transition-colors"
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
                                 >

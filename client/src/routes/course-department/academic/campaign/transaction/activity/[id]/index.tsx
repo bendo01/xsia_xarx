@@ -237,13 +237,13 @@ export default function RectoratActivityDetail() {
     });
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Navigation and Breadcrumb */}
                 <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                         <A href="/course-department" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             {tt('cd.courseDepartment')}
                         </A>
@@ -252,21 +252,21 @@ export default function RectoratActivityDetail() {
                             {tt('rt.aktivitas')}
                         </A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
+                        <span class="text-foreground/80 font-semibold truncate max-w-xs">
                             {activity()?.name || 'Detail Aktivitas'}
                         </span>
                     </nav>
 
                     <Show when={!isLoading() && activity()}>
                         {/* Header Banner */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                        <div class="bg-card rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                             <div class="absolute -right-20 -top-20 w-72 h-72 bg-linear-to-br from-blue-500/10 via-indigo-500/10 to-teal-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                                 <div class="space-y-3">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <A
                                             href={`/course-department/academic/campaign/transaction/activity`}
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs font-semibold transition-all"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-foreground/80 text-xs font-semibold transition-all"
                                         >
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -278,7 +278,7 @@ export default function RectoratActivityDetail() {
                                         <Show
                                             when={activity()?.is_active !== false}
                                             fallback={
-                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-xs font-semibold border border-neutral-300 dark:border-neutral-700">
+                                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-muted-foreground text-xs font-semibold border border-border">
                                                     <span class="size-2 rounded-full bg-neutral-400" />
                                                     {tt('rt.nonAktif2')}
                                                 </span>
@@ -301,16 +301,16 @@ export default function RectoratActivityDetail() {
                                         </Show>
                                     </div>
 
-                                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                                         {activity()?.name}
                                     </h1>
 
-                                    <div class="flex flex-wrap items-center gap-4 text-xs text-neutral-500 dark:text-neutral-400">
+                                    <div class="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                                         <div class="flex items-center gap-1.5">
                                             <svg class="size-4 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
                                             </svg>
-                                            <span class="font-medium text-neutral-700 dark:text-neutral-300">
+                                            <span class="font-medium text-foreground/80">
                                                 {activity()?.unit_name || unit()?.name || 'Program Studi'}
                                             </span>
                                         </div>
@@ -319,7 +319,7 @@ export default function RectoratActivityDetail() {
                                             <svg class="size-4 text-purple-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 9v7.5" />
                                             </svg>
-                                            <span class="font-medium text-neutral-700 dark:text-neutral-300">
+                                            <span class="font-medium text-foreground/80">
                                                 {activity()?.academic_year_name || academicYear()?.name || 'Tahun Akademik'}
                                             </span>
                                         </div>
@@ -339,7 +339,7 @@ export default function RectoratActivityDetail() {
                                     <button
                                         type="button"
                                         onClick={() => copyToClipboard(activity()?.id || '')}
-                                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all hover:bg-neutral-50 dark:hover:bg-neutral-700 shadow-2xs"
+                                        class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card border border-border text-neutral-700 dark:text-neutral-200 text-xs font-semibold transition-all hover:bg-neutral-50 dark:hover:bg-neutral-700 shadow-2xs"
                                         title={tt('rt.salinUUIDAktivitas')}
                                     >
                                         <Show
@@ -376,9 +376,9 @@ export default function RectoratActivityDetail() {
 
                 {/* Loading State */}
                 <Show when={isLoading()}>
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200 dark:border-neutral-800 text-center flex flex-col items-center justify-center gap-3">
+                    <div class="bg-card rounded-2xl p-16 border border-border text-center flex flex-col items-center justify-center gap-3">
                         <Spinner size="lg" color="blue" aria-hidden={true} />
-                        <p class="text-sm font-medium text-neutral-500 dark:text-neutral-400">
+                        <p class="text-sm font-medium text-muted-foreground">
                             {tt('rt.memuatDataAktivitasTransaksi')}
                         </p>
                     </div>
@@ -386,16 +386,16 @@ export default function RectoratActivityDetail() {
 
                 {/* Error State */}
                 <Show when={!isLoading() && error()}>
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-12 border border-red-200 dark:border-red-900/50 text-center max-w-lg mx-auto space-y-4">
+                    <div class="bg-card rounded-2xl p-12 border border-red-200 dark:border-red-900/50 text-center max-w-lg mx-auto space-y-4">
                         <div class="size-14 rounded-2xl bg-red-50 dark:bg-red-950/60 text-red-600 dark:text-red-400 flex items-center justify-center mx-auto shadow-inner">
                             <svg class="size-7" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-neutral-900 dark:text-white">
+                        <h2 class="text-xl font-bold text-foreground">
                             {tt('rt.aktivitasTidakDitemukan')}
                         </h2>
-                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                        <p class="text-xs text-muted-foreground">
                             {error()}
                         </p>
                         <A
@@ -412,7 +412,7 @@ export default function RectoratActivityDetail() {
                     {/* KPI Metrics Summary Grid */}
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         {/* 1. Target Mahasiswa */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.targetKuota')}</span>
                                 <div class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400">
@@ -421,14 +421,14 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.student_target?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.targetMahasiswa')}</span>
                         </div>
 
                         {/* 2. Pendaftar Calon */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.pendaftar')}</span>
                                 <div class="p-1.5 rounded-lg bg-amber-50 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400">
@@ -437,14 +437,14 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.candidate_number?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.calonMahasiswa')}</span>
                         </div>
 
                         {/* 3. Lolos Seleksi */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.lolos2')}</span>
                                 <div class="p-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
@@ -453,14 +453,14 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.candidate_pass?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.lolosVerifikasiUjian')}</span>
                         </div>
 
                         {/* 4. Menjadi Mahasiswa */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.mahasiswa')}</span>
                                 <div class="p-1.5 rounded-lg bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400">
@@ -469,14 +469,14 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.became_student?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.daftarUlangResmi')}</span>
                         </div>
 
                         {/* 5. Mahasiswa Pindahan */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.pindahan')}</span>
                                 <div class="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
@@ -485,14 +485,14 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.transfer_student?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.transferKreditJenjang')}</span>
                         </div>
 
                         {/* 6. Anggota Kelas */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                        <div class="bg-card rounded-2xl p-4 sm:p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
                             <div class="flex items-center justify-between text-neutral-400 mb-2">
                                 <span class="text-2xs font-bold uppercase tracking-wider">{tt('rt.pesertaKelas')}</span>
                                 <div class="p-1.5 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
@@ -501,7 +501,7 @@ export default function RectoratActivityDetail() {
                                     </svg>
                                 </div>
                             </div>
-                            <div class="text-2xl font-extrabold text-neutral-900 dark:text-white">
+                            <div class="text-2xl font-extrabold text-foreground">
                                 {activity()?.total_class_member?.toLocaleString('id-ID') || 0}
                             </div>
                             <span class="text-2xs text-neutral-400 block mt-1">{tt('rt.totalKelasTerisi')}</span>
@@ -509,13 +509,13 @@ export default function RectoratActivityDetail() {
                     </div>
 
                     {/* Funnel Pipeline & Performance Progress */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-6">
-                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-6">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
                             <div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {tt('rt.corongKonversiCapaianKuota')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs text-muted-foreground">
                                     {tt('rt.tahapanAlurSeleksiDariPendaftaranHingga')}
                                 </p>
                             </div>
@@ -530,12 +530,12 @@ export default function RectoratActivityDetail() {
                         {/* Pipeline Stage Cards */}
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {/* Stage 1: Pendaftar */}
-                            <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/60 space-y-2">
+                            <div class="p-4 rounded-xl bg-muted/60 border border-border/60 space-y-2">
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold text-neutral-600 dark:text-neutral-300">{tt('rt.n1Pendaftar')}</span>
+                                    <span class="font-bold text-muted-foreground">{tt('rt.n1Pendaftar')}</span>
                                     <span class="font-mono font-semibold text-neutral-500">100%</span>
                                 </div>
-                                <div class="text-xl font-extrabold text-neutral-900 dark:text-white">
+                                <div class="text-xl font-extrabold text-foreground">
                                     {stats()?.candidates} <span class="text-xs font-normal text-neutral-500">{tt('rt.orang')}</span>
                                 </div>
                                 <div class="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -545,14 +545,14 @@ export default function RectoratActivityDetail() {
                             </div>
 
                             {/* Stage 2: Lolos Seleksi */}
-                            <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/60 space-y-2">
+                            <div class="p-4 rounded-xl bg-muted/60 border border-border/60 space-y-2">
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold text-neutral-600 dark:text-neutral-300">{tt('rt.n2LolosSeleksi')}</span>
+                                    <span class="font-bold text-muted-foreground">{tt('rt.n2LolosSeleksi')}</span>
                                     <span class="font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                                         {stats()?.passRate}% lulus
                                     </span>
                                 </div>
-                                <div class="text-xl font-extrabold text-neutral-900 dark:text-white">
+                                <div class="text-xl font-extrabold text-foreground">
                                     {stats()?.pass} <span class="text-xs font-normal text-neutral-500">{tt('rt.orang')}</span>
                                 </div>
                                 <div class="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -562,14 +562,14 @@ export default function RectoratActivityDetail() {
                             </div>
 
                             {/* Stage 3: Menjadi Mahasiswa */}
-                            <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/60 space-y-2">
+                            <div class="p-4 rounded-xl bg-muted/60 border border-border/60 space-y-2">
                                 <div class="flex items-center justify-between text-xs">
-                                    <span class="font-bold text-neutral-600 dark:text-neutral-300">{tt('rt.n3RegistrasiUlang')}</span>
+                                    <span class="font-bold text-muted-foreground">{tt('rt.n3RegistrasiUlang')}</span>
                                     <span class="font-mono font-semibold text-teal-600 dark:text-teal-400">
                                         {stats()?.regRate}% daftar ulang
                                     </span>
                                 </div>
-                                <div class="text-xl font-extrabold text-neutral-900 dark:text-white">
+                                <div class="text-xl font-extrabold text-foreground">
                                     {stats()?.became} <span class="text-xs font-normal text-neutral-500">{tt('rt.mahasiswa')}</span>
                                 </div>
                                 <div class="w-full h-1.5 bg-neutral-200 dark:bg-neutral-700 rounded-full overflow-hidden">
@@ -583,8 +583,8 @@ export default function RectoratActivityDetail() {
                         <div class="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-200/80 dark:border-blue-900/40 space-y-2">
                             <div class="flex items-center justify-between text-xs">
                                 <div class="flex items-center gap-2">
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{tt('rt.realisasiKuotaTarget')}</span>
-                                    <span class="text-neutral-600 dark:text-neutral-400">
+                                    <span class="font-bold text-foreground">{tt('rt.realisasiKuotaTarget')}</span>
+                                    <span class="text-muted-foreground">
                                         {stats()?.became} dari target {stats()?.target} mahasiswa
                                     </span>
                                 </div>
@@ -609,47 +609,47 @@ export default function RectoratActivityDetail() {
                     {/* Detailed Information Cards */}
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                         {/* Section 1: Detail Akademik */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
-                            <div class="flex items-center gap-2.5 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
+                            <div class="flex items-center gap-2.5 pb-3 border-b border-border">
                                 <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">
                                     {tt('rt.informasiAkademik')}
                                 </h3>
                             </div>
 
                             <dl class="space-y-4 text-xs">
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.programStudiUnit')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white flex items-center justify-between">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.programStudiUnit')}</dt>
+                                    <dd class="font-semibold text-foreground flex items-center justify-between">
                                         <span>{activity()?.unit_name || unit()?.name || 'Program Studi'}</span>
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.tahunAkademik')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.tahunAkademik')}</dt>
+                                    <dd class="font-semibold text-foreground">
                                         {activity()?.academic_year_name || academicYear()?.name || '-'}
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.durasiPerkuliahan')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.durasiPerkuliahan')}</dt>
+                                    <dd class="font-semibold text-foreground">
                                         {activity()?.week_quantity ? `${activity()?.week_quantity} Minggu` : '-'}
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.statusOperasional')}</dt>
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.statusOperasional')}</dt>
                                     <dd>
                                         <Show
                                             when={activity()?.is_active !== false}
                                             fallback={
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 text-2xs font-medium">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-secondary text-muted-foreground text-2xs font-medium">
                                                     {tt('rt.nonAktif2')}
                                                 </span>
                                             }
@@ -664,38 +664,38 @@ export default function RectoratActivityDetail() {
                         </div>
 
                         {/* Section 2: Jadwal & Timeline */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
-                            <div class="flex items-center gap-2.5 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
+                            <div class="flex items-center gap-2.5 pb-3 border-b border-border">
                                 <div class="p-2 rounded-xl bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 9v7.5" />
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">
                                     {tt('rt.jadwalPeriodePenting')}
                                 </h3>
                             </div>
 
                             <dl class="space-y-4 text-xs">
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.periodeKegiatanPerkuliahan')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white space-y-0.5">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.periodeKegiatanPerkuliahan')}</dt>
+                                    <dd class="font-semibold text-foreground space-y-0.5">
                                         <div>{tt('rt.mulai')} {formatDate(activity()?.start_date)}</div>
                                         <div>{tt('rt.selesai')} {formatDate(activity()?.end_date)}</div>
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.periodeTransaksiPMB')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white space-y-0.5">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.periodeTransaksiPMB')}</dt>
+                                    <dd class="font-semibold text-foreground space-y-0.5">
                                         <div>{tt('rt.mulai')} {formatDate(activity()?.start_transaction)}</div>
                                         <div>{tt('rt.selesai')} {formatDate(activity()?.end_transaction)}</div>
                                     </dd>
                                 </div>
 
-                                <div class="pt-2 border-t border-neutral-100 dark:border-neutral-800">
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium mb-1">{tt('rt.totalMahasiswaTerdaftarDiKelas')}</dt>
-                                    <dd class="font-semibold text-neutral-900 dark:text-white">
+                                <div class="pt-2 border-t border-border">
+                                    <dt class="text-muted-foreground font-medium mb-1">{tt('rt.totalMahasiswaTerdaftarDiKelas')}</dt>
+                                    <dd class="font-semibold text-foreground">
                                         {activity()?.total_class_member || 0} Mahasiswa
                                     </dd>
                                 </div>
@@ -703,22 +703,22 @@ export default function RectoratActivityDetail() {
                         </div>
 
                         {/* Section 3: Integrasi & Metadata */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
-                            <div class="flex items-center gap-2.5 pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-5">
+                            <div class="flex items-center gap-2.5 pb-3 border-b border-border">
                                 <div class="p-2 rounded-xl bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white">
+                                <h3 class="text-sm font-bold uppercase tracking-wider text-foreground">
                                     {tt('rt.integrasiAudit')}
                                 </h3>
                             </div>
 
                             <dl class="space-y-4 text-xs font-mono">
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium font-sans mb-1">{tt('rt.feederID')}</dt>
-                                    <dd class="text-neutral-800 dark:text-neutral-200 truncate">
+                                    <dt class="text-muted-foreground font-medium font-sans mb-1">{tt('rt.feederID')}</dt>
+                                    <dd class="text-foreground truncate">
                                         {activity()?.feeder_id ? (
                                             <span class="inline-flex items-center gap-1.5">
                                                 <span class="truncate">{activity()?.feeder_id}</span>
@@ -737,22 +737,22 @@ export default function RectoratActivityDetail() {
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium font-sans mb-1">{tt('rt.sinkronisasiTerakhir')}</dt>
-                                    <dd class="text-neutral-800 dark:text-neutral-200 font-sans">
+                                    <dt class="text-muted-foreground font-medium font-sans mb-1">{tt('rt.sinkronisasiTerakhir')}</dt>
+                                    <dd class="text-foreground font-sans">
                                         {activity()?.sync_at ? formatDateTime(activity()?.sync_at) : tt('rt.belumPernahSinkronisasi')}
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium font-sans mb-1">{tt('rt.waktuDibuat')}</dt>
-                                    <dd class="text-neutral-800 dark:text-neutral-200 font-sans">
+                                    <dt class="text-muted-foreground font-medium font-sans mb-1">{tt('rt.waktuDibuat')}</dt>
+                                    <dd class="text-foreground font-sans">
                                         {formatDateTime(activity()?.created_at)}
                                     </dd>
                                 </div>
 
                                 <div>
-                                    <dt class="text-neutral-500 dark:text-neutral-400 font-medium font-sans mb-1">{tt('rt.terakhirDiperbarui')}</dt>
-                                    <dd class="text-neutral-800 dark:text-neutral-200 font-sans">
+                                    <dt class="text-muted-foreground font-medium font-sans mb-1">{tt('rt.terakhirDiperbarui')}</dt>
+                                    <dd class="text-foreground font-sans">
                                         {formatDateTime(activity()?.updated_at)}
                                     </dd>
                                 </div>
@@ -761,17 +761,17 @@ export default function RectoratActivityDetail() {
                     </div>
 
                     {/* Associated Teaches / Classes Section */}
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden space-y-4 p-6">
-                        <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                    <div class="bg-card rounded-2xl border border-neutral-200/80 dark:border-neutral-800 shadow-2xs overflow-hidden space-y-4 p-6">
+                        <div class="flex items-center justify-between border-b border-border pb-4">
                             <div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {tt('rt.daftarKelasPerkuliahanTeaches')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs text-muted-foreground">
                                     {tt('rt.kelasOperasionalPerkuliahanYangBeradaDi')}
                                 </p>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-secondary text-muted-foreground">
                                 {teaches().length} Kelas
                             </span>
                         </div>
@@ -794,7 +794,7 @@ export default function RectoratActivityDetail() {
                             >
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-xs">
-                                        <thead class="bg-neutral-50 dark:bg-neutral-800/50 uppercase font-semibold text-neutral-500">
+                                        <thead class="bg-muted/50 uppercase font-semibold text-neutral-500">
                                             <tr>
                                                 <th class="px-4 py-3">{tt('rt.namaKelas')}</th>
                                                 <th class="px-4 py-3">{tt('rt.mataKuliah')}</th>
@@ -807,10 +807,10 @@ export default function RectoratActivityDetail() {
                                             <For each={teaches()}>
                                                 {(t) => (
                                                     <tr class="hover:bg-neutral-50/50 dark:hover:bg-neutral-800/40">
-                                                        <td class="px-4 py-3 font-semibold text-neutral-900 dark:text-white">
+                                                        <td class="px-4 py-3 font-semibold text-foreground">
                                                             {t.class_code?.alphabet_code || t.name || '-'}
                                                         </td>
-                                                        <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                                                        <td class="px-4 py-3 text-muted-foreground">
                                                             {t.course?.code && t.course?.name ? `${t.course.code} / ${t.course.name}` : t.course?.name || t.course?.code || '-'}
                                                         </td>
                                                         <td class="px-4 py-3 text-center font-mono">

@@ -14,7 +14,7 @@ import {
 import { t, getLocale, toggleLocale } from '../../i18n';
 import { Spinner } from '~/components/loader';
 
-const inputClass = "w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
+const inputClass = "w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-foreground placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner";
 
 function FieldShell(props: { label: string; error?: string; children: JSX.Element }) {
     return (
@@ -115,7 +115,7 @@ export default function CandidateAdmissionForm() {
                 <button
                     onClick={toggleLocale}
                     type="button"
-                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-xs bg-neutral-900/5 dark:bg-white/10 hover:bg-neutral-900/10 dark:hover:bg-white/20 border border-neutral-200 dark:border-white/15 text-neutral-900 dark:text-white text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
+                    class="flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-neutral-900/5 dark:bg-white/10 hover:bg-neutral-900/10 dark:hover:bg-white/20 border border-neutral-200 dark:border-white/15 text-foreground text-xs font-semibold backdrop-blur-md transition-all shadow-lg"
                     aria-label={t('nav.selectLanguage')}
                     title={t('nav.selectLanguage')}
                 >
@@ -125,20 +125,20 @@ export default function CandidateAdmissionForm() {
             </div>
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0 opacity-50 dark:opacity-100">
-                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-70"></div>
-                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
-                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-md mix-blend-screen filter blur-[120px] opacity-70"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-md mix-blend-screen filter blur-[120px] opacity-60"></div>
+                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-md mix-blend-screen filter blur-[120px] opacity-60"></div>
             </div>
 
             {/* Glassmorphic Card */}
-            <div class="relative z-10 w-full max-w-3xl p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-3xl p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-md flex flex-col items-center">
                 <Show when={getInstitutionLogo()}>
                     {(logo) => (
                         <img src={logo()} alt={t('au.logo')} class="size-20 object-contain mb-4 drop-shadow-lg" />
                     )}
                 </Show>
 
-                <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans text-center">
+                <h1 class="text-[26px] sm:text-[30px] font-bold text-foreground tracking-wide mb-1 font-sans text-center">
                     {t('au.formulirPendaftaranCalonMahasiswa')}
                 </h1>
                 <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
@@ -146,7 +146,7 @@ export default function CandidateAdmissionForm() {
                 </p>
 
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium">
+                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-md flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium">
                         <svg class="shrink-0 size-4 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
@@ -313,7 +313,7 @@ export default function CandidateAdmissionForm() {
                             <button
                                 type="submit"
                                 disabled={!state()[0] || isLoading()}
-                                class="w-full mt-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-2 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-md border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={<span>{t('au.daftarSekarang')}</span>}>
                                     <Spinner size="sm" color="current" aria-hidden={true} />

@@ -183,13 +183,24 @@ export default function LecturerTeachAttendancePage() {
         realtime?.close();
     });
 
+    const StatusSelect = (p: { r: RosterItem; class?: string }) => (
+        <select
+            value={p.r.attend_type_id ?? ''}
+            onChange={(e) => setAttendType(p.r.student_id, e.currentTarget.value)}
+            class={`rounded-md border border-border bg-card ${p.class ?? ''}`}
+        >
+            <option value="" disabled>Belum dicatat</option>
+            <For each={attendTypes()}>{(o) => <option value={o.id}>{o.name}</option>}</For>
+        </select>
+    );
+
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
-            <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+            <main class="flex-1 w-full mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
+                <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 sm:gap-4 pb-4 border-b border-border">
+                    <nav class="flex items-center gap-1.5 text-xs text-muted-foreground overflow-x-auto whitespace-nowrap scrollbar-none">
                         <A href="/lecturer/dashboard" class="hover:text-blue-600 transition-colors">
                             {t('lc.dashboard')}
                         </A>
@@ -198,15 +209,15 @@ export default function LecturerTeachAttendancePage() {
                             {t('lc.pengajaran')}
                         </A>
                         <span>/</span>
-                        <span class="font-medium text-neutral-900 dark:text-white">
+                        <span class="font-medium text-foreground">
                             {t('lc.presensiRoster')}
                         </span>
                     </nav>
 
-                    <div class="flex items-center gap-2">
+                    <div class="grid grid-cols-2 sm:flex items-center gap-2">
                         <A
                             href="/lecturer/academic/campaign/transaction/teach"
-                            class="px-3 py-1.5 rounded-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-800 text-xs font-semibold text-neutral-700 dark:text-neutral-300 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors inline-flex items-center gap-1.5"
+                            class="px-3 py-2 sm:py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors inline-flex items-center justify-center gap-1.5 text-center"
                         >
                             <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -215,15 +226,15 @@ export default function LecturerTeachAttendancePage() {
                         </A>
                         <A
                             href={`/lecturer/academic/campaign/transaction/teach/${teachId()}/grade`}
-                            class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 text-xs font-semibold transition-colors inline-flex items-center gap-1.5"
+                            class="px-3 py-2 sm:py-1.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 text-xs font-semibold transition-colors inline-flex items-center justify-center gap-1.5 text-center"
                         >
                             {t('lc.nilaiMahasiswa2')}
                         </A>
                     </div>
                 </div>
 
-                <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
-                    <section class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6 space-y-4">
+                <div class="grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+                    <section class="min-w-0 bg-card rounded-md border border-border shadow-2xs p-3 sm:p-6 space-y-4">
                         <div class="flex items-center justify-between gap-2">
                             <h1 class="text-lg font-bold">{t('lc.presensiRoster')}</h1>
                             <span class="flex items-center gap-1.5 text-[11px] text-neutral-500" aria-live="polite">
@@ -232,17 +243,17 @@ export default function LecturerTeachAttendancePage() {
                             </span>
                         </div>
 
-                        <div class="flex flex-wrap gap-1.5" role="tablist" aria-label="Pertemuan">
+                        <div class="flex gap-1.5 overflow-x-auto sm:flex-wrap -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 scrollbar-none" role="tablist" aria-label="Pertemuan">
                             <For each={meetings()}>
                                 {(m) => (
                                     <button
                                         role="tab"
                                         aria-selected={m.id === activeMeetingId()}
                                         onClick={() => selectMeeting(m.id)}
-                                        class={`px-2.5 py-1 rounded-xs text-xs font-semibold border transition-colors ${
+                                        class={`shrink-0 min-w-9 px-3 sm:px-2.5 py-2 sm:py-1 rounded-md text-xs font-semibold border transition-colors ${
                                             m.id === activeMeetingId()
                                                 ? 'bg-blue-600 border-blue-600 text-white'
-                                                : 'bg-white dark:bg-neutral-800 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700'
+                                                : 'bg-card border-border hover:bg-neutral-50 dark:hover:bg-neutral-700'
                                         }`}
                                         title={m.meeting_type === 'midterm' ? 'Ujian Tengah Semester' : m.meeting_type === 'final' ? 'Ujian Akhir Semester' : `Pertemuan ${m.sequence}`}
                                     >
@@ -260,28 +271,28 @@ export default function LecturerTeachAttendancePage() {
                         </Show>
 
                         <Show when={!isLoading() && activeMeeting()}>
-                            <div class="flex flex-wrap items-center justify-between gap-2">
-                                <p class="text-sm text-neutral-600 dark:text-neutral-300">
+                            <div class="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-2">
+                                <p class="text-sm text-muted-foreground">
                                     {meetingLabel()} · Hadir {presentCount()} / {roster().length}
                                 </p>
-                                <div class="flex gap-2">
-                                    <button onClick={markAll} class="px-3 py-1.5 rounded-xs border border-neutral-300 dark:border-neutral-700 text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700">
+                                <div class="grid grid-cols-2 sm:flex gap-2 w-full sm:w-auto">
+                                    <button onClick={markAll} class="px-3 py-2 sm:py-1.5 rounded-md border border-border text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700">
                                         Tandai semua hadir
                                     </button>
                                     <button
                                         onClick={save}
                                         disabled={isSaving() || dirty().size === 0}
-                                        class="px-3 py-1.5 rounded-xs bg-blue-600 text-white text-xs font-semibold disabled:opacity-50"
+                                        class="px-3 py-2 sm:py-1.5 rounded-md bg-blue-600 text-white text-xs font-semibold disabled:opacity-50"
                                     >
                                         {isSaving() ? 'Menyimpan…' : `Simpan & kirim${dirty().size ? ` (${dirty().size})` : ''}`}
                                     </button>
                                 </div>
                             </div>
 
-                            <div class="overflow-x-auto">
+                            <div class="hidden sm:block overflow-x-auto">
                                 <table class="w-full text-sm">
                                     <thead>
-                                        <tr class="text-left text-xs text-neutral-500 border-b border-neutral-200 dark:border-neutral-700">
+                                        <tr class="text-left text-xs text-neutral-500 border-b border-border">
                                             <th class="py-2 pr-2">NIM</th>
                                             <th class="py-2 pr-2">Nama</th>
                                             <th class="py-2 pr-2">Status</th>
@@ -295,14 +306,7 @@ export default function LecturerTeachAttendancePage() {
                                                     <td class="py-2 pr-2 font-mono text-xs">{r.student_code}</td>
                                                     <td class="py-2 pr-2">{r.student_name}</td>
                                                     <td class="py-2 pr-2">
-                                                        <select
-                                                            value={r.attend_type_id ?? ''}
-                                                            onChange={(e) => setAttendType(r.student_id, e.currentTarget.value)}
-                                                            class="rounded-xs border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-2 py-1 text-xs"
-                                                        >
-                                                            <option value="" disabled>Belum dicatat</option>
-                                                            <For each={attendTypes()}>{(o) => <option value={o.id}>{o.name}</option>}</For>
-                                                        </select>
+                                                        <StatusSelect r={r} class="px-2 py-1 text-xs" />
                                                     </td>
                                                     <td class="py-2 text-xs text-neutral-500">{r.method === 'qr' ? 'QR' : r.method === 'manual' ? 'Manual' : '-'}</td>
                                                 </tr>
@@ -311,10 +315,28 @@ export default function LecturerTeachAttendancePage() {
                                     </tbody>
                                 </table>
                             </div>
+
+                            {/* Mobile: card list */}
+                            <ul class="sm:hidden space-y-2">
+                                <For each={roster()} fallback={<li class="py-6 text-center text-sm text-muted-foreground">Belum ada peserta terdaftar.</li>}>
+                                    {(r) => (
+                                        <li class="rounded-md border border-border p-3 space-y-2">
+                                            <div class="flex items-start justify-between gap-2">
+                                                <div class="min-w-0">
+                                                    <p class="text-sm font-medium wrap-break-words">{r.student_name}</p>
+                                                    <p class="font-mono text-xs text-muted-foreground">{r.student_code}</p>
+                                                </div>
+                                                <span class="shrink-0 text-[11px] text-muted-foreground">{r.method === 'qr' ? 'QR' : r.method === 'manual' ? 'Manual' : '-'}</span>
+                                            </div>
+                                            <StatusSelect r={r} class="w-full px-3 py-2 text-sm" />
+                                        </li>
+                                    )}
+                                </For>
+                            </ul>
                         </Show>
                     </section>
 
-                    <aside class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6 space-y-4 h-fit">
+                    <aside class="min-w-0 bg-card rounded-md border border-border shadow-2xs p-3 sm:p-6 space-y-4 h-fit">
                         <h2 class="text-sm font-bold">Presensi QR-Code</h2>
                         <Show
                             when={qr()}
@@ -324,7 +346,7 @@ export default function LecturerTeachAttendancePage() {
                                     <button
                                         onClick={startQr}
                                         disabled={!activeMeeting()}
-                                        class="w-full px-3 py-2 rounded-xs bg-blue-600 text-white text-xs font-semibold disabled:opacity-50"
+                                        class="w-full px-3 py-2.5 sm:py-2 rounded-md bg-blue-600 text-white text-xs font-semibold disabled:opacity-50"
                                     >
                                         Buka presensi QR
                                     </button>
@@ -332,9 +354,9 @@ export default function LecturerTeachAttendancePage() {
                             }
                         >
                             <div class="space-y-3 text-center">
-                                <div class="flex justify-center"><QrDisplay value={qr()!.token} size={256} /></div>
+                                <div class="flex justify-center max-w-full overflow-hidden [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:max-w-full [&_svg]:h-auto"><QrDisplay value={qr()!.token} size={256} /></div>
                                 <p class="text-xs text-neutral-500">Berganti dalam {secondsLeft()} dtk</p>
-                                <button onClick={stopQr} class="w-full px-3 py-2 rounded-xs border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-950/40">
+                                <button onClick={stopQr} class="w-full px-3 py-2.5 sm:py-2 rounded-md border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-950/40">
                                     Tutup presensi QR
                                 </button>
                             </div>

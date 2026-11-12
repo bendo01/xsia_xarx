@@ -80,12 +80,12 @@ export default function RectoratUnitsIndex() {
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Page Header */}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div class="space-y-1">
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-blue-200 dark:border-blue-800/50">
                             <span class="relative flex size-2">
@@ -94,10 +94,10 @@ export default function RectoratUnitsIndex() {
                             </span>
                             {tt('rt.masterData')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                             {tt('rt.daftarUnit')}
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl">
+                        <p class="text-sm text-muted-foreground max-w-2xl">
                             {tt('rt.kelolaSeluruhUnitYangTerdaftarPada')}
                         </p>
                     </div>
@@ -136,10 +136,10 @@ export default function RectoratUnitsIndex() {
                 </div>
 
                 {/* Data Table */}
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden transition-all">
+                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden transition-all">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
+                            <thead class="text-xs text-neutral-500 uppercase bg-neutral-50/80 dark:bg-neutral-800/50 dark:text-neutral-400 border-b border-border font-semibold tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4">{tt('rt.idKode')}</th>
                                     <th class="px-6 py-4">{tt('rt.namaUnit')}</th>
@@ -171,16 +171,16 @@ export default function RectoratUnitsIndex() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="6" class="px-6 py-16 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="6" class="px-6 py-16 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center gap-3">
-                                                        <div class="p-4 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-400">
+                                                        <div class="p-4 rounded-full bg-secondary text-neutral-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                                 <circle cx="12" cy="12" r="10" />
                                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-medium text-base text-neutral-700 dark:text-neutral-300">{tt('rt.tidakAdaDataDitemukan')}</span>
+                                                        <span class="font-medium text-base text-foreground/80">{tt('rt.tidakAdaDataDitemukan')}</span>
                                                         <span class="text-sm">{tt('rt.silakanUbahKataKunciPencarianAnda')}</span>
                                                     </div>
                                                 </td>
@@ -190,10 +190,10 @@ export default function RectoratUnitsIndex() {
                                         <For each={items()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors group">
-                                                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-neutral-600 dark:text-neutral-400">
+                                                    <td class="px-6 py-4 whitespace-nowrap font-mono text-xs font-medium text-muted-foreground">
                                                         {item.code || '-'}
                                                     </td>
-                                                    <td class="px-6 py-4 font-medium text-neutral-900 dark:text-white">
+                                                    <td class="px-6 py-4 font-medium text-foreground">
                                                         {item.name || '-'}
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -201,7 +201,7 @@ export default function RectoratUnitsIndex() {
                                                             {item.unit_type?.name || '-'}
                                                         </span>
                                                     </td>
-                                                    <td class="px-6 py-4 text-neutral-600 dark:text-neutral-300">
+                                                    <td class="px-6 py-4 text-muted-foreground">
                                                         {item.parent?.name || '-'}
                                                     </td>
                                                     <td class="px-6 py-4 text-center">
@@ -238,26 +238,26 @@ export default function RectoratUnitsIndex() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
-                        <div class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {tt('rt.menampilkan')} <span class="font-medium text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-medium text-neutral-900 dark:text-white">{totalData()}</span> {tt('rt.totalData')}
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-4">
+                        <div class="text-sm text-muted-foreground">
+                            {tt('rt.menampilkan')} <span class="font-medium text-foreground">{totalData() > 0 ? startIndex() + 1 : 0}</span> sampai <span class="font-medium text-foreground">{endIndex()}</span> dari <span class="font-medium text-foreground">{totalData()}</span> {tt('rt.totalData')}
                         </div>
                         <div class="flex justify-center">
                             <nav class="inline-flex -space-x-px shadow-sm rounded-lg overflow-hidden" aria-label={tt('rt.pagination')}>
                                 <button
                                     type="button"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 cursor-pointer transition-colors"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 >
                                     {tt('rt.sebelumnya2')}
                                 </button>
-                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                                <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-border">
                                     {currentPage()} / {totalPages()}
                                 </span>
                                 <button
                                     type="button"
-                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 cursor-pointer transition-colors"
+                                    class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-50 disabled:bg-neutral-100 dark:disabled:bg-neutral-900 cursor-pointer transition-colors"
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 >

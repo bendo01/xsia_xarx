@@ -102,16 +102,16 @@ export default function StaffEditPage() {
     };
 
     const inputClass =
-        'w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors';
+        'w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
                             <span class="shrink-0">{t('ad.institution')}</span>
@@ -120,9 +120,9 @@ export default function StaffEditPage() {
                             <span class="shrink-0">/</span>
                             <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.staff')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.edit')}</span>
+                            <span class="font-medium text-foreground shrink-0">{t('ad.edit')}</span>
                         </nav>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground font-mono truncate">
                             {t('ad.editStaff')}
                         </h1>
                     </div>
@@ -130,7 +130,7 @@ export default function StaffEditPage() {
                     <div class="w-full sm:w-auto flex items-center gap-2 shrink-0">
                         <a
                             href={selectedId() ? `${basePath}/${encodeURIComponent(selectedId())}` : basePath}
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -140,7 +140,7 @@ export default function StaffEditPage() {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6 max-w-4xl">
+                <div class="bg-card border border-border shadow-2xs p-4 sm:p-6 max-w-4xl">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -165,7 +165,7 @@ export default function StaffEditPage() {
                                     <For each={Object.keys(fields())}>
                                         {(key) => (
                                             <div class="min-w-0">
-                                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                                     {key}
                                                 </label>
                                                 <Show
@@ -186,7 +186,7 @@ export default function StaffEditPage() {
                                                         />
                                                     }
                                                 >
-                                                    <label class="inline-flex items-center gap-2 text-xs font-mono text-neutral-800 dark:text-neutral-200 cursor-pointer">
+                                                    <label class="inline-flex items-center gap-2 text-xs font-mono text-foreground cursor-pointer">
                                                         <input
                                                             type="checkbox"
                                                             checked={fields()[key] === true}
@@ -207,7 +207,7 @@ export default function StaffEditPage() {
                                 <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-100 dark:border-neutral-700">
                                     <a
                                         href={`${basePath}/${encodeURIComponent(selectedId())}`}
-                                        class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                        class="px-4 py-2 text-xs font-mono font-medium border border-border text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                                     >
                                         {t('ad.cancel')}
                                     </a>

@@ -123,20 +123,20 @@ export default function LocationOverviewPage() {
     ];
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
-                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                <div class="border-b border-border pb-4">
+                    <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                         <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                         <span>/</span>
-                        <span class="font-medium text-neutral-900 dark:text-white">{t('ad.location')}</span>
+                        <span class="font-medium text-foreground">{t('ad.location')}</span>
                     </nav>
-                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                    <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                         {t('ad.locationManagementHub')}
                     </h1>
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                    <p class="text-sm text-muted-foreground mt-0.5">
                         {t('ad.hierarchicalAdministrativeAndGeospatialMasterDatasets')}
                     </p>
                 </div>
@@ -146,22 +146,22 @@ export default function LocationOverviewPage() {
                         {(mod) => (
                             <A
                                 href={mod.path}
-                                class="group relative flex flex-col justify-between p-5 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
+                                class="group relative flex flex-col justify-between p-5 bg-card border border-border hover:border-blue-500 dark:hover:border-blue-500 shadow-2xs hover:shadow-md transition-all"
                             >
                                 <div>
                                     <div class="flex items-center justify-between">
-                                        <h2 class="font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        <h2 class="font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                                             {mod.title}
                                         </h2>
-                                        <span class="text-xs px-2 py-0.5 font-mono font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
+                                        <span class="text-xs px-2 py-0.5 font-mono font-semibold bg-secondary text-foreground/80">
                                             {isLoading() ? '...' : `${mod.count} records`}
                                         </span>
                                     </div>
-                                    <p class="mt-2 text-xs text-neutral-500 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                                    <p class="mt-2 text-xs text-muted-foreground line-clamp-2 leading-relaxed">
                                         {mod.description}
                                     </p>
                                 </div>
-                                <div class="mt-4 pt-3 border-t border-neutral-100 dark:border-neutral-800 flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 font-medium">
+                                <div class="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-blue-600 dark:text-blue-400 font-medium">
                                     <span>{t('ad.manageRecords')}</span>
                                     <svg class="size-4 transform group-hover:translate-x-1 transition-transform" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />

@@ -177,14 +177,14 @@ export default function ForgotPasswordRequest() {
             <div class="absolute top-4 right-4 z-20 flex items-center gap-2"><ThemeToggle /><LocaleToggle /></div>
             {/* Ambient Background Gradient Spheres */}
             <div class="absolute inset-0 w-full h-full pointer-events-none z-0">
-                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-xs mix-blend-screen filter blur-[120px] opacity-35 dark:opacity-70"></div>
-                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
-                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-xs mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
+                <div class="absolute top-[-15%] left-[-10%] w-[65%] h-[65%] bg-[#0d9488]/30 rounded-md mix-blend-screen filter blur-[120px] opacity-35 dark:opacity-70"></div>
+                <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#3b82f6]/25 rounded-md mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
+                <div class="absolute bottom-[-15%] right-[-10%] w-[65%] h-[65%] bg-[#10b981]/25 rounded-md mix-blend-screen filter blur-[120px] opacity-30 dark:opacity-60"></div>
                 <canvas ref={canvasRef} class="absolute inset-0 w-full h-full opacity-70"></canvas>
             </div>
 
             {/* Glassmorphic Card */}
-            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-xs flex flex-col items-center">
+            <div class="relative z-10 w-full max-w-lg p-8 sm:p-10 bg-white/95 dark:bg-slate-900/60 backdrop-blur-2xl border border-neutral-300 dark:border-emerald-500/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] rounded-md flex flex-col items-center">
 
                 {/* Logo */}
                 <Show when={getInstitutionLogo()}>
@@ -197,7 +197,7 @@ export default function ForgotPasswordRequest() {
                     )}
                 </Show>
 
-                <h1 class="text-[26px] sm:text-[30px] font-bold text-neutral-900 dark:text-white tracking-wide mb-1 font-sans">
+                <h1 class="text-[26px] sm:text-[30px] font-bold text-foreground tracking-wide mb-1 font-sans">
                     {t('au.lupaKataSandi')}
                 </h1>
                 <p class="text-neutral-600 dark:text-white/60 text-xs font-semibold tracking-wider uppercase mb-6 font-mono text-center">
@@ -205,7 +205,7 @@ export default function ForgotPasswordRequest() {
                 </p>
 
                 <Show when={errorMessage()}>
-                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-xs flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium animate-fadeIn">
+                    <div class="w-full mb-5 p-3.5 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-md flex items-center gap-3 text-red-700 dark:text-red-200 text-xs font-medium animate-fadeIn">
                         <svg class="shrink-0 size-4 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="12" cy="12" r="10" />
                             <line x1="12" y1="8" x2="12" y2="12" />
@@ -226,7 +226,7 @@ export default function ForgotPasswordRequest() {
                 </Show>
 
                 <Show when={successWaLink()}>
-                    <div class="w-full mb-5 p-3.5 bg-emerald-500/15 border border-emerald-500/30 rounded-xs flex items-start gap-3 text-emerald-800 dark:text-emerald-200 text-xs font-medium animate-fadeIn">
+                    <div class="w-full mb-5 p-3.5 bg-emerald-500/15 border border-emerald-500/30 rounded-md flex items-start gap-3 text-emerald-800 dark:text-emerald-200 text-xs font-medium animate-fadeIn">
                         <svg class="shrink-0 size-4 text-emerald-700 dark:text-emerald-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                             <path d="M22 4L12 14.01l-3-3" />
@@ -261,7 +261,7 @@ export default function ForgotPasswordRequest() {
                                         field().handleChange(e.currentTarget.value);
                                         if (errorMessage()) setErrorMessage(null);
                                     }}
-                                    class="w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                    class="w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-foreground placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                 />
                             </div>
                         )}
@@ -281,7 +281,7 @@ export default function ForgotPasswordRequest() {
                                         field().handleChange(e.currentTarget.value);
                                         if (errorMessage()) setErrorMessage(null);
                                     }}
-                                    class="w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-neutral-900 dark:text-white placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
+                                    class="w-full bg-white dark:bg-[#111827]/70 border border-neutral-300 dark:border-emerald-500/20 text-foreground placeholder-neutral-400 dark:placeholder-white/30 px-4 py-3 rounded-md focus:outline-none focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-400/50 transition-all text-sm shadow-inner"
                                 />
                             </div>
                         )}
@@ -292,7 +292,7 @@ export default function ForgotPasswordRequest() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit() || isLoading()}
-                                class="w-full mt-4 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-xs border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                class="w-full mt-4 bg-linear-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-3.5 px-4 rounded-md border border-emerald-400/20 transition-all duration-300 shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:shadow-[0_6px_25px_rgba(16,185,129,0.45)] active:scale-[0.99] text-xs tracking-[0.12em] uppercase disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                             >
                                 <Show when={isLoading()} fallback={
                                     <>

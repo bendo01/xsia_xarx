@@ -300,40 +300,40 @@ export default function AgentChatbotPage() {
     };
 
     const selectClass =
-        'block w-full p-2 text-xs text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white';
+        'block w-full p-2 text-xs text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white';
 
     const rangeClass = 'w-full accent-blue-600 cursor-pointer';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <Show when={status()?.llm_enabled !== false} fallback={
                 <div class="mx-auto max-w-xl px-4 py-16 text-center space-y-3">
                     <h1 class="text-xl font-bold">{t('ad.llmDisabledTitle')}</h1>
-                    <p class="text-sm text-neutral-600 dark:text-neutral-400">{t('ad.llmDisabledDesc')}</p>
+                    <p class="text-sm text-muted-foreground">{t('ad.llmDisabledDesc')}</p>
                     <a href="/administrator/preference/application" class="inline-block text-sm font-semibold text-blue-600 hover:underline">{t('ad.applicationPreference')}</a>
                 </div>
             }>
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
                 {/* Page header */}
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/administrator/dashboard" class="hover:text-blue-600 transition-colors">{t('ad.administrator')}</a>
                             <span>/</span>
                             <span>{t('ad.ragBreadcrumbAgent')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.ragTitle')}</span>
+                            <span class="font-medium text-foreground">{t('ad.ragTitle')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-bold tracking-tight font-mono">{t('ad.ragTitle')}</h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">{t('ad.ragSubtitle')}</p>
+                        <p class="text-sm text-muted-foreground mt-0.5">{t('ad.ragSubtitle')}</p>
                     </div>
                     <div class="mt-4 sm:mt-0">
                         <button
                             type="button"
                             onClick={newConversation}
-                            class="px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            class="px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white hover:bg-secondary dark:text-neutral-200 dark:hover:bg-neutral-700 border border-border rounded-md shadow-xs transition-colors cursor-pointer"
                             id="btn-rag-new-chat"
                         >
                             {t('ad.ragNewChat')}
@@ -343,7 +343,7 @@ export default function AgentChatbotPage() {
 
                 {/* Status */}
                 <Show when={status()}>
-                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-neutral-600 dark:text-neutral-300">
+                    <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-muted-foreground">
                         <span>
                             {t('ad.ragModel')}: <span class="font-mono">{selectedModel()?.label ?? status()!.llm_model}</span>
                             <Show when={selectedModel()?.model_size ?? status()!.llm_model_size}>
@@ -357,25 +357,25 @@ export default function AgentChatbotPage() {
                         <span>
                             {t('ad.ragRevokedChunks')}: <span class="font-semibold">{status()!.revoked_chunks.toLocaleString()}</span>
                         </span>
-                        <span class="text-neutral-500 dark:text-neutral-400">
+                        <span class="text-muted-foreground">
                             {(selectedModel()?.loaded ?? status()!.llm_loaded) ? t('ad.ragModelLoaded') : t('ad.ragModelColdStart')}
                             <Show when={selectedModel()?.device}>{(d) => <> ({d().toUpperCase()})</>}</Show>
                         </span>
                     </div>
                 </Show>
                 <Show when={modelProblem()}>
-                    <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-xs">
+                    <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-md">
                         {modelProblem()}
                     </p>
                 </Show>
-                <p class="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-3 rounded-xs">
+                <p class="text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 p-3 rounded-md">
                     {t('ad.ragCpuNote')} {t('ad.ragSmallModelNote')}
                     <Show when={status() && !status()!.fast_prompt}> {t('ad.ragSlowPrompt')}</Show>
                 </p>
 
                 <div class="grid grid-cols-1 lg:grid-cols-4 gap-4">
                     {/* Settings */}
-                    <aside class="lg:col-span-1 space-y-3 border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 p-4 h-fit">
+                    <aside class="lg:col-span-1 space-y-3 border border-border bg-card p-4 h-fit">
                         <h2 class="text-sm font-bold">{t('ad.ragSettings')}</h2>
                         <label class="block space-y-1 text-xs">
                             <span class="font-medium">{t('ad.ragMode')}</span>
@@ -481,17 +481,17 @@ export default function AgentChatbotPage() {
                                 <span>{t('ad.ragRerank')}</span>
                             </label>
                         </Show>
-                        <div class="pt-3 mt-1 border-t border-neutral-200 dark:border-neutral-700 space-y-2">
+                        <div class="pt-3 mt-1 border-t border-border space-y-2">
                             <h2 class="text-sm font-bold">{t('ad.ragHistory')}</h2>
                             <Show
                                 when={history().length > 0}
-                                fallback={<p class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.ragHistoryEmpty')}</p>}
+                                fallback={<p class="text-xs text-muted-foreground">{t('ad.ragHistoryEmpty')}</p>}
                             >
                                 <ul class="space-y-1 max-h-64 overflow-y-auto">
                                     <For each={history()}>
                                         {(item) => (
                                             <li
-                                                class="group flex items-center gap-1 border rounded-xs"
+                                                class="group flex items-center gap-1 border rounded-md"
                                                 classList={{
                                                     'border-blue-500 bg-blue-50 dark:bg-blue-950/50': item.id === conversationId(),
                                                     'border-transparent hover:bg-neutral-100 dark:hover:bg-neutral-700': item.id !== conversationId(),
@@ -504,7 +504,7 @@ export default function AgentChatbotPage() {
                                                     title={item.title ?? ''}
                                                 >
                                                     <span class="block truncate text-xs">{item.title || '-'}</span>
-                                                    <span class="block text-[10px] text-neutral-500 dark:text-neutral-400">
+                                                    <span class="block text-[10px] text-muted-foreground">
                                                         {new Date(item.updated_at).toLocaleString()}
                                                     </span>
                                                 </button>
@@ -526,13 +526,13 @@ export default function AgentChatbotPage() {
                     </aside>
 
                     {/* Conversation */}
-                    <section class="lg:col-span-3 flex flex-col border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 min-h-[60vh]">
+                    <section class="lg:col-span-3 flex flex-col border border-border bg-card min-h-[60vh]">
                         <div ref={scrollRef} class="flex-1 overflow-y-auto p-4 space-y-6 max-h-[65vh]" id="rag-conversation">
                             <Show
                                 when={turns.length > 0}
                                 fallback={
                                     <div class="py-10 text-center space-y-4">
-                                        <p class="text-sm text-neutral-500 dark:text-neutral-400">{t('ad.ragEmptyState')}</p>
+                                        <p class="text-sm text-muted-foreground">{t('ad.ragEmptyState')}</p>
                                         <div>
                                             <p class="text-xs font-semibold mb-2">{t('ad.ragSamples')}</p>
                                             <div class="flex flex-wrap justify-center gap-2">
@@ -541,7 +541,7 @@ export default function AgentChatbotPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => setQuestion(t(`ad.${key}`))}
-                                                            class="px-3 py-1.5 text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-xs cursor-pointer transition-colors"
+                                                            class="px-3 py-1.5 text-xs text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 rounded-md cursor-pointer transition-colors"
                                                         >
                                                             {t(`ad.${key}`)}
                                                         </button>
@@ -569,7 +569,7 @@ export default function AgentChatbotPage() {
                                                     </p>
                                                 </Show>
                                                 <Show when={turn.retrievalOnly && turn.status === 'done'}>
-                                                    <p class="text-xs font-semibold text-neutral-600 dark:text-neutral-300">
+                                                    <p class="text-xs font-semibold text-muted-foreground">
                                                         {t('ad.ragRetrievalOnlyResult')}
                                                     </p>
                                                 </Show>
@@ -582,7 +582,7 @@ export default function AgentChatbotPage() {
                                                                     <button
                                                                         type="button"
                                                                         onClick={() => focusSource(turn.id, Number(match[1]))}
-                                                                        class="mx-0.5 px-1 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950 hover:bg-blue-200 dark:hover:bg-blue-900 rounded-xs cursor-pointer"
+                                                                        class="mx-0.5 px-1 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950 hover:bg-blue-200 dark:hover:bg-blue-900 rounded-md cursor-pointer"
                                                                     >
                                                                         {part}
                                                                     </button>
@@ -606,14 +606,14 @@ export default function AgentChatbotPage() {
                                                     <p class="text-xs text-amber-700 dark:text-amber-400">{t('ad.ragStopped')}</p>
                                                 </Show>
                                                 <Show when={turn.status === 'error'}>
-                                                    <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-xs">
+                                                    <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-md">
                                                         {turn.error}
                                                     </p>
                                                 </Show>
 
                                                 {/* Stats */}
                                                 <Show when={turn.retrievalMs !== undefined}>
-                                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                    <p class="text-xs text-muted-foreground">
                                                         {t('ad.ragRetrievalMs')}: {turn.retrievalMs} ms
                                                         <Show when={turn.stats}>
                                                             {' · '}
@@ -633,7 +633,7 @@ export default function AgentChatbotPage() {
                                                             type="button"
                                                             onClick={() => rate(turn, 1)}
                                                             title={t('ad.ragFeedbackGood')}
-                                                            class={`px-2.5 py-1 text-xs border rounded-xs cursor-pointer transition-colors ${turn.feedback === 1 ? 'bg-green-600 text-white border-green-600' : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                                            class={`px-2.5 py-1 text-xs border rounded-md cursor-pointer transition-colors ${turn.feedback === 1 ? 'bg-green-600 text-white border-green-600' : 'bg-card text-neutral-700 dark:text-neutral-200 border-border hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
                                                         >
                                                             👍 {t('ad.ragFeedbackGood')}
                                                         </button>
@@ -641,7 +641,7 @@ export default function AgentChatbotPage() {
                                                             type="button"
                                                             onClick={() => rate(turn, -1)}
                                                             title={t('ad.ragFeedbackBad')}
-                                                            class={`px-2.5 py-1 text-xs border rounded-xs cursor-pointer transition-colors ${turn.feedback === -1 ? 'bg-red-600 text-white border-red-600' : 'bg-white dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
+                                                            class={`px-2.5 py-1 text-xs border rounded-md cursor-pointer transition-colors ${turn.feedback === -1 ? 'bg-red-600 text-white border-red-600' : 'bg-card text-neutral-700 dark:text-neutral-200 border-border hover:bg-neutral-100 dark:hover:bg-neutral-700'}`}
                                                         >
                                                             👎 {t('ad.ragFeedbackBad')}
                                                         </button>
@@ -651,12 +651,12 @@ export default function AgentChatbotPage() {
                                                                 value={turn.note}
                                                                 onInput={(e) => update(turn.id, (x) => (x.note = e.currentTarget.value))}
                                                                 placeholder={t('ad.ragFeedbackNote')}
-                                                                class="flex-1 min-w-40 p-1.5 text-xs border border-neutral-300 rounded-xs bg-white dark:bg-neutral-800 dark:border-neutral-700"
+                                                                class="flex-1 min-w-40 p-1.5 text-xs border border-neutral-300 rounded-md bg-card dark:border-neutral-700"
                                                             />
                                                             <button
                                                                 type="button"
                                                                 onClick={() => saveNote(turn)}
-                                                                class="px-2.5 py-1 text-xs text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-xs cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/40"
+                                                                class="px-2.5 py-1 text-xs text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 rounded-md cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-950/40"
                                                             >
                                                                 {t('ad.ragFeedbackSave')}
                                                             </button>
@@ -667,7 +667,7 @@ export default function AgentChatbotPage() {
                                                 {/* Sources */}
                                                 <Show when={turn.status !== 'retrieving' && turn.status !== 'error'}>
                                                     <details class="group" open={turn.retrievalOnly}>
-                                                        <summary class="cursor-pointer text-xs font-semibold text-neutral-700 dark:text-neutral-300 select-none">
+                                                        <summary class="cursor-pointer text-xs font-semibold text-foreground/80 select-none">
                                                             {t('ad.ragSources')} ({turn.hits.length})
                                                         </summary>
                                                         <div class="mt-2 space-y-2">
@@ -688,7 +688,7 @@ export default function AgentChatbotPage() {
                         </div>
 
                         {/* Input */}
-                        <div class="border-t border-neutral-200 dark:border-neutral-700 p-3 flex items-end gap-2">
+                        <div class="border-t border-border p-3 flex items-end gap-2">
                             <textarea
                                 rows={2}
                                 value={question()}
@@ -696,7 +696,7 @@ export default function AgentChatbotPage() {
                                 onKeyDown={onKeyDown}
                                 placeholder={t('ad.ragPlaceholder')}
                                 maxLength={QUESTION_MAX_CHARS}
-                                class="flex-1 p-2.5 text-sm border border-neutral-300 rounded-xs bg-white text-neutral-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white resize-none"
+                                class="flex-1 p-2.5 text-sm border border-neutral-300 rounded-md bg-white text-neutral-900 focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-900 dark:border-neutral-700 dark:text-white resize-none"
                                 id="textarea-rag-question"
                             />
                             <Show
@@ -705,7 +705,7 @@ export default function AgentChatbotPage() {
                                     <button
                                         type="button"
                                         onClick={stop}
-                                        class="px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xs cursor-pointer transition-colors"
+                                        class="px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md cursor-pointer transition-colors"
                                         id="btn-rag-stop"
                                     >
                                         {t('ad.ragStop')}
@@ -716,7 +716,7 @@ export default function AgentChatbotPage() {
                                     type="button"
                                     onClick={() => send(question())}
                                     disabled={question().trim().length < QUESTION_MIN_CHARS || modelProblem() !== null}
-                                    class="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xs cursor-pointer transition-colors"
+                                    class="px-4 py-2.5 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md cursor-pointer transition-colors"
                                     id="btn-rag-send"
                                 >
                                     {t('ad.ragSend')}
@@ -741,7 +741,7 @@ function SourceCard(props: { turnId: number; n: number; hit: RagHit }) {
     return (
         <div
             id={`rag-source-${props.turnId}-${props.n}`}
-            class="border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/60 p-3 text-xs space-y-1.5 transition-shadow"
+            class="border border-border bg-muted/60 p-3 text-xs space-y-1.5 transition-shadow"
         >
             <div class="flex flex-wrap items-center gap-2">
                 <span class="font-semibold text-blue-700 dark:text-blue-300">[{props.n}]</span>
@@ -755,11 +755,11 @@ function SourceCard(props: { turnId: number; n: number; hit: RagHit }) {
                 >
                     {revoked() ? t('ad.ragStatusRevoked') : t('ad.ragStatusActive')}
                 </span>
-                <span class="text-neutral-500 dark:text-neutral-400 ml-auto">
+                <span class="text-muted-foreground ml-auto">
                     {t('ad.ragScore')}: {props.hit.score.toFixed(3)}
                 </span>
             </div>
-            <p class="whitespace-pre-wrap text-neutral-700 dark:text-neutral-300">{text()}</p>
+            <p class="whitespace-pre-wrap text-foreground/80">{text()}</p>
             <Show when={long()}>
                 <button type="button" onClick={() => setExpanded(!expanded())} class="text-blue-600 dark:text-blue-400 hover:underline cursor-pointer">
                     {expanded() ? t('ad.ragShowLess') : t('ad.ragShowMore')}

@@ -72,7 +72,7 @@ export default function QrScanner(props: {
     });
 
     return (
-        <div class="relative overflow-hidden rounded-xs bg-black aspect-square w-full max-w-sm mx-auto">
+        <div class="relative overflow-hidden rounded-md bg-black aspect-square w-full max-w-sm mx-auto">
             <video ref={video} class="size-full object-cover" playsinline muted />
             <canvas ref={canvas} class="hidden" />
             <Show when={error()}>

@@ -24,13 +24,13 @@ import { Spinner } from '~/components/loader';
 const PARENT_RELATIVE_TYPES = ['Ayah Kandung', 'Ibu Kandung', 'Ayah Wali', 'Ibu Wali'];
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const inputClass = "w-full bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-600 px-3 py-2 rounded-xs text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 disabled:opacity-50";
-const primaryButton = "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
+const inputClass = "w-full bg-card border border-border px-3 py-2 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500/40 focus:border-emerald-500 disabled:opacity-50";
+const primaryButton = "px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
 function StatusBadge(props: { done: boolean; optional?: boolean; label?: string }) {
     return (
         <span
-            class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold whitespace-nowrap"
+            class="px-2.5 py-0.5 rounded-md text-[10px] font-bold whitespace-nowrap"
             classList={{
                 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300': props.done,
                 'bg-neutral-100 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300': !props.done && props.optional,
@@ -44,11 +44,11 @@ function StatusBadge(props: { done: boolean; optional?: boolean; label?: string 
 
 function SectionCard(props: { step: number; title: string; done: boolean; description?: string; children: JSX.Element }) {
     return (
-        <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-            <div class="flex items-start justify-between gap-4 pb-3 border-b border-neutral-200 dark:border-neutral-700">
+        <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
+            <div class="flex items-start justify-between gap-4 pb-3 border-b border-border">
                 <div class="flex items-start gap-3">
                     <div
-                        class="size-7 shrink-0 rounded-xs flex items-center justify-center text-xs font-black"
+                        class="size-7 shrink-0 rounded-md flex items-center justify-center text-xs font-black"
                         classList={{
                             'bg-emerald-600 text-white': props.done,
                             'bg-neutral-200 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-300': !props.done,
@@ -57,9 +57,9 @@ function SectionCard(props: { step: number; title: string; done: boolean; descri
                         {props.done ? '✓' : props.step}
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{props.title}</h3>
+                        <h3 class="text-sm font-bold text-foreground">{props.title}</h3>
                         <Show when={props.description}>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">{props.description}</p>
+                            <p class="text-[11px] text-muted-foreground mt-0.5">{props.description}</p>
                         </Show>
                     </div>
                 </div>
@@ -234,7 +234,7 @@ export default function CandidateDashboardPage() {
         setMember((prev) => ({ ...prev, [field]: value }));
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-muted text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -250,7 +250,7 @@ export default function CandidateDashboardPage() {
                     <Show
                         when={status()}
                         fallback={
-                            <div class="bg-white dark:bg-neutral-800 rounded-xs p-8 border border-red-200 dark:border-red-900 text-center space-y-3">
+                            <div class="bg-card rounded-md p-8 border border-red-200 dark:border-red-900 text-center space-y-3">
                                 <p class="text-sm font-bold text-red-600 dark:text-red-400">{loadError() || 'Data pendaftaran tidak ditemukan'}</p>
                                 <button type="button" onClick={loadStatus} class={primaryButton}>{t('cn.cobaLagi')}</button>
                             </div>
@@ -259,21 +259,21 @@ export default function CandidateDashboardPage() {
                         {(data) => (
                             <>
                                 {/* Header Card */}
-                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs">
                                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                                         <div class="flex items-center gap-5">
-                                            <div class="size-16 sm:size-20 rounded-xs bg-linear-to-tr from-amber-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                                            <div class="size-16 sm:size-20 rounded-md bg-linear-to-tr from-amber-500 to-emerald-500 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                                 {(data().candidate.name || 'C').charAt(0)}
                                             </div>
                                             <div class="space-y-1">
-                                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-mono font-semibold border border-amber-200 dark:border-amber-800/80">
-                                                    <span class="size-1.5 rounded-xs bg-amber-500"></span>
+                                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 text-xs font-mono font-semibold border border-amber-200 dark:border-amber-800/80">
+                                                    <span class="size-1.5 rounded-md bg-amber-500"></span>
                                                     <span>{t('cn.calonMahasiswa')}{data().candidate.code ? ` • ${data().candidate.code}` : ''}</span>
                                                 </div>
-                                                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                                                <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
                                                     {data().candidate.name}
                                                 </h1>
-                                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-mono">
+                                                <p class="text-xs sm:text-sm text-muted-foreground font-mono">
                                                     {t('cn.nik')} {data().candidate.nik || '-'} • {data().candidate.email || '-'}
                                                 </p>
                                             </div>
@@ -284,7 +284,7 @@ export default function CandidateDashboardPage() {
                                                 <span class="font-bold text-neutral-700 dark:text-neutral-200">{t('cn.kelengkapanPendaftaran')}</span>
                                                 <span class="font-mono text-neutral-500">{completedSteps()} / 4</span>
                                             </div>
-                                            <div class="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-xs overflow-hidden">
+                                            <div class="h-2 w-full bg-neutral-200 dark:bg-neutral-700 rounded-md overflow-hidden">
                                                 <div class="h-full bg-emerald-500 transition-all duration-500" style={{ width: `${(completedSteps() / 4) * 100}%` }}></div>
                                             </div>
                                         </div>
@@ -294,12 +294,12 @@ export default function CandidateDashboardPage() {
                                 <Show
                                     when={req()?.is_complete}
                                     fallback={
-                                        <div class="p-4 rounded-xs border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-800 dark:text-amber-300">
+                                        <div class="p-4 rounded-md border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950/40 text-xs text-amber-800 dark:text-amber-300">
                                             {t('cn.lengkapiSeluruhTahapanDiBawahIni')}
                                         </div>
                                     }
                                 >
-                                    <div class="p-4 rounded-xs border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 text-xs text-emerald-800 dark:text-emerald-300 font-semibold">
+                                    <div class="p-4 rounded-md border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950/40 text-xs text-emerald-800 dark:text-emerald-300 font-semibold">
                                         {t('cn.seluruhDataPendaftaranSudahLengkapSilakan')}
                                     </div>
                                 </Show>
@@ -311,7 +311,7 @@ export default function CandidateDashboardPage() {
                                             {(unit) => (
                                                 <div class="flex justify-between py-1 border-b border-neutral-100 dark:border-neutral-700/50">
                                                     <span class="text-neutral-400 font-mono">{t('cn.pilihanSaatIni')}</span>
-                                                    <span class="font-bold text-neutral-800 dark:text-neutral-100 text-right">
+                                                    <span class="font-bold text-foreground text-right">
                                                         {unit().unit_name || '-'} • {unit().registration_category_name || '-'}
                                                     </span>
                                                 </div>
@@ -319,14 +319,14 @@ export default function CandidateDashboardPage() {
                                         </Show>
                                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <div class="space-y-1">
-                                                <label class="block font-medium text-neutral-600 dark:text-neutral-300">{t('cn.programStudi')}</label>
+                                                <label class="block font-medium text-muted-foreground">{t('cn.programStudi')}</label>
                                                 <select class={inputClass} value={unitId()} onChange={(e) => setUnitId(e.currentTarget.value)}>
                                                     <option value="">{t('cn.pilihProgramStudi')}</option>
                                                     <For each={units()}>{(item) => <option value={item.id}>{item.name}</option>}</For>
                                                 </select>
                                             </div>
                                             <div class="space-y-1">
-                                                <label class="block font-medium text-neutral-600 dark:text-neutral-300">{t('cn.kelas')}</label>
+                                                <label class="block font-medium text-muted-foreground">{t('cn.kelas')}</label>
                                                 <select class={inputClass} value={categoryId()} onChange={(e) => setCategoryId(e.currentTarget.value)}>
                                                     <option value="">{t('cn.pilihKelas')}</option>
                                                     <For each={categories()}>{(item) => <option value={item.id}>{item.name}</option>}</For>
@@ -386,7 +386,7 @@ export default function CandidateDashboardPage() {
                                                 <div class="overflow-x-auto">
                                                     <table class="w-full text-left">
                                                         <thead>
-                                                            <tr class="text-neutral-400 font-mono border-b border-neutral-200 dark:border-neutral-700">
+                                                            <tr class="text-neutral-400 font-mono border-b border-border">
                                                                 <th class="py-2 pr-3 font-medium">{t('cn.hubungan')}</th>
                                                                 <th class="py-2 pr-3 font-medium">{t('cn.nama')}</th>
                                                                 <th class="py-2 pr-3 font-medium">{t('cn.nik')}</th>
@@ -428,7 +428,7 @@ export default function CandidateDashboardPage() {
                                                 when={data().family_card}
                                                 fallback={<p class="text-amber-600 dark:text-amber-400 font-semibold">{t('cn.isiNomorKartuKeluargaTerlebihDahulu')}</p>}
                                             >
-                                                <div class="pt-3 border-t border-neutral-200 dark:border-neutral-700 space-y-3">
+                                                <div class="pt-3 border-t border-border space-y-3">
                                                     <h4 class="font-bold text-neutral-700 dark:text-neutral-200">{t('cn.tambahOrangTuaWali')}</h4>
                                                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                                                         <select class={inputClass} value={member().relative_type_id} onChange={(e) => updateMember('relative_type_id', e.currentTarget.value)}>
@@ -464,9 +464,9 @@ export default function CandidateDashboardPage() {
                                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <For each={data().archives}>
                                                     {(archive) => (
-                                                        <div class="p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 space-y-3">
+                                                        <div class="p-4 rounded-md border border-border space-y-3">
                                                             <div class="flex items-center justify-between gap-3">
-                                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{archive.archive_type_name}</span>
+                                                                <span class="font-bold text-foreground">{archive.archive_type_name}</span>
                                                                 <StatusBadge done={!!archive.archive_id} label={archive.archive_id ? t('cn.terunggah') : t('cn.wajib')} />
                                                             </div>
                                                             <Show when={archive.archive_id}>
@@ -478,7 +478,7 @@ export default function CandidateDashboardPage() {
                                                                 </div>
                                                             </Show>
                                                             <label
-                                                                class="flex items-center justify-center gap-2 px-3 py-2 rounded-xs border border-dashed border-neutral-300 dark:border-neutral-600 cursor-pointer hover:border-emerald-500 hover:text-emerald-600 transition-colors"
+                                                                class="flex items-center justify-center gap-2 px-3 py-2 rounded-md border border-dashed border-border cursor-pointer hover:border-emerald-500 hover:text-emerald-600 transition-colors"
                                                                 classList={{ 'opacity-50 pointer-events-none': busy() !== null }}
                                                             >
                                                                 <input

@@ -110,10 +110,10 @@ export default function PopupBlockedAlert() {
                                     Unduh Dokumen PDF
                                 </span>
                             </div>
-                            <h4 class="text-sm sm:text-base font-bold text-neutral-900 dark:text-white">
+                            <h4 class="text-sm sm:text-base font-bold text-foreground">
                                 Browser Memblokir Jendela Pop-up
                             </h4>
-                            <p class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed max-w-2xl">
+                            <p class="text-xs text-muted-foreground leading-relaxed max-w-2xl">
                                 Fitur cetak dan unduh berkas PDF dari server (seperti KRS, KHS, Transkrip, dan Laporan Akademik) membutuhkan izin pop-up browser agar dokumen dapat dibuka langsung di tab baru atau diunduh dengan lancar.
                             </p>
                         </div>
@@ -165,11 +165,11 @@ export default function PopupBlockedAlert() {
                     <div class="mt-4 pt-4 border-t border-amber-500/20 dark:border-amber-500/20 grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
                         {/* Chrome / Edge Guide */}
                         <div class="bg-white/80 dark:bg-neutral-800/80 rounded-xl p-3 border border-amber-200/60 dark:border-neutral-700/60 space-y-1.5">
-                            <div class="flex items-center gap-1.5 font-bold text-neutral-800 dark:text-neutral-100">
+                            <div class="flex items-center gap-1.5 font-bold text-foreground">
                                 <span class="size-2 rounded-full bg-blue-500"></span>
                                 Google Chrome / Edge
                             </div>
-                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-neutral-600 dark:text-neutral-300 leading-snug">
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-muted-foreground leading-snug">
                                 <li>Klik ikon <strong>Gembok 🔒</strong> atau <strong>Pop-up diblokir 🚫</strong> di sebelah kiri/kanan bilah URL.</li>
                                 <li>Ubah opsi <strong>Pop-up dan pengalihan</strong> menjadi <strong>Izinkan (Allow)</strong>.</li>
                                 <li>Muat ulang (refresh) halaman.</li>
@@ -178,11 +178,11 @@ export default function PopupBlockedAlert() {
 
                         {/* Firefox Guide */}
                         <div class="bg-white/80 dark:bg-neutral-800/80 rounded-xl p-3 border border-amber-200/60 dark:border-neutral-700/60 space-y-1.5">
-                            <div class="flex items-center gap-1.5 font-bold text-neutral-800 dark:text-neutral-100">
+                            <div class="flex items-center gap-1.5 font-bold text-foreground">
                                 <span class="size-2 rounded-full bg-orange-500"></span>
                                 Mozilla Firefox
                             </div>
-                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-neutral-600 dark:text-neutral-300 leading-snug">
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-muted-foreground leading-snug">
                                 <li>Perhatikan bilah kuning atau ikon peringatan pop-up di bawah kolom alamat URL.</li>
                                 <li>Klik tombol <strong>Opsi (Options)</strong>.</li>
                                 <li>Pilih <strong>Izinkan pop-up untuk situs ini</strong>.</li>
@@ -191,11 +191,11 @@ export default function PopupBlockedAlert() {
 
                         {/* Safari Guide */}
                         <div class="bg-white/80 dark:bg-neutral-800/80 rounded-xl p-3 border border-amber-200/60 dark:border-neutral-700/60 space-y-1.5">
-                            <div class="flex items-center gap-1.5 font-bold text-neutral-800 dark:text-neutral-100">
+                            <div class="flex items-center gap-1.5 font-bold text-foreground">
                                 <span class="size-2 rounded-full bg-teal-500"></span>
                                 Apple Safari (Mac / iPad)
                             </div>
-                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-neutral-600 dark:text-neutral-300 leading-snug">
+                            <ol class="list-decimal list-inside space-y-1 text-[11px] text-muted-foreground leading-snug">
                                 <li>Buka menu <strong>Safari</strong> &rarr; <strong>Pengaturan (Settings)</strong>.</li>
                                 <li>Pilih tab <strong>Situs Web</strong> &rarr; menu <strong>Jendela Pop-up</strong> di sebelah kiri.</li>
                                 <li>Ubah status situs SIAKA ini menjadi <strong>Izinkan (Allow)</strong>.</li>

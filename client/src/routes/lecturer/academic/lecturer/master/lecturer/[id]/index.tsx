@@ -270,7 +270,7 @@ export default function LecturerIndividualShowPage() {
     const currentContractName = () => latestHomebase()?.contract_name || '';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
@@ -278,7 +278,7 @@ export default function LecturerIndividualShowPage() {
                 <PopupBlockedAlert />
 
                 {/* Profile Header Hero Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
+                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs relative overflow-hidden">
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         {/* Avatar & Main Info */}
@@ -287,7 +287,7 @@ export default function LecturerIndividualShowPage() {
                                 <Show
                                     when={individualData()?.picture?.location}
                                     fallback={
-                                        <div class="size-20 sm:size-24 rounded-xs bg-blue-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-blue-200 dark:border-blue-800/80">
+                                        <div class="size-20 sm:size-24 rounded-md bg-blue-600 text-white font-black text-3xl flex items-center justify-center shadow-lg border-2 border-blue-200 dark:border-blue-800/80">
                                             {(ind()?.name || user()?.name || 'L').charAt(0).toUpperCase()}
                                         </div>
                                     }
@@ -295,20 +295,20 @@ export default function LecturerIndividualShowPage() {
                                     <img
                                         src={individualData()!.picture!.location}
                                         alt={formattedFullName()}
-                                        class="size-20 sm:size-24 rounded-xs object-cover shadow-lg border-2 border-blue-200 dark:border-blue-800/80"
+                                        class="size-20 sm:size-24 rounded-md object-cover shadow-lg border-2 border-blue-200 dark:border-blue-800/80"
                                     />
                                 </Show>
-                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-white dark:border-neutral-800 rounded-xs" title={t('lc.activeLecturer')}></span>
+                                <span class="absolute -bottom-1 -right-1 size-5 bg-emerald-500 border-2 border-white dark:border-neutral-800 rounded-md" title={t('lc.activeLecturer')}></span>
                             </div>
 
                             <div class="text-center sm:text-start space-y-1">
-                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                                <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                     <span>{nidnOrNuptkBadge()}</span>
                                 </div>
-                                <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
+                                <h1 class="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                                     {formattedFullName()}
                                 </h1>
-                                <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 font-medium">
+                                <p class="text-xs sm:text-sm text-muted-foreground font-medium">
                                     {currentUnitName()} • {currentRankName()}{currentGroupName() ? ` (${currentGroupName()})` : ''}
                                 </p>
                                 <p class="text-xs text-neutral-400 font-mono">
@@ -321,7 +321,7 @@ export default function LecturerIndividualShowPage() {
                         <div class="flex items-center justify-center gap-3">
                             <A
                                 href="/lecturer/academic/campaign/transaction/teach"
-                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-md text-xs flex items-center gap-2 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" />
@@ -334,12 +334,12 @@ export default function LecturerIndividualShowPage() {
                 </div>
 
                 {/* Navigation Tabs */}
-                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700/80 pb-px">
+                <div class="flex items-center gap-2 border-b border-border/80 pb-px">
                     <button
                         type="button"
                         onClick={() => setActiveTab('overview')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'overview'
-                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                        class={`px-4 py-2.5 text-xs font-bold rounded-md transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'overview'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-card'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -349,8 +349,8 @@ export default function LecturerIndividualShowPage() {
                     <button
                         type="button"
                         onClick={() => setActiveTab('biodata')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'biodata'
-                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                        class={`px-4 py-2.5 text-xs font-bold rounded-md transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'biodata'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-card'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -360,8 +360,8 @@ export default function LecturerIndividualShowPage() {
                     <button
                         type="button"
                         onClick={() => setActiveTab('academic')}
-                        class={`px-4 py-2.5 text-xs font-bold rounded-xs transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'academic'
-                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-white dark:bg-neutral-800'
+                        class={`px-4 py-2.5 text-xs font-bold rounded-md transition-all border-b-2 -mb-px flex items-center gap-2 ${activeTab() === 'academic'
+                            ? 'border-blue-600 text-blue-600 dark:text-blue-400 bg-card'
                             : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                             }`}
                     >
@@ -384,35 +384,35 @@ export default function LecturerIndividualShowPage() {
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Faculty Assignment Card */}
-                                <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
+                                <div class="p-5 rounded-md bg-card border border-border/60 space-y-3 shadow-2xs">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                        <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
                                             {t('lc.facultyAppointment')}
                                         </h3>
-                                        <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
+                                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300 font-mono">
                                             {currentStatusName()}
                                         </span>
                                     </div>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.nidn')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNidn() || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{lecturerNidn() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.nuptk')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNuptk() || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{lecturerNuptk() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.studyProgramHomebase')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentUnitName()}</span>
+                                            <span class="font-bold text-foreground">{currentUnitName()}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.academicRank')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentRankName()}</span>
+                                            <span class="font-bold text-foreground">{currentRankName()}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.golonganPangkat')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentGroupName() || '-'}</span>
+                                            <span class="font-bold text-foreground">{currentGroupName() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.academicStatus')}</span>
@@ -421,37 +421,37 @@ export default function LecturerIndividualShowPage() {
                                         <Show when={currentContractName()}>
                                             <div class="col-span-2">
                                                 <span class="text-neutral-400 block">{t('lc.contractAgreement')}</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentContractName()}</span>
+                                                <span class="font-bold text-foreground">{currentContractName()}</span>
                                             </div>
                                         </Show>
                                     </div>
                                 </div>
 
                                 {/* Identity Summary Card */}
-                                <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
-                                    <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                <div class="p-5 rounded-md bg-card border border-border/60 space-y-3 shadow-2xs">
+                                    <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
                                         {t('lc.identityContact')}
                                     </h3>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.nationalIDNIK')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{ind()?.code || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.gender')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                            <span class="font-bold text-foreground">
                                                 {individualData()?.gender?.name || '-'}
                                             </span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.birthPlaceDate')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                            <span class="font-bold text-foreground">
                                                 {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                             </span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('lc.emailAddress')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 truncate block">
+                                            <span class="font-bold text-foreground truncate block">
                                                 {user()?.email || individualData()?.user?.email || 'mim@tritunas.ac.id'}
                                             </span>
                                         </div>
@@ -460,26 +460,26 @@ export default function LecturerIndividualShowPage() {
                             </div>
 
                             {/* Teaching Credit Progression Visualization with Apache ECharts */}
-                            <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-4">
+                            <div class="min-w-0 p-6 rounded-md bg-card border border-border/60 shadow-2xs space-y-4">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="space-y-1">
                                         <div class="flex items-center gap-2">
-                                            <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                            <div class="size-7 rounded-md bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                                 </svg>
                                             </div>
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                            <h3 class="text-sm font-bold text-foreground">
                                                 {t('lc.teachingCreditsProgression')}
                                             </h3>
                                         </div>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('lc.trenAkumulasiBebanSKSPerkuliahanYang')}
                                         </p>
                                     </div>
                                     <Show when={yearlyCreditTrends().length > 0}>
                                         <div class="flex items-center gap-2">
-                                            <span class="px-2.5 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200/80 dark:border-blue-800/60">
+                                            <span class="px-2.5 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-semibold border border-blue-200/80 dark:border-blue-800/60">
                                                 {yearlyCreditTrends().length} Periode Akademik
                                             </span>
                                         </div>
@@ -518,18 +518,18 @@ export default function LecturerIndividualShowPage() {
                             </div>
 
                             {/* Teaching Quick Link */}
-                            <div class="p-6 rounded-xs bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div class="p-6 rounded-md bg-linear-to-r from-blue-50 to-indigo-50 dark:from-blue-950/40 dark:to-indigo-950/40 border border-blue-200/80 dark:border-blue-800/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                                 <div class="space-y-1">
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-sm font-bold text-foreground">
                                         {t('lc.teachingClassManagement')}
                                     </h3>
-                                    <p class="text-xs text-neutral-600 dark:text-neutral-400">
+                                    <p class="text-xs text-muted-foreground">
                                         {t('lc.inputSemesterStudentScoresDownloadAttendee')}
                                     </p>
                                 </div>
                                 <A
                                     href="/lecturer/academic/campaign/transaction/teach"
-                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xs text-xs inline-flex items-center gap-2 transition-colors shrink-0"
+                                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md text-xs inline-flex items-center gap-2 transition-colors shrink-0"
                                 >
                                     <span>{t('lc.goToTeachingPortal')}</span>
                                 </A>
@@ -539,12 +539,12 @@ export default function LecturerIndividualShowPage() {
 
                     {/* Tab 2: Biodata */}
                     <Show when={activeTab() === 'biodata'}>
-                        <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-2xs">
-                            <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                        <div class="p-6 rounded-md bg-card border border-border/60 space-y-6 shadow-2xs">
+                            <div class="border-b border-border/60 pb-4">
+                                <h3 class="text-sm font-bold text-foreground">
                                     {t('lc.personalBiodataCivilRecords')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs text-muted-foreground">
                                     {t('lc.officialIndividualIdentityStoredInThe')}
                                 </p>
                             </div>
@@ -552,39 +552,39 @@ export default function LecturerIndividualShowPage() {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.fullName')}</span>
-                                    <span class="font-bold text-neutral-900 dark:text-white">{formattedFullName()}</span>
+                                    <span class="font-bold text-foreground">{formattedFullName()}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.frontTitle')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.front_title || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.front_title || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.lastTitle')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.last_title || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.last_title || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.nationalIDNIK')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.code || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{ind()?.code || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.gender')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.gender?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.gender?.name || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.religion')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.religion?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.religion?.name || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.birthPlace')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.birth_place || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.birth_place || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.birthDate')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.birth_date || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{ind()?.birth_date || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('lc.maritalStatus')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.marital_status?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.marital_status?.name || '-'}</span>
                                 </div>
                             </div>
                         </div>
@@ -594,17 +594,17 @@ export default function LecturerIndividualShowPage() {
                     <Show when={activeTab() === 'academic'}>
                         <div class="space-y-6">
                             {/* Primary Faculty Credentials Card */}
-                            <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-2xs">
-                                <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="p-6 rounded-md bg-card border border-border/60 space-y-6 shadow-2xs">
+                                <div class="border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <h3 class="text-sm font-bold text-foreground">
                                             {t('lc.academicEmploymentFacultyRegistration')}
                                         </h3>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('lc.higherEducationTeachingCredentialsHomebaseAssignment')}
                                         </p>
                                     </div>
-                                    <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 self-start sm:self-auto">
+                                    <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800 self-start sm:self-auto">
                                         {currentStatusName()}
                                     </span>
                                 </div>
@@ -612,23 +612,23 @@ export default function LecturerIndividualShowPage() {
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.nidnNomorIndukDosenNasional')}</span>
-                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNidn() || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{lecturerNidn() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.nuptkNUPN')}</span>
-                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNuptk() || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{lecturerNuptk() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.academicRankJabatanFungsional')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentRankName()}</span>
+                                        <span class="font-bold text-foreground">{currentRankName()}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.academicGroupGolonganPangkat')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentGroupName() || '-'}</span>
+                                        <span class="font-bold text-foreground">{currentGroupName() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.homebaseStudyProgram')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentUnitName()}</span>
+                                        <span class="font-bold text-foreground">{currentUnitName()}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.employmentStatus')}</span>
@@ -636,15 +636,15 @@ export default function LecturerIndividualShowPage() {
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.contractAgreement')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentContractName() || '-'}</span>
+                                        <span class="font-bold text-foreground">{currentContractName() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.highestEducationDegree')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
+                                        <span class="font-bold text-foreground">{individualData()?.education?.name || 'Magister (S2)'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('lc.registeredEmail')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{user()?.email || individualData()?.user?.email || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{user()?.email || individualData()?.user?.email || '-'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -652,43 +652,43 @@ export default function LecturerIndividualShowPage() {
                             {/* Homebases & Rank History Records */}
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Homebase Assignment History */}
-                                <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-2xs">
-                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                <div class="p-6 rounded-md bg-card border border-border/60 space-y-4 shadow-2xs">
+                                    <div class="flex items-center justify-between pb-3 border-b border-border">
                                         <div class="flex items-center gap-2">
-                                            <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                                            <div class="size-8 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                                 {t('lc.hb')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('lc.homebaseAssignmentHistory')}</h4>
+                                                <h4 class="text-xs font-bold text-foreground">{t('lc.homebaseAssignmentHistory')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_lecturer_transaction.homebases</p>
                                             </div>
                                         </div>
-                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">
                                             {allHomebases().length} Records
                                         </span>
                                     </div>
 
                                     <Show when={allHomebases().length > 0} fallback={
                                         <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                            {t('lc.currentActiveHomebase')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
+                                            {t('lc.currentActiveHomebase')} <span class="font-bold text-foreground/80">{currentUnitName()}</span>
                                         </div>
                                     }>
                                         <div class="space-y-3">
                                             <For each={allHomebases()}>
                                                 {(hb, idx) => (
-                                                    <div class="p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-md bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{hb.unit_name || 'Program Studi'}</span>
+                                                                <span class="font-bold text-foreground">{hb.unit_name || 'Program Studi'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{t('lc.active')}</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{t('lc.active')}</span>
                                                                 </Show>
                                                             </div>
                                                             <div class="flex items-center gap-2 text-[11px] text-neutral-500">
                                                                 <span>{hb.status_name || 'Dosen Tetap'}</span>
                                                                 <Show when={hb.contract_name}>
                                                                     <span>•</span>
-                                                                    <span class="font-medium text-neutral-600 dark:text-neutral-400">{hb.contract_name}</span>
+                                                                    <span class="font-medium text-muted-foreground">{hb.contract_name}</span>
                                                                 </Show>
                                                             </div>
                                                         </div>
@@ -703,36 +703,36 @@ export default function LecturerIndividualShowPage() {
                                 </div>
 
                                 {/* Academic Rank Progression */}
-                                <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-2xs">
-                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                <div class="p-6 rounded-md bg-card border border-border/60 space-y-4 shadow-2xs">
+                                    <div class="flex items-center justify-between pb-3 border-b border-border">
                                         <div class="flex items-center gap-2">
-                                            <div class="size-8 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                                            <div class="size-8 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
                                                 {t('lc.rk')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('lc.academicRankGroupHistory')}</h4>
+                                                <h4 class="text-xs font-bold text-foreground">{t('lc.academicRankGroupHistory')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_ranks & academic_groups</p>
                                             </div>
                                         </div>
-                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-md bg-secondary text-muted-foreground">
                                             {allAcademicRanks().length + allAcademicGroups().length} Records
                                         </span>
                                     </div>
 
                                     <Show when={allAcademicRanks().length > 0 || allAcademicGroups().length > 0} fallback={
                                         <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                            {t('lc.currentRank')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
+                                            {t('lc.currentRank')} <span class="font-bold text-foreground/80">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
                                         </div>
                                     }>
                                         <div class="space-y-3">
                                             <For each={allAcademicRanks()}>
                                                 {(rk, idx) => (
-                                                    <div class="p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-md bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
+                                                                <span class="font-bold text-foreground">{rk.rank_name || 'Jabatan Fungsional'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">{t('lc.latest')}</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">{t('lc.latest')}</span>
                                                                 </Show>
                                                             </div>
                                                             <span class="text-[10px] text-neutral-500 font-mono">{t('lc.sk')} {rk.decree_number || '-'} {rk.decree_date ? `(${rk.decree_date})` : ''}</span>
@@ -745,12 +745,12 @@ export default function LecturerIndividualShowPage() {
                                             </For>
                                             <For each={allAcademicGroups()}>
                                                 {(gp, idx) => (
-                                                    <div class="p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-md bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{t('lc.golongan')} {gp.group_name || 'Golongan'}</span>
+                                                                <span class="font-bold text-foreground">{t('lc.golongan')} {gp.group_name || 'Golongan'}</span>
                                                                 <Show when={idx() === 0}>
-                                                                    <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">{t('lc.latest')}</span>
+                                                                    <span class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">{t('lc.latest')}</span>
                                                                 </Show>
                                                             </div>
                                                             <span class="text-[10px] text-neutral-500 font-mono">{t('lc.sk')} {gp.decree_number || '-'} {gp.decree_date ? `(${gp.decree_date})` : ''}</span>

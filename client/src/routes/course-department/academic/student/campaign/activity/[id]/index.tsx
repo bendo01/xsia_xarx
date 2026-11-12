@@ -32,7 +32,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
     const [activity, setActivity] = createSignal<StudentActivityItem | null>(null);
     const teachHref = (id: string) => `/course-department/academic/campaign/transaction/teach/${id}`;
     const teachBtn =
-        'inline-flex items-center px-2.5 py-1 rounded-xs text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors';
+        'inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors';
     const [courses, setCourses] = createSignal<DetailActivityItem[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
     const [isPrintingKRS, setIsPrintingKRS] = createSignal(false);
@@ -136,23 +136,23 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
     };
 
     const btn =
-        'px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
+        'px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-card rounded-md p-6 border border-border shadow-2xs">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <p class="text-xs font-mono font-semibold text-blue-700 dark:text-blue-300">{t('cd.academicStudentActivity')}</p>
-                            <h1 class="text-2xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-2xl font-black tracking-tight text-foreground">
                                 {activity()?.name || activity()?.semester_name || t('cd.activityDetail')}
                             </h1>
                             <Show when={activity()?.student_name}>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs text-muted-foreground">
                                     {activity()?.student_code ? `${activity()?.student_code} - ` : ''}
                                     {activity()?.student_name}
                                 </p>
@@ -172,31 +172,31 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
 
                 {/* Summary */}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.sksSemester')}</p>
+                    <div class="bg-card rounded-md p-4 border border-border">
+                        <p class="text-[10px] uppercase font-mono text-muted-foreground">{t('cd.sksSemester')}</p>
                         <p class="text-2xl font-black font-mono text-neutral-800 dark:text-white">{totalSks()}</p>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.sksKumulatif')}</p>
+                    <div class="bg-card rounded-md p-4 border border-border">
+                        <p class="text-[10px] uppercase font-mono text-muted-foreground">{t('cd.sksKumulatif')}</p>
                         <p class="text-2xl font-black font-mono text-teal-600 dark:text-teal-400">
                             {activity()?.grand_total_credit || totalSks()}
                         </p>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.ips')}</p>
+                    <div class="bg-card rounded-md p-4 border border-border">
+                        <p class="text-[10px] uppercase font-mono text-muted-foreground">{t('cd.ips')}</p>
                         <p class="text-2xl font-black font-mono text-sky-600 dark:text-sky-400">{ips()}</p>
                     </div>
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700">
-                        <p class="text-[10px] uppercase font-mono text-neutral-500 dark:text-neutral-400">{t('cd.ipk')}</p>
+                    <div class="bg-card rounded-md p-4 border border-border">
+                        <p class="text-[10px] uppercase font-mono text-muted-foreground">{t('cd.ipk')}</p>
                         <p class="text-2xl font-black font-mono text-indigo-600 dark:text-indigo-400">{ipk()}</p>
                     </div>
                 </div>
 
                 {/* Courses */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                    <div class="px-5 py-4 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
+                    <div class="px-5 py-4 border-b border-border flex items-center justify-between">
                         <h2 class="text-sm font-bold">{t('cd.mataKuliah')}</h2>
-                        <span class="text-xs font-mono text-neutral-500 dark:text-neutral-400">{courses().length} {t('cd.mataKuliah')}</span>
+                        <span class="text-xs font-mono text-muted-foreground">{courses().length} {t('cd.mataKuliah')}</span>
                     </div>
 
                     <Show when={!isLoading()} fallback={<div class="p-8 text-center text-xs text-neutral-500">{t('cd.loading')}</div>}>
@@ -207,7 +207,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                             {/* Desktop table */}
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-xs text-left border-collapse">
-                                    <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-700">
+                                    <thead class="bg-muted/60 text-muted-foreground uppercase font-mono text-[10px] tracking-wider border-b border-border">
                                         <tr>
                                             <th class="px-5 py-3">{t('cd.no')}</th>
                                             <th class="px-5 py-3">{t('cd.kode')}</th>
@@ -225,7 +225,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                                 <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                     <td class="px-5 py-3 font-mono text-neutral-400">{idx() + 1}</td>
                                                     <td class="px-5 py-3 font-mono text-blue-600 dark:text-blue-400">{c.course_code}</td>
-                                                    <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">{c.course_name}</td>
+                                                    <td class="px-5 py-3 font-medium text-foreground">{c.course_name}</td>
                                                     <td class="px-5 py-3">
                                                         <Show when={c.lecturers && c.lecturers.length > 0} fallback={<span>{c.lecturer_name || '-'}</span>}>
                                                             <div class="flex flex-col gap-1">
@@ -238,7 +238,7 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                                     <td class="px-5 py-3 text-center font-mono font-bold">{c.credit ?? 0}</td>
                                                     <td class="px-5 py-3 text-center font-mono">{c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}</td>
                                                     <td class="px-5 py-3 text-center">
-                                                        <span class={`px-2 py-0.5 rounded-xs text-[10px] font-bold ${gradeBadgeClass(c.grade_letter)}`}>
+                                                        <span class={`px-2 py-0.5 rounded-md text-[10px] font-bold ${gradeBadgeClass(c.grade_letter)}`}>
                                                             {c.grade_letter || '-'}
                                                         </span>
                                                     </td>
@@ -264,13 +264,13 @@ export default function CourseDepartmentStudentCampaignActivityShowPage() {
                                                     <p class="text-[10px] font-mono text-neutral-400">
                                                         #{idx() + 1} · <span class="text-blue-600 dark:text-blue-400">{c.course_code}</span>
                                                     </p>
-                                                    <p class="text-sm font-medium text-neutral-900 dark:text-white">{c.course_name}</p>
+                                                    <p class="text-sm font-medium text-foreground">{c.course_name}</p>
                                                 </div>
-                                                <span class={`px-2 py-0.5 rounded-xs text-[10px] font-bold ${gradeBadgeClass(c.grade_letter)}`}>
+                                                <span class={`px-2 py-0.5 rounded-md text-[10px] font-bold ${gradeBadgeClass(c.grade_letter)}`}>
                                                     {c.grade_letter || '-'}
                                                 </span>
                                             </div>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400">{c.lecturer_name || '-'}</p>
+                                            <p class="text-xs text-muted-foreground">{c.lecturer_name || '-'}</p>
                                             <div class="flex gap-4 text-xs font-mono">
                                                 <span>{t('cd.sks2')} <b>{c.credit ?? 0}</b></span>
                                                 <span>{t('cd.nilai2')} <b>{c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}</b></span>

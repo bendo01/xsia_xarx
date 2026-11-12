@@ -131,22 +131,22 @@ export default function RectoratLecturerIndex() {
     const endIndex = () => Math.min(startIndex() + pagedItems().length - 1, filteredItems().length);
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
 
                 {/* Header */}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">{t('rt.akademik')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.dosen')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.dosen')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-violet-200 dark:border-violet-800/50">
                             <span class="relative flex size-2">
@@ -155,7 +155,7 @@ export default function RectoratLecturerIndex() {
                             </span>
                             {t('rt.akademikDosen')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-violet-600 dark:text-violet-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
@@ -163,16 +163,16 @@ export default function RectoratLecturerIndex() {
                             </span>
                             {t('rt.daftarDosen')}
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('rt.seluruhDosenYangBertugasDalamInstitusi')}
                         </p>
                     </div>
 
                     {/* Stats */}
                     <div class="flex items-center gap-3 shrink-0">
-                        <div class="text-center px-4 py-2.5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm min-w-18">
-                            <p class="text-2xl font-black text-neutral-900 dark:text-white">{scopedItems().length}</p>
-                            <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-medium uppercase tracking-wide">{t('rt.total')}</p>
+                        <div class="text-center px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm min-w-18">
+                            <p class="text-2xl font-black text-foreground">{scopedItems().length}</p>
+                            <p class="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">{t('rt.total')}</p>
                         </div>
                         <div class="text-center px-4 py-2.5 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 shadow-sm min-w-18">
                             <p class="text-2xl font-black text-emerald-700 dark:text-emerald-400">{activeCount()}</p>
@@ -203,14 +203,14 @@ export default function RectoratLecturerIndex() {
                             />
                         </div>
 
-                        <div class="flex items-center gap-1 p-1 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-lg shadow-sm shrink-0">
+                        <div class="flex items-center gap-1 p-1 bg-card border border-border rounded-lg shadow-sm shrink-0">
                             {(['all', 'active', 'inactive'] as const).map(status => (
                                 <button
                                     type="button"
                                     id={`lecturer-filter-${status}`}
                                     class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-all ${filterStatus() === status
                                         ? status === 'inactive' ? 'bg-amber-600 text-white shadow-sm' : 'bg-violet-600 text-white shadow-sm'
-                                        : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800'
+                                        : 'text-muted-foreground hover:bg-neutral-100 dark:hover:bg-neutral-800'
                                         }`}
                                     onClick={() => { setFilterStatus(status); setCurrentPage(1); }}
                                 >
@@ -221,10 +221,10 @@ export default function RectoratLecturerIndex() {
                     </div>
 
                     <div class="flex items-center gap-2 shrink-0">
-                        <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium">{t('rt.baris')}</label>
+                        <label class="text-xs text-muted-foreground font-medium">{t('rt.baris')}</label>
                         <select
                             id="lecturer-rows-per-page"
-                            class="p-2.5 text-sm border border-neutral-200 rounded-lg bg-white dark:bg-neutral-900 dark:border-neutral-800 dark:text-white shadow-sm"
+                            class="p-2.5 text-sm border border-neutral-200 rounded-lg bg-card dark:border-neutral-800 dark:text-white shadow-sm"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -240,10 +240,10 @@ export default function RectoratLecturerIndex() {
                 </div>
 
                 {/* Table */}
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider">
+                            <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-muted-foreground border-b border-border font-semibold tracking-wider">
                                 <tr>
                                     <th class="px-6 py-4">{t('rt.dosen')}</th>
                                     <th class="px-6 py-4">{t('rt.nidnKode')}</th>
@@ -284,11 +284,11 @@ export default function RectoratLecturerIndex() {
                                         fallback={
                                             <tr>
                                                 <td colspan="6" class="px-6 py-16 text-center">
-                                                    <div class="flex flex-col items-center gap-3 text-neutral-500 dark:text-neutral-400">
+                                                    <div class="flex flex-col items-center gap-3 text-muted-foreground">
                                                         <div class="p-4 rounded-full bg-violet-50 dark:bg-violet-900/20 text-violet-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" /></svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaDataDosen')}</span>
+                                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaDataDosen')}</span>
                                                         <span class="text-sm">{t('rt.cobaUbahKataKunciAtauFilter')}</span>
                                                     </div>
                                                 </td>
@@ -304,20 +304,20 @@ export default function RectoratLecturerIndex() {
                                                                 {initials(item)}
                                                             </div>
                                                             <div class="min-w-0">
-                                                                <p class="font-semibold text-neutral-900 dark:text-white truncate">{fullName(item)}</p>
+                                                                <p class="font-semibold text-foreground truncate">{fullName(item)}</p>
                                                                 <Show when={item.identification_number}>
-                                                                    <p class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">{item.identification_number}</p>
+                                                                    <p class="text-[11px] font-mono text-muted-foreground">{item.identification_number}</p>
                                                                 </Show>
                                                             </div>
                                                         </div>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <span class="text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300">{item.code || '-'}</span>
+                                                        <span class="text-xs font-mono font-medium text-foreground/80">{item.code || '-'}</span>
                                                     </td>
                                                     <td class="px-6 py-4 whitespace-nowrap">
-                                                        <span class="text-xs font-mono text-neutral-600 dark:text-neutral-400">{item.nuptk || '-'}</span>
+                                                        <span class="text-xs font-mono text-muted-foreground">{item.nuptk || '-'}</span>
                                                     </td>
-                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-neutral-600 dark:text-neutral-400">
+                                                    <td class="px-6 py-4 whitespace-nowrap text-xs text-muted-foreground">
                                                         {formatDate(item.start_date) || '-'}
                                                     </td>
                                                     <td class="px-6 py-4 text-center">
@@ -356,27 +356,27 @@ export default function RectoratLecturerIndex() {
                     </div>
 
                     {/* Pagination */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('rt.menampilkan')} <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length > 0 ? startIndex() : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> dari <span class="font-semibold text-neutral-900 dark:text-white">{filteredItems().length}</span> dosen
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
+                            {t('rt.menampilkan')} <span class="font-semibold text-foreground">{filteredItems().length > 0 ? startIndex() : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> dari <span class="font-semibold text-foreground">{filteredItems().length}</span> dosen
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm">
                             <button
                                 type="button"
                                 id="lecturer-prev-page"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
                             >
                                 {t('rt.sebelumnya2')}
                             </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-violet-700 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border-y border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
                             <button
                                 type="button"
                                 id="lecturer-next-page"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage(p => Math.min(totalPages(), p + 1))}
                             >

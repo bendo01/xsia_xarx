@@ -70,23 +70,23 @@ export default function NotFound() {
   ];
 
   return (
-    <div class="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 selection:bg-neutral-800 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900">
+    <div class="min-h-screen flex flex-col bg-muted text-foreground selection:bg-neutral-800 selection:text-white dark:selection:bg-white dark:selection:text-neutral-900">
       <TopBar />
 
       <main class="flex-1 flex flex-col items-center justify-center relative overflow-hidden px-4 py-12 sm:py-16">
         {/* Ambient background decoration */}
         <div class="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
-          <div class="absolute -top-40 -left-40 size-96 rounded-xs bg-linear-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
-          <div class="absolute -bottom-40 -right-40 size-96 rounded-xs bg-linear-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
+          <div class="absolute -top-40 -left-40 size-96 rounded-md bg-linear-to-br from-blue-500/10 to-indigo-500/0 dark:from-blue-500/15 blur-3xl" />
+          <div class="absolute -bottom-40 -right-40 size-96 rounded-md bg-linear-to-tl from-amber-500/10 to-purple-500/0 dark:from-amber-500/15 blur-3xl" />
           <div class="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#262626_1px,transparent_1px)] [background-size:16px_16px] opacity-60" />
         </div>
 
         <div class="relative z-1 max-w-3xl w-full mx-auto text-center">
           {/* Status Badge */}
-          <div class="inline-flex items-center gap-2 px-3 py-1 bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-xs font-semibold text-neutral-700 dark:text-neutral-300 tracking-wide uppercase shadow-2xs mb-6">
+          <div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary border border-border text-xs font-semibold text-foreground/80 tracking-wide uppercase shadow-2xs mb-6">
             <span class="relative flex size-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-xs bg-red-400 opacity-75" />
-              <span class="relative inline-flex rounded-xs size-2 bg-red-500" />
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-md bg-red-400 opacity-75" />
+              <span class="relative inline-flex rounded-md size-2 bg-red-500" />
             </span>
             <span>{t('errors.notFound.status')}</span>
           </div>
@@ -97,7 +97,7 @@ export default function NotFound() {
               404
             </h1>
             <div class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 dark:opacity-20">
-              <svg class="size-48 sm:size-64 text-neutral-900 dark:text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <svg class="size-48 sm:size-64 text-foreground" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
                 <circle cx="12" cy="12" r="10" />
                 <path d="m4.93 4.93 4.24 4.24" />
                 <path d="m14.83 9.17 4.24-4.24" />
@@ -109,19 +109,19 @@ export default function NotFound() {
           </div>
 
           {/* Title & Description */}
-          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white mt-2">
+          <h2 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground mt-2">
             {t('errors.notFound.title')}
           </h2>
-          <p class="mt-3 text-sm sm:text-base text-neutral-600 dark:text-neutral-400 max-w-lg mx-auto leading-relaxed">
+          <p class="mt-3 text-sm sm:text-base text-muted-foreground max-w-lg mx-auto leading-relaxed">
             {t('errors.notFound.description')}
           </p>
 
           {/* Requested Path Badge with Copy */}
-          <div class="mt-5 inline-flex items-center gap-2 p-1.5 px-3 bg-white dark:bg-neutral-800/80 border border-neutral-200 dark:border-neutral-700 shadow-2xs max-w-full">
-            <span class="text-xs font-medium text-neutral-500 dark:text-neutral-400 shrink-0">
+          <div class="mt-5 inline-flex items-center gap-2 p-1.5 px-3 bg-card/80 border border-border shadow-2xs max-w-full">
+            <span class="text-xs font-medium text-muted-foreground shrink-0">
               {t('errors.notFound.target')}:
             </span>
-            <code class="text-xs font-mono text-neutral-800 dark:text-neutral-200 truncate max-w-xs sm:max-w-md">
+            <code class="text-xs font-mono text-foreground truncate max-w-xs sm:max-w-md">
               {location.pathname}
             </code>
             <button
@@ -160,7 +160,7 @@ export default function NotFound() {
             <button
               type="button"
               onClick={() => window.history.back()}
-              class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white hover:bg-neutral-50 dark:bg-neutral-800 dark:text-neutral-200 dark:hover:bg-neutral-700 border border-neutral-300 dark:border-neutral-600 shadow-2xs hover:shadow-xs transition-all cursor-pointer"
+              class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium text-neutral-700 bg-white hover:bg-muted dark:text-neutral-200 dark:hover:bg-neutral-700 border border-border shadow-2xs hover:shadow-xs transition-all cursor-pointer"
             >
               <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m12 19-7-7 7-7" />
@@ -184,8 +184,8 @@ export default function NotFound() {
 
           {/* Quick Links Section */}
           <div class="mt-12 text-left">
-            <div class="flex items-center justify-between mb-4 border-b border-neutral-200 dark:border-neutral-700 pb-2">
-              <h3 class="text-xs font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+            <div class="flex items-center justify-between mb-4 border-b border-border pb-2">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-muted-foreground">
                 {t('errors.notFound.popularDestinations')}
               </h3>
               <span class="text-xs text-neutral-400 dark:text-neutral-500">
@@ -198,21 +198,21 @@ export default function NotFound() {
                 {(link) => (
                   <A
                     href={link.href}
-                    class="group flex items-start gap-3 p-3.5 bg-white dark:bg-neutral-800/90 border border-neutral-200 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-500 hover:shadow-sm transition-all"
+                    class="group flex items-start gap-3 p-3.5 bg-card/90 border border-border hover:border-neutral-400 dark:hover:border-neutral-500 hover:shadow-sm transition-all"
                   >
-                    <div class="size-9 shrink-0 flex items-center justify-center bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-neutral-900 transition-colors">
+                    <div class="size-9 shrink-0 flex items-center justify-center bg-secondary text-neutral-700 dark:text-neutral-200 group-hover:bg-neutral-900 group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-neutral-900 transition-colors">
                       {link.icon}
                     </div>
                     <div class="flex-1 min-w-0">
                       <div class="flex items-center justify-between gap-2">
-                        <div class="text-sm font-semibold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <div class="text-sm font-semibold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                           {link.title}
                         </div>
-                        <span class="text-[10px] font-medium px-1.5 py-0.5 bg-neutral-100 dark:bg-neutral-700/80 text-neutral-600 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
+                        <span class="text-[10px] font-medium px-1.5 py-0.5 bg-secondary/80 text-muted-foreground border border-border">
                           {link.badge}
                         </span>
                       </div>
-                      <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 leading-snug line-clamp-2">
+                      <p class="text-xs text-muted-foreground mt-1 leading-snug line-clamp-2">
                         {link.description}
                       </p>
                     </div>
@@ -228,7 +228,7 @@ export default function NotFound() {
           </div>
 
           {/* Assistance & System Info Footer */}
-          <div class="mt-10 pt-6 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-neutral-500 dark:text-neutral-400">
+          <div class="mt-10 pt-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground">
             <div class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10" />

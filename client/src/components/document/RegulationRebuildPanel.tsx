@@ -62,21 +62,21 @@ export default function RegulationRebuildPanel() {
 
     return (
         <div class="space-y-4">
-            <p class="text-xs text-neutral-500 dark:text-neutral-400">{t('ad.kbRegDescription')}</p>
+            <p class="text-xs text-muted-foreground">{t('ad.kbRegDescription')}</p>
 
             <Show when={status()?.docling_available === false}>
-                <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-xs">
+                <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-md">
                     {t('ad.kbDoclingMissing')}
                 </p>
             </Show>
             <Show when={status()?.folder_available === false}>
-                <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-xs">
+                <p class="text-xs text-red-700 dark:text-red-300 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 p-3 rounded-md">
                     {t('ad.kbRegFolderMissing')}
                 </p>
             </Show>
 
             <Show when={status()}>
-                <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-neutral-600 dark:text-neutral-300">
+                <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-muted-foreground">
                     <span>
                         {t('ad.kbRegFolderPdfs')}: <span class="font-semibold">{status()!.folder_pdf_count}</span>
                     </span>
@@ -103,7 +103,7 @@ export default function RegulationRebuildPanel() {
                         <span class="size-2 rounded-full bg-blue-500 animate-pulse"></span>
                         {t('ad.kbRegQueueNote')}: {queueLength()}
                     </p>
-                    <p class="text-neutral-600 dark:text-neutral-300">{t('ad.kbRegFailureNote')}</p>
+                    <p class="text-muted-foreground">{t('ad.kbRegFailureNote')}</p>
                 </div>
             </Show>
 
@@ -127,9 +127,9 @@ export default function RegulationRebuildPanel() {
                 </div>
             </Show>
 
-            <div class="border border-neutral-200 dark:border-neutral-700 max-h-64 overflow-y-auto">
+            <div class="border border-border max-h-64 overflow-y-auto">
                 <table class="w-full text-xs sm:text-sm text-left">
-                    <thead class="sticky top-0 text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-800 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                    <thead class="sticky top-0 text-xs text-neutral-600 uppercase bg-secondary dark:text-neutral-300 border-b border-border">
                         <tr>
                             <th class="px-3 py-2.5 font-semibold">{t('ad.kbRegColumnTitle')}</th>
                             <th class="px-3 py-2.5 font-semibold whitespace-nowrap">{t('ad.kbRegColumnNumber')}</th>
@@ -186,7 +186,7 @@ export default function RegulationRebuildPanel() {
                 </table>
             </div>
 
-            <label class="flex items-start gap-2 text-xs text-neutral-700 dark:text-neutral-300 cursor-pointer">
+            <label class="flex items-start gap-2 text-xs text-foreground/80 cursor-pointer">
                 <input
                     type="checkbox"
                     class="mt-0.5"
@@ -195,7 +195,7 @@ export default function RegulationRebuildPanel() {
                 />
                 <span>
                     {t('ad.kbRegForce')}
-                    <span class="block text-neutral-500 dark:text-neutral-400">{t('ad.kbRegForceHint')}</span>
+                    <span class="block text-muted-foreground">{t('ad.kbRegForceHint')}</span>
                 </span>
             </label>
 
@@ -204,7 +204,7 @@ export default function RegulationRebuildPanel() {
                     type="button"
                     onClick={start}
                     disabled={startDisabled()}
-                    class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-xs transition-colors cursor-pointer"
+                    class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md transition-colors cursor-pointer"
                     id="btn-start-regulation-rebuild"
                 >
                     {isStarting() ? t('ad.kbStarting') : t('ad.kbRegStart')}

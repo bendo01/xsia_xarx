@@ -75,7 +75,7 @@ export default function RouteGuard(props: { children: JSX.Element }) {
         <Show
             when={!isChecking() && isAllowed()}
             fallback={
-                <div class="min-h-screen flex items-center justify-center bg-neutral-50 dark:bg-neutral-900">
+                <div class="min-h-screen flex items-center justify-center bg-muted">
                     <div class="flex flex-col items-center gap-3 text-xs text-neutral-500 font-mono">
                         <div class="size-6 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
                         <span>Verifying access permissions...</span>

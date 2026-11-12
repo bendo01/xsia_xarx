@@ -38,7 +38,7 @@ const ToggleSwitch = (props: { checked: boolean; disabled: boolean; label: strin
         class="relative inline-flex h-5 w-9 shrink-0 items-center border transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-wait"
         classList={{
             'bg-blue-600 border-blue-600': props.checked,
-            'bg-neutral-200 dark:bg-neutral-700 border-neutral-300 dark:border-neutral-600': !props.checked,
+            'bg-neutral-200 dark:bg-neutral-700 border-border': !props.checked,
         }}
     >
         <span
@@ -157,7 +157,7 @@ export default function PermissionToggleList(props: Props) {
         <div class="space-y-3">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div class="flex items-center gap-2">
-                    <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">{props.title ?? 'Controller Permissions'}</h3>
+                    <h3 class="text-sm font-bold font-mono text-foreground">{props.title ?? 'Controller Permissions'}</h3>
                     <Show when={!isLoading()}>
                         <span class="px-2 py-0.5 text-[11px] font-mono font-semibold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800/80">
                             {assignedCount()} / {permissions().length} allowed
@@ -165,7 +165,7 @@ export default function PermissionToggleList(props: Props) {
                     </Show>
                 </div>
                 <div class="flex flex-col sm:flex-row sm:items-center gap-2 w-full sm:w-auto">
-                    <label class="inline-flex items-center gap-2 text-xs font-mono text-neutral-600 dark:text-neutral-400 cursor-pointer select-none">
+                    <label class="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground cursor-pointer select-none">
                         <input
                             type="checkbox"
                             checked={showAssignedOnly()}
@@ -179,7 +179,7 @@ export default function PermissionToggleList(props: Props) {
                         value={searchQuery()}
                         onInput={(e) => setSearchQuery(e.currentTarget.value)}
                         placeholder="Search permission or URI..."
-                        class="w-full sm:w-72 px-3 py-1.5 text-xs font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 focus:outline-none focus:border-blue-500"
+                        class="w-full sm:w-72 px-3 py-1.5 text-xs font-mono bg-card border border-border focus:outline-none focus:border-blue-500"
                     />
                 </div>
             </div>
@@ -197,18 +197,18 @@ export default function PermissionToggleList(props: Props) {
                 <Show
                     when={groups().length > 0}
                     fallback={
-                        <div class="py-8 text-center text-xs text-neutral-500 border border-neutral-200 dark:border-neutral-700">
+                        <div class="py-8 text-center text-xs text-neutral-500 border border-border">
                             No permissions match the current filter.
                         </div>
                     }
                 >
                     <For each={groups()}>
                         {(group) => (
-                            <div class="border border-neutral-200 dark:border-neutral-700">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-2.5 bg-neutral-50 dark:bg-neutral-900/40 border-b border-neutral-200 dark:border-neutral-700">
+                            <div class="border border-border">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-4 py-2.5 bg-muted/40 border-b border-border">
                                     <div class="flex items-center gap-2 min-w-0">
-                                        <span class="text-xs font-mono font-semibold text-neutral-900 dark:text-white truncate">{group.controller}</span>
-                                        <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400 shrink-0">
+                                        <span class="text-xs font-mono font-semibold text-foreground truncate">{group.controller}</span>
+                                        <span class="text-[11px] font-mono text-muted-foreground shrink-0">
                                             {groupAssignedCount(group)} / {group.permissions.length}
                                         </span>
                                     </div>
@@ -237,7 +237,7 @@ export default function PermissionToggleList(props: Props) {
                                             <div class="flex items-center justify-between gap-3 px-4 py-2 hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
                                                 <div class="min-w-0">
                                                     <div class="flex items-center gap-2">
-                                                        <span class="text-xs font-mono font-medium text-neutral-900 dark:text-white">
+                                                        <span class="text-xs font-mono font-medium text-foreground">
                                                             {splitPermissionName(permission.name).action}
                                                         </span>
                                                         <Show when={permission.is_open}>
@@ -246,7 +246,7 @@ export default function PermissionToggleList(props: Props) {
                                                             </span>
                                                         </Show>
                                                     </div>
-                                                    <div class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400 truncate">
+                                                    <div class="text-[11px] font-mono text-muted-foreground truncate">
                                                         {permission.uri || permission.name}
                                                     </div>
                                                 </div>

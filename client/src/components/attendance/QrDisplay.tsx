@@ -20,5 +20,5 @@ export default function QrDisplay(props: { value: string; size?: number }) {
         void draw();
     });
 
-    return <canvas ref={canvas} class="rounded-xs bg-white" aria-label="QR Code presensi" />;
+    return <canvas ref={canvas} class="rounded-md bg-white" aria-label="QR Code presensi" />;
 }

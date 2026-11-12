@@ -104,27 +104,27 @@ export default function StudentMasterIndexPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="border-b border-border pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                            <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                                 <span>{t('st.student')}</span>
                                 <span>/</span>
                                 <span>{t('st.academic')}</span>
                                 <span>/</span>
                                 <span>{t('st.student')}</span>
                                 <span>/</span>
-                                <span class="font-medium text-neutral-900 dark:text-white">{t('st.master')}</span>
+                                <span class="font-medium text-foreground">{t('st.master')}</span>
                             </nav>
-                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                                 {t('st.admittedStudentsDirectory')}
                             </h1>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            <p class="text-sm text-muted-foreground mt-0.5">
                                 {t('st.comprehensiveInstitutionalRegistryOfAdmittedStudents')}
                             </p>
                         </div>
@@ -132,7 +132,7 @@ export default function StudentMasterIndexPage() {
                         <div class="flex items-center gap-3">
                             <A
                                 href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors"
                             >
                                 {t('st.myProfile')}
                             </A>
@@ -141,14 +141,14 @@ export default function StudentMasterIndexPage() {
                 </div>
 
                 {/* Filter & Search Bar */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="bg-card rounded-md p-4 border border-border shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
                     <form onSubmit={handleSearchSubmit} class="relative w-full sm:w-80">
                         <input
                             type="text"
                             placeholder={t('st.searchByStudentNIMOrName')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
+                            class="w-full pl-9 pr-4 py-2 text-xs rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-blue-500"
                         />
                         <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </form>
@@ -161,7 +161,7 @@ export default function StudentMasterIndexPage() {
                 </div>
 
                 {/* Student Master Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <Spinner size="lg" color="blue" aria-hidden={true} />
@@ -170,7 +170,7 @@ export default function StudentMasterIndexPage() {
                     }>
                         <div class="overflow-x-auto">
                             <table class="w-full text-xs text-start">
-                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
                                         <th class="py-3.5 px-4 text-start">{t('st.studentNIM')}</th>
                                         <th class="py-3.5 px-4 text-start">{t('st.fullName')}</th>
@@ -189,7 +189,7 @@ export default function StudentMasterIndexPage() {
                                                     <svg class="size-10 text-neutral-300 dark:text-neutral-600 mb-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
                                                     </svg>
-                                                    <p class="text-sm font-semibold text-neutral-600 dark:text-neutral-300">
+                                                    <p class="text-sm font-semibold text-muted-foreground">
                                                         {t('st.noAdmittedStudentRecordsFound')}
                                                     </p>
                                                     <p class="text-xs text-neutral-400 max-w-sm">
@@ -206,29 +206,29 @@ export default function StudentMasterIndexPage() {
                                                 <td class="py-3.5 px-4 font-mono font-bold text-blue-600 dark:text-blue-400">
                                                     {std.code}
                                                 </td>
-                                                <td class="py-3.5 px-4 font-bold text-neutral-900 dark:text-white">
+                                                <td class="py-3.5 px-4 font-bold text-foreground">
                                                     {std.name}
                                                 </td>
-                                                <td class="py-3.5 px-4 text-neutral-600 dark:text-neutral-300">
+                                                <td class="py-3.5 px-4 text-muted-foreground">
                                                     {std.unit_name || 'Informatics Engineering'}
                                                 </td>
                                                 <td class="py-3.5 px-4">
-                                                    <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-semibold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                                                    <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-semibold bg-secondary text-foreground/80">
                                                         {std.selection_type_name || 'SNBP'}
                                                     </span>
                                                 </td>
-                                                <td class="py-3.5 px-4 text-center font-mono text-neutral-500 dark:text-neutral-400">
+                                                <td class="py-3.5 px-4 text-center font-mono text-muted-foreground">
                                                     {std.registered}
                                                 </td>
                                                 <td class="py-3.5 px-4 text-center">
-                                                    <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                         {t('st.active')}
                                                     </span>
                                                 </td>
                                                 <td class="py-3.5 px-4 text-end">
                                                     <A
                                                         href={`/student/academic/student/master/student/${std.id}/show`}
-                                                        class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
+                                                        class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-md text-xs font-bold transition-colors"
                                                     >
                                                         {t('st.viewDetail')}
                                                     </A>
@@ -241,7 +241,7 @@ export default function StudentMasterIndexPage() {
                         </div>
 
                         {/* Pagination Bar */}
-                        <div class="p-4 border-t border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
+                        <div class="p-4 border-t border-border flex items-center justify-between">
                             <span class="text-xs text-neutral-400 font-mono">
                                 {t('st.page')} {page()} of {totalPages()}
                             </span>
@@ -255,7 +255,7 @@ export default function StudentMasterIndexPage() {
                                         }
                                     }}
                                     disabled={page() <= 1}
-                                    class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                    class="px-3 py-1 text-xs rounded-md border border-border disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
                                     {t('st.previous')}
                                 </button>
@@ -268,7 +268,7 @@ export default function StudentMasterIndexPage() {
                                         }
                                     }}
                                     disabled={page() >= totalPages()}
-                                    class="px-3 py-1 text-xs rounded-xs border border-neutral-200 dark:border-neutral-700 disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                    class="px-3 py-1 text-xs rounded-md border border-border disabled:opacity-40 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                                 >
                                     {t('st.next')}
                                 </button>

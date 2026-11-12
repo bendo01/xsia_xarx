@@ -183,14 +183,14 @@ export default function CourseMasterShowPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header & Breadcrumb */}
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
                             <span>{t('cd.academic')}</span>
@@ -201,9 +201,9 @@ export default function CourseMasterShowPage() {
                             <span>/</span>
                             <a href={backUrl()} class="hover:text-blue-600 transition-colors">{t('cd.course')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.detail')}</span>
+                            <span class="font-medium text-foreground">{t('cd.detail')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('cd.courseDetails')} <span class="text-blue-600 dark:text-blue-400">{course()?.code || '...'}</span>
                         </h1>
                     </div>
@@ -211,7 +211,7 @@ export default function CourseMasterShowPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href={backUrl()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -222,7 +222,7 @@ export default function CourseMasterShowPage() {
                         <Show when={selectedId()}>
                             <a
                                 href={`${basePath}/${selectedId()}/edit`}
-                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors"
+                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 20h9" />
@@ -234,7 +234,7 @@ export default function CourseMasterShowPage() {
                             <button
                                 type="button"
                                 onClick={openDeleteModal}
-                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-red-600 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-xs shadow-xs transition-colors cursor-pointer"
+                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-red-600 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 hover:bg-red-100 dark:hover:bg-red-900/50 rounded-md shadow-xs transition-colors cursor-pointer"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M3 6h18" />
@@ -250,7 +250,7 @@ export default function CourseMasterShowPage() {
                 <Show
                     when={!isLoading()}
                     fallback={
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-8 space-y-4 animate-pulse">
+                        <div class="bg-card border border-border p-8 space-y-4 animate-pulse">
                             <div class="h-8 w-64 bg-neutral-200 dark:bg-neutral-700"></div>
                             <div class="h-4 w-96 bg-neutral-200 dark:bg-neutral-700"></div>
                             <div class="grid grid-cols-2 gap-4 pt-4">
@@ -263,7 +263,7 @@ export default function CourseMasterShowPage() {
                     <Show
                         when={course()}
                         fallback={
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 p-12 text-center text-neutral-500">
+                            <div class="bg-card border border-border p-12 text-center text-neutral-500">
                                 <p class="text-base font-semibold">{t('cd.courseDetailsNotFound')}</p>
                                 <p class="text-xs mt-1">{t('cd.checkIfTheIDInThe')}</p>
                                 <a href={basePath} class="inline-block mt-4 text-xs font-mono text-blue-600 hover:underline">{t('cd.returnToCourseList')}</a>
@@ -271,24 +271,24 @@ export default function CourseMasterShowPage() {
                         }
                     >
                         {/* Course Overview Banner */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
+                        <div class="bg-card border border-border shadow-2xs p-6">
                             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-100 dark:border-neutral-700 pb-5">
                                 <div>
                                     <div class="flex items-center gap-2 mb-1">
                                         <span class="px-2.5 py-0.5 text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                             {course()?.code || '-'}
                                         </span>
-                                        <span class="px-2.5 py-0.5 text-xs font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                                        <span class="px-2.5 py-0.5 text-xs font-medium bg-secondary text-foreground/80">
                                             {course()?.implementation_method || 'Kuliah'}
                                         </span>
                                     </div>
-                                    <h2 class="text-2xl font-bold text-neutral-900 dark:text-white font-mono">
+                                    <h2 class="text-2xl font-bold text-foreground font-mono">
                                         {course()?.name || '-'}
                                     </h2>
-                                    <div class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 flex items-center gap-2">
-                                        <span>{t('cd.programStudi')} <strong class="text-neutral-800 dark:text-neutral-200">{unitName()}</strong></span>
+                                    <div class="text-xs text-muted-foreground mt-1 flex items-center gap-2">
+                                        <span>{t('cd.programStudi')} <strong class="text-foreground">{unitName()}</strong></span>
                                         <span>•</span>
-                                        <span>{t('cd.jenis')} <strong class="text-neutral-800 dark:text-neutral-200">{varietyName()}</strong></span>
+                                        <span>{t('cd.jenis')} <strong class="text-foreground">{varietyName()}</strong></span>
                                     </div>
                                 </div>
 
@@ -304,38 +304,38 @@ export default function CourseMasterShowPage() {
 
                             {/* Credit Distribution Cards */}
                             <div class="mt-5">
-                                <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-3">
+                                <h3 class="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground mb-3">
                                     {t('cd.creditsBreakdownDistribusiSKS')}
                                 </h3>
 
                                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center">
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/70">
+                                    <div class="p-3 bg-muted/50 border border-border/70">
                                         <span class="text-[11px] text-neutral-500 uppercase font-mono block">{t('cd.teoriKuliah')}</span>
-                                        <span class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold font-mono text-foreground">
                                             {course()?.lecture_credit ?? 0}
                                         </span>
                                         <span class="text-[10px] text-neutral-400 block">{t('cd.sks')}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/70">
+                                    <div class="p-3 bg-muted/50 border border-border/70">
                                         <span class="text-[11px] text-neutral-500 uppercase font-mono block">{t('cd.praktikum2')}</span>
-                                        <span class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold font-mono text-foreground">
                                             {course()?.practice_credit ?? 0}
                                         </span>
                                         <span class="text-[10px] text-neutral-400 block">{t('cd.sks')}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/70">
+                                    <div class="p-3 bg-muted/50 border border-border/70">
                                         <span class="text-[11px] text-neutral-500 uppercase font-mono block">{t('cd.praktikLapangan')}</span>
-                                        <span class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold font-mono text-foreground">
                                             {course()?.field_practice_credit ?? 0}
                                         </span>
                                         <span class="text-[10px] text-neutral-400 block">{t('cd.sks')}</span>
                                     </div>
 
-                                    <div class="p-3 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/70">
+                                    <div class="p-3 bg-muted/50 border border-border/70">
                                         <span class="text-[11px] text-neutral-500 uppercase font-mono block">{t('cd.simulasi')}</span>
-                                        <span class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                                        <span class="text-lg font-bold font-mono text-foreground">
                                             {course()?.simulation_credit ?? 0}
                                         </span>
                                         <span class="text-[10px] text-neutral-400 block">{t('cd.sks')}</span>
@@ -347,8 +347,8 @@ export default function CourseMasterShowPage() {
                         {/* Pedagogical Flags & Classification Cards */}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Classifications */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-foreground flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
                                     <span class="size-2 bg-blue-600 inline-block"></span>
                                     {t('cd.curricularClassifications')}
                                 </h3>
@@ -356,32 +356,32 @@ export default function CourseMasterShowPage() {
                                 <div class="space-y-3 text-xs">
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 font-medium">{t('cd.departmentProgramStudi')}</span>
-                                        <span class="font-semibold text-neutral-800 dark:text-neutral-200">{unitName()}</span>
+                                        <span class="font-semibold text-foreground">{unitName()}</span>
                                     </div>
 
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 font-medium">{t('cd.varietyJenisMataKuliah')}</span>
-                                        <span class="font-semibold text-neutral-800 dark:text-neutral-200">{varietyName()}</span>
+                                        <span class="font-semibold text-foreground">{varietyName()}</span>
                                     </div>
 
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 font-medium">{t('cd.groupKelompokMataKuliah')}</span>
-                                        <span class="font-semibold text-neutral-800 dark:text-neutral-200">{groupName()}</span>
+                                        <span class="font-semibold text-foreground">{groupName()}</span>
                                     </div>
 
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 font-medium">{t('cd.competenceKompetensi')}</span>
-                                        <span class="font-semibold text-neutral-800 dark:text-neutral-200">{competenceName()}</span>
+                                        <span class="font-semibold text-foreground">{competenceName()}</span>
                                     </div>
 
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
                                         <span class="text-neutral-500 font-medium">{t('cd.implementationMethod')}</span>
-                                        <span class="font-semibold text-neutral-800 dark:text-neutral-200">{course()?.implementation_method || '-'}</span>
+                                        <span class="font-semibold text-foreground">{course()?.implementation_method || '-'}</span>
                                     </div>
 
                                     <div class="flex justify-between py-1.5">
                                         <span class="text-neutral-500 font-medium">{t('cd.activeDates')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200">
+                                        <span class="font-mono text-foreground">
                                             {course()?.start_date ? String(course().start_date).substring(0, 10) : t('cd.always')}
                                             {course()?.end_date ? ` ~ ${String(course().end_date).substring(0, 10)}` : ''}
                                         </span>
@@ -390,44 +390,44 @@ export default function CourseMasterShowPage() {
                             </div>
 
                             {/* Teaching Aids & Policies */}
-                            <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                                <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
+                            <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                                <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-foreground flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
                                     <span class="size-2 bg-indigo-600 inline-block"></span>
                                     {t('cd.pedagogicalIndicators')}
                                 </h3>
 
                                 <div class="space-y-3 text-xs">
                                     <div class="flex items-center justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
-                                        <span class="text-neutral-700 dark:text-neutral-300">{t('cd.syllabusRPSSilabusTersedia')}</span>
-                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_syllabus ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                        <span class="text-foreground/80">{t('cd.syllabusRPSSilabusTersedia')}</span>
+                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_syllabus ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-secondary text-neutral-500'}`}>
                                             {course()?.has_syllabus ? t('cd.available') : t('cd.no')}
                                         </span>
                                     </div>
 
                                     <div class="flex items-center justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
-                                        <span class="text-neutral-700 dark:text-neutral-300">{t('cd.teachingMaterialsSAPBahanAjar')}</span>
-                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_material ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                        <span class="text-foreground/80">{t('cd.teachingMaterialsSAPBahanAjar')}</span>
+                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_material ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-secondary text-neutral-500'}`}>
                                             {course()?.has_material ? t('cd.available') : t('cd.no')}
                                         </span>
                                     </div>
 
                                     <div class="flex items-center justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
-                                        <span class="text-neutral-700 dark:text-neutral-300">{t('cd.practicalSessionsPraktikum')}</span>
-                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_practice ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                        <span class="text-foreground/80">{t('cd.practicalSessionsPraktikum')}</span>
+                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_practice ? 'bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800' : 'bg-secondary text-neutral-500'}`}>
                                             {course()?.has_practice ? t('cd.yes') : t('cd.no')}
                                         </span>
                                     </div>
 
                                     <div class="flex items-center justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/60">
-                                        <span class="text-neutral-700 dark:text-neutral-300">{t('cd.lectureDictationModuleDiktat')}</span>
-                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_dictation ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                        <span class="text-foreground/80">{t('cd.lectureDictationModuleDiktat')}</span>
+                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_dictation ? 'bg-purple-50 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800' : 'bg-secondary text-neutral-500'}`}>
                                             {course()?.has_dictation ? t('cd.available') : t('cd.no')}
                                         </span>
                                     </div>
 
                                     <div class="flex items-center justify-between py-1.5">
-                                        <span class="text-neutral-700 dark:text-neutral-300">{t('cd.offeringUnitAssignedUnitPengampu')}</span>
-                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_unit ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'}`}>
+                                        <span class="text-foreground/80">{t('cd.offeringUnitAssignedUnitPengampu')}</span>
+                                        <span class={`px-2 py-0.5 text-xs font-mono font-medium ${course()?.has_unit ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800' : 'bg-secondary text-neutral-500'}`}>
                                             {course()?.has_unit ? t('cd.yes') : t('cd.no')}
                                         </span>
                                     </div>
@@ -436,8 +436,8 @@ export default function CourseMasterShowPage() {
                         </div>
 
                         {/* Sub-resource shortcuts: RPS and Evaluation Planning */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6 space-y-4">
-                            <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
+                        <div class="bg-card border border-border shadow-2xs p-6 space-y-4">
+                            <h3 class="text-sm font-bold font-mono uppercase tracking-wider text-foreground flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-3">
                                 <span class="size-2 bg-amber-500 inline-block"></span>
                                 {t('cd.courseLearningEvaluationPlanning')}
                             </h3>
@@ -445,7 +445,7 @@ export default function CourseMasterShowPage() {
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <a
                                     href={`${basePath}/${selectedId()}/course-learn-planning`}
-                                    class="p-4 border border-neutral-200 dark:border-neutral-700 hover:border-blue-500 dark:hover:border-blue-500 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
+                                    class="p-4 border border-border hover:border-blue-500 dark:hover:border-blue-500 bg-muted/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
                                 >
                                     <div class="flex items-start gap-3">
                                         <div class="size-8 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
@@ -456,11 +456,11 @@ export default function CourseMasterShowPage() {
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <div class="font-bold text-xs sm:text-sm text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center justify-between">
+                                            <div class="font-bold text-xs sm:text-sm text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 flex items-center justify-between">
                                                 <span>{t('cd.rpsCourseLearnPlanning')}</span>
                                                 <span class="text-neutral-400 group-hover:translate-x-0.5 transition-transform">→</span>
                                             </div>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                                            <p class="text-xs text-muted-foreground mt-1">
                                                 {t('cd.weeklySemesterLearningPlansLessonOutcomes')}
                                             </p>
                                         </div>
@@ -469,7 +469,7 @@ export default function CourseMasterShowPage() {
 
                                 <a
                                     href={`${basePath}/${selectedId()}/course-evaluation-planning`}
-                                    class="p-4 border border-neutral-200 dark:border-neutral-700 hover:border-purple-500 dark:hover:border-purple-500 bg-neutral-50 dark:bg-neutral-900/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
+                                    class="p-4 border border-border hover:border-purple-500 dark:hover:border-purple-500 bg-muted/40 hover:bg-white dark:hover:bg-neutral-800 transition-all group"
                                 >
                                     <div class="flex items-start gap-3">
                                         <div class="size-8 bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
@@ -480,11 +480,11 @@ export default function CourseMasterShowPage() {
                                             </svg>
                                         </div>
                                         <div class="flex-1 min-w-0">
-                                            <div class="font-bold text-xs sm:text-sm text-neutral-900 dark:text-white group-hover:text-purple-600 dark:group-hover:text-purple-400 flex items-center justify-between">
+                                            <div class="font-bold text-xs sm:text-sm text-foreground group-hover:text-purple-600 dark:group-hover:text-purple-400 flex items-center justify-between">
                                                 <span>{t('cd.courseEvaluationPlanning')}</span>
                                                 <span class="text-neutral-400 group-hover:translate-x-0.5 transition-transform">→</span>
                                             </div>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                                            <p class="text-xs text-muted-foreground mt-1">
                                                 {t('cd.evaluationComponentsGradingRubricsAndWeight')}
                                             </p>
                                         </div>
@@ -494,10 +494,10 @@ export default function CourseMasterShowPage() {
                         </div>
 
                         {/* System Metadata Card */}
-                        <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700 text-xs flex flex-wrap items-center justify-between gap-4 font-mono">
+                        <div class="p-4 bg-muted/50 border border-border text-xs flex flex-wrap items-center justify-between gap-4 font-mono">
                             <div class="flex items-center gap-2">
                                 <span class="text-neutral-500">{t('cd.id')}</span>
-                                <span class="text-neutral-800 dark:text-neutral-200">{course()?.id}</span>
+                                <span class="text-foreground">{course()?.id}</span>
                                 <button
                                     type="button"
                                     onClick={() => copyToClipboard(course()?.id, 'ID')}
@@ -519,7 +519,7 @@ export default function CourseMasterShowPage() {
             {/* Delete Confirmation Modal */}
             <dialog
                 ref={deleteDialogRef}
-                class="p-6 bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-neutral-100 shadow-xl max-w-md w-full backdrop:bg-black/50"
+                class="p-6 bg-card border border-border text-foreground shadow-xl max-w-md w-full backdrop:bg-black/50"
             >
                 <div class="space-y-4">
                     <div class="flex items-center gap-3 text-red-600">
@@ -531,15 +531,15 @@ export default function CourseMasterShowPage() {
                         <h3 class="text-lg font-bold font-mono">{t('cd.confirmCourseDeletion')}</h3>
                     </div>
 
-                    <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                        {t('cd.areYouSureYouWantTo2')} <strong class="font-mono text-neutral-900 dark:text-white">{course()?.code} - {course()?.name}</strong>{t('cd.thisActionCannotBeUndone')}
+                    <p class="text-xs sm:text-sm text-muted-foreground">
+                        {t('cd.areYouSureYouWantTo2')} <strong class="font-mono text-foreground">{course()?.code} - {course()?.name}</strong>{t('cd.thisActionCannotBeUndone')}
                     </p>
 
                     <div class="flex items-center justify-end gap-3 pt-3 border-t border-neutral-100 dark:border-neutral-700">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-xs font-mono font-medium border border-neutral-300 dark:border-neutral-600 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
+                            class="px-4 py-2 text-xs font-mono font-medium border border-border text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors cursor-pointer"
                         >
                             {t('cd.cancel')}
                         </button>

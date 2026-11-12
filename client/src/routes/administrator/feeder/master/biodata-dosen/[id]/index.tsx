@@ -61,14 +61,14 @@ export default function FeederMasterBiodataDosenDetailPage() {
     const recordCode = () => record()?.nim || record()?.nidn || record()?.nipd || record()?.kode_mata_kuliah || '-';
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
                 {/* Header Section */}
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
                             <span class="shrink-0">{t('ad.feeder')}</span>
@@ -77,9 +77,9 @@ export default function FeederMasterBiodataDosenDetailPage() {
                             <span class="shrink-0">/</span>
                             <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.biodataDosen')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.detail2')}</span>
+                            <span class="font-medium text-foreground shrink-0">{t('ad.detail2')}</span>
                         </nav>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground font-mono truncate">
                             {t('ad.biodataDosenDetails')}
                         </h1>
                     </div>
@@ -87,7 +87,7 @@ export default function FeederMasterBiodataDosenDetailPage() {
                     <div class="w-full sm:w-auto flex items-center gap-2 shrink-0">
                         <a
                             href={basePath}
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -98,7 +98,7 @@ export default function FeederMasterBiodataDosenDetailPage() {
                 </div>
 
                 {/* Content Box */}
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6">
+                <div class="bg-card border border-border shadow-2xs p-4 sm:p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -126,8 +126,8 @@ export default function FeederMasterBiodataDosenDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">{t('ad.feederEntity')}</span>
-                                        <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
+                                        <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground block mb-0.5">{t('ad.feederEntity')}</span>
+                                        <h2 class="text-lg sm:text-xl font-bold text-foreground font-mono break-all sm:break-normal">
                                             {recordTitle()}
                                         </h2>
                                     </div>
@@ -140,10 +140,10 @@ export default function FeederMasterBiodataDosenDetailPage() {
 
                                 {/* Key Highlights Grid */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-xs">
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.identifier')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
-                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{recordId() || '-'}</span>
+                                            <span class="font-mono text-foreground truncate">{recordId() || '-'}</span>
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard(recordId(), 'ID')}
@@ -153,36 +153,36 @@ export default function FeederMasterBiodataDosenDetailPage() {
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.codeNIMNIDN')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{recordCode()}</span>
+                                        <span class="font-mono text-foreground block truncate">{recordCode()}</span>
                                     </div>
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.updatedAt')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{record()?.updated_at || record()?.last_update || '-'}</span>
+                                        <span class="font-mono text-foreground block truncate">{record()?.updated_at || record()?.last_update || '-'}</span>
                                     </div>
                                 </div>
 
                                 {/* All Synchronized Fields: Dual Desktop Table & Mobile Card View */}
                                 <div class="mt-6">
                                     <div class="flex items-center justify-between mb-3">
-                                        <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white">{t('ad.allSynchronizedFields')}</h3>
-                                        <span class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
+                                        <h3 class="text-sm font-bold font-mono text-foreground">{t('ad.allSynchronizedFields')}</h3>
+                                        <span class="text-[11px] font-mono text-muted-foreground">
                                             {Object.keys(record() || {}).length} fields
                                         </span>
                                     </div>
 
                                     {/* Desktop Table View (>= 768px) */}
-                                    <div class="hidden md:block border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                                    <div class="hidden md:block border border-border overflow-hidden">
                                         <table class="w-full text-xs text-left">
                                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                                 <For each={Object.entries(record() || {})}>
                                                     {([key, val]) => (
                                                         <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                                                            <td class="px-4 py-2.5 font-mono font-semibold text-neutral-600 dark:text-neutral-400 w-1/3 bg-neutral-50 dark:bg-neutral-900/30">
+                                                            <td class="px-4 py-2.5 font-mono font-semibold text-muted-foreground w-1/3 bg-muted/30">
                                                                 {key}
                                                             </td>
-                                                            <td class="px-4 py-2.5 font-mono text-neutral-900 dark:text-white break-all">
+                                                            <td class="px-4 py-2.5 font-mono text-foreground break-all">
                                                                 {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val ?? '-')}
                                                             </td>
                                                         </tr>
@@ -193,14 +193,14 @@ export default function FeederMasterBiodataDosenDetailPage() {
                                     </div>
 
                                     {/* Mobile Cards View (< 768px) */}
-                                    <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700 border border-neutral-200 dark:border-neutral-700 bg-neutral-50/40 dark:bg-neutral-900/30">
+                                    <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700 border border-border bg-neutral-50/40 dark:bg-neutral-900/30">
                                         <For each={Object.entries(record() || {})}>
                                             {([key, val]) => (
                                                 <div class="p-3 space-y-1">
-                                                    <div class="text-[11px] font-mono font-semibold text-neutral-500 dark:text-neutral-400 uppercase tracking-wider">
+                                                    <div class="text-[11px] font-mono font-semibold text-muted-foreground uppercase tracking-wider">
                                                         {key}
                                                     </div>
-                                                    <div class="text-xs font-mono text-neutral-900 dark:text-white break-all">
+                                                    <div class="text-xs font-mono text-foreground break-all">
                                                         {typeof val === 'object' && val !== null ? JSON.stringify(val, null, 2) : String(val ?? '-')}
                                                     </div>
                                                 </div>

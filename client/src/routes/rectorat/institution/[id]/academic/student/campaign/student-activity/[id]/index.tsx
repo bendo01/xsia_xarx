@@ -536,12 +536,12 @@ export default function RectoratStudentActivityDetail() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-muted text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
                 {/* Breadcrumb Navigation */}
-                <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                <nav class="flex items-center gap-2 text-xs text-muted-foreground font-mono">
                     <A href={institutionId() ? `/rectorat/institution/${institutionId()}` : '/rectorat/institution'} class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                         {t('rt.rektorat')}
                     </A>
@@ -556,36 +556,36 @@ export default function RectoratStudentActivityDetail() {
                         </A>
                         <span>/</span>
                     </Show>
-                    <span class="text-neutral-900 dark:text-white font-bold">{t('rt.aktivitasSemester')}</span>
+                    <span class="text-foreground font-bold">{t('rt.aktivitasSemester')}</span>
                 </nav>
 
                 {/* Header Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs">
                     <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                         <div class="space-y-1.5">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
-                                    <span class="size-1.5 rounded-xs bg-indigo-500"></span>
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 text-xs font-mono font-semibold border border-indigo-200 dark:border-indigo-800/80">
+                                    <span class="size-1.5 rounded-md bg-indigo-500"></span>
                                     <span>{t('rt.aktivitasPerkuliahanMahasiswa')}</span>
                                 </span>
                                 <Show when={activity()?.status_name}>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
                                         {activity()!.status_name}
                                     </span>
                                 </Show>
                                 <Show when={activity()?.is_lock}>
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-xs text-[11px] font-mono text-neutral-500 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-700">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-mono text-muted-foreground bg-secondary">
                                         {t('rt.terkunci')}
                                     </span>
                                 </Show>
                             </div>
 
-                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
                                 {activity()?.academic_year?.name || activity()?.academic_year_name || activity()?.name || activity()?.semester_name || 'Detail Aktivitas Semester'}
                             </h1>
 
-                            <div class="flex items-center gap-2 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 flex-wrap">
-                                <span class="font-bold text-neutral-800 dark:text-neutral-200">{studentDisplayName()}</span>
+                            <div class="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground flex-wrap">
+                                <span class="font-bold text-foreground">{studentDisplayName()}</span>
                                 <span>•</span>
                                 <span class="font-mono">{t('rt.nim2')} {studentCode()}</span>
                                 <Show when={student()?.unit_name || (student() as any)?.unit?.name || activity()?.unit_name || (activity() as any)?.unit?.name}>
@@ -599,7 +599,7 @@ export default function RectoratStudentActivityDetail() {
                         <div class="flex flex-wrap items-center gap-2.5">
                             <A
                                 href={backToStudentUrl()}
-                                class="px-3.5 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                                class="px-3.5 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                             >
                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <line x1="19" y1="12" x2="5" y2="12" />
@@ -612,7 +612,7 @@ export default function RectoratStudentActivityDetail() {
                                 type="button"
                                 onClick={handlePrintKRS}
                                 disabled={isPrintingKRS()}
-                                class="px-3.5 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-3.5 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title={t('rt.cetakKartuRencanaStudiKRS')}
                             >
                                 <Show
@@ -628,7 +628,7 @@ export default function RectoratStudentActivityDetail() {
                                 type="button"
                                 onClick={handlePrintKHS}
                                 disabled={isPrintingKHS()}
-                                class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                                class="px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/40 dark:hover:bg-indigo-900/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/80 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
                                 title={t('rt.cetakKartuHasilStudiKHS')}
                             >
                                 <Show
@@ -644,27 +644,27 @@ export default function RectoratStudentActivityDetail() {
 
                     {/* KPI Metrics Grid */}
                     <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5 mt-6 pt-6 border-t border-neutral-100 dark:border-neutral-700/60">
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.mataKuliah')}</span>
-                            <span class="text-xl font-black text-neutral-900 dark:text-white">{detailCourses().length} Kelas</span>
+                            <span class="text-xl font-black text-foreground">{detailCourses().length} Kelas</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.sksSemester')}</span>
                             <span class="text-xl font-black text-blue-600 dark:text-blue-400">{totalEnrolledSKS()} SKS</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.sksKumulatif')}</span>
                             <span class="text-xl font-black text-teal-600 dark:text-teal-400">{cumulativeSKS()} SKS</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.indeksPrestasiIPS')}</span>
                             <span class="text-xl font-black text-indigo-600 dark:text-indigo-400">{calculatedIPS()}</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.ipkKumulatif')}</span>
                             <span class="text-xl font-black text-sky-600 dark:text-sky-400">{calculatedIPK()}</span>
                         </div>
-                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200/60 dark:border-neutral-700/60">
+                        <div class="p-3.5 rounded-md bg-muted/50 border border-border/60">
                             <span class="text-[10px] text-neutral-400 font-mono uppercase block">{t('rt.status')}</span>
                             <span class="text-sm font-bold text-emerald-600 dark:text-emerald-400 truncate block mt-1">
                                 {activity()?.status_name || 'Aktif / Selesai'}
@@ -676,29 +676,29 @@ export default function RectoratStudentActivityDetail() {
                 {/* Academic Analytics Charts */}
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Chart 1: IPK & IPS trend over the student's semesters */}
-                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div class="min-w-0 p-5 rounded-md bg-card border border-border shadow-2xs flex flex-col justify-between space-y-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                    <div class="size-7 rounded-md bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-sm font-bold text-foreground">
                                         {t('rt.trenIndeksPrestasi')}
                                     </h3>
                                 </div>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('rt.ipsSemesterDanIPKKumulatifPer')}
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="size-2.5 rounded-xs bg-blue-600"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ipk2')}</span>
+                                    <span class="size-2.5 rounded-md bg-blue-600"></span>
+                                    <span class="text-foreground/80 font-semibold">{t('rt.ipk2')}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <span class="size-2.5 rounded-xs bg-sky-500"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.ips')}</span>
+                                    <span class="size-2.5 rounded-md bg-sky-500"></span>
+                                    <span class="text-foreground/80 font-semibold">{t('rt.ips')}</span>
                                 </div>
                             </div>
                         </div>
@@ -728,29 +728,29 @@ export default function RectoratStudentActivityDetail() {
                     </div>
 
                     {/* Chart 2: SKS load per semester and cumulative */}
-                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div class="min-w-0 p-5 rounded-md bg-card border border-border shadow-2xs flex flex-col justify-between space-y-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                                    <div class="size-7 rounded-md bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20V10"/><path d="M18 20V4"/><path d="M6 20v-4"/></svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-sm font-bold text-foreground">
                                         {t('rt.progresBebanKreditSKS')}
                                     </h3>
                                 </div>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('rt.akumulasiSKSKumulatifDanSKSDiambil')}
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 text-[11px] font-mono shrink-0">
                                 <div class="flex items-center gap-1.5">
-                                    <span class="size-2.5 rounded-xs bg-teal-600"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.sksKumulatif')}</span>
+                                    <span class="size-2.5 rounded-md bg-teal-600"></span>
+                                    <span class="text-foreground/80 font-semibold">{t('rt.sksKumulatif')}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <span class="size-2.5 rounded-xs bg-amber-500"></span>
-                                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.sksSemester')}</span>
+                                    <span class="size-2.5 rounded-md bg-amber-500"></span>
+                                    <span class="text-foreground/80 font-semibold">{t('rt.sksSemester')}</span>
                                 </div>
                             </div>
                         </div>
@@ -773,22 +773,22 @@ export default function RectoratStudentActivityDetail() {
                     </div>
 
                     {/* Chart 3: Course variety donut over every semester */}
-                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div class="min-w-0 p-5 rounded-md bg-card border border-border shadow-2xs flex flex-col justify-between space-y-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <div class="size-7 rounded-xs bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                    <div class="size-7 rounded-md bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-sm font-bold text-foreground">
                                         {t('rt.jenisMataKuliahIPK')}
                                     </h3>
                                 </div>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('rt.sebaranSKSDanIPKPerJenis')}
                                 </p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono shrink-0">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 font-mono shrink-0">
                                 {varietyScopeData().length} Jenis
                             </span>
                         </div>
@@ -843,16 +843,16 @@ export default function RectoratStudentActivityDetail() {
                                                 <div
                                                     onPointerEnter={() => setHoveredVarietyIdx(idx())}
                                                     onPointerLeave={() => setHoveredVarietyIdx(null)}
-                                                    class={`p-2 rounded-xs border transition-all cursor-pointer ${
+                                                    class={`p-2 rounded-md border transition-all cursor-pointer ${
                                                         hoveredVarietyIdx() === idx()
-                                                            ? 'bg-neutral-100 dark:bg-neutral-700/60 border-neutral-300 dark:border-neutral-600 shadow-2xs'
-                                                            : 'bg-neutral-50 dark:bg-neutral-900/50 border-neutral-200/60 dark:border-neutral-700/60'
+                                                            ? 'bg-secondary/60 border-border shadow-2xs'
+                                                            : 'bg-muted/50 border-border/60'
                                                     }`}
                                                 >
                                                     <div class="flex items-center justify-between gap-2">
                                                         <div class="flex items-center gap-2 min-w-0">
-                                                            <span class="size-2.5 rounded-xs shrink-0" style={{ "background-color": slice.color }}></span>
-                                                            <span class="font-bold text-neutral-800 dark:text-neutral-200 truncate">
+                                                            <span class="size-2.5 rounded-md shrink-0" style={{ "background-color": slice.color }}></span>
+                                                            <span class="font-bold text-foreground truncate">
                                                                 {slice.varietyName}
                                                             </span>
                                                         </div>
@@ -862,7 +862,7 @@ export default function RectoratStudentActivityDetail() {
                                                     </div>
                                                     <div class="flex items-center justify-between text-[10px] text-neutral-400 font-mono mt-1 pl-4.5">
                                                         <span>{slice.courseCount} MK • {slice.totalCredits} SKS</span>
-                                                        <span class="font-semibold text-neutral-500 dark:text-neutral-400">{slice.percent}%</span>
+                                                        <span class="font-semibold text-muted-foreground">{slice.percent}%</span>
                                                     </div>
                                                 </div>
                                             )}
@@ -874,22 +874,22 @@ export default function RectoratStudentActivityDetail() {
                     </div>
 
                     {/* Chart 4: Grade distribution of this semester */}
-                    <div class="min-w-0 p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between space-y-4">
+                    <div class="min-w-0 p-5 rounded-md bg-card border border-border shadow-2xs flex flex-col justify-between space-y-4">
                         <div class="flex items-start justify-between gap-3">
                             <div>
                                 <div class="flex items-center gap-2">
-                                    <div class="size-7 rounded-xs bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                    <div class="size-7 rounded-md bg-indigo-100 dark:bg-indigo-950/80 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="12" width="4" height="9"/><rect x="10" y="7" width="4" height="14"/><rect x="17" y="3" width="4" height="18"/></svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-sm font-bold text-foreground">
                                         {t('rt.sebaranNilaiSemesterIni')}
                                     </h3>
                                 </div>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1">
+                                <p class="text-[11px] text-muted-foreground mt-1">
                                     {t('rt.jumlahMataKuliahDanSKSPer')} {activity()?.academic_year_name || activity()?.academic_year?.name || 'semester ini'}.
                                 </p>
                             </div>
-                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono shrink-0">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 font-mono shrink-0">
                                 {t('rt.ips')} {calculatedIPS()}
                             </span>
                         </div>
@@ -913,13 +913,13 @@ export default function RectoratStudentActivityDetail() {
                 </div>
 
                 {/* Enrolled Courses Table Card */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                    <div class="p-4 sm:p-5 border-b border-neutral-200 dark:border-neutral-700 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
+                    <div class="p-4 sm:p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div>
-                            <h2 class="text-sm font-bold text-neutral-900 dark:text-white">
+                            <h2 class="text-sm font-bold text-foreground">
                                 {t('rt.daftarMataKuliahHasilStudi')}
                             </h2>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                            <p class="text-xs text-muted-foreground">
                                 {t('rt.rekapitulasiRencanaStudiKRSDanNilai')}
                             </p>
                         </div>
@@ -937,7 +937,7 @@ export default function RectoratStudentActivityDetail() {
                         {/* Desktop Table View */}
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
-                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
                                         <th class="py-3 px-4 text-start">{t('rt.no')}</th>
                                         {/* <th class="py-3 px-4 text-start">{t('rt.teachID')}</th> */}
@@ -963,16 +963,16 @@ export default function RectoratStudentActivityDetail() {
                                             <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                 <td class="py-3 px-4 font-mono text-neutral-400">{idx() + 1}</td>
                                                 {/* <td class="py-3 px-4 font-mono text-neutral-400">{c.teach_id}</td> */}
-                                                <td class="py-3 px-4 font-mono font-semibold text-neutral-800 dark:text-neutral-200">
+                                                <td class="py-3 px-4 font-mono font-semibold text-foreground">
                                                     {c.course_code || '-'}
                                                 </td>
-                                                <td class="py-3 px-4 font-medium text-neutral-900 dark:text-white">
+                                                <td class="py-3 px-4 font-medium text-foreground">
                                                     {c.course_name || '-'}
                                                 </td>
-                                                <td class="py-3 px-4 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
+                                                <td class="py-3 px-4 text-center font-mono font-bold text-foreground/80">
                                                     {c.credit ?? 0}
                                                 </td>
-                                                <td class="py-3 px-4 text-neutral-700 dark:text-neutral-300">
+                                                <td class="py-3 px-4 text-foreground/80">
                                                     <Show
                                                         when={c.lecturers && c.lecturers.length > 0}
                                                         fallback={<span>{c.lecturer_name || '-'}</span>}
@@ -981,7 +981,7 @@ export default function RectoratStudentActivityDetail() {
                                                             <For each={c.lecturers}>
                                                                 {(lecturer: any) => (
                                                                     <span class="inline-flex items-center gap-1.5 leading-snug">
-                                                                        <span class="size-1 rounded-xs bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                                                                        <span class="size-1 rounded-md bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
                                                                         <span>
                                                                             {lecturer.code ? (
                                                                                 <span class="font-mono text-blue-600 dark:text-blue-400 me-1">{lecturer.code} -</span>
@@ -994,27 +994,27 @@ export default function RectoratStudentActivityDetail() {
                                                         </div>
                                                     </Show>
                                                 </td>
-                                                <td class="py-3 px-4 text-center font-mono font-medium text-neutral-600 dark:text-neutral-400">
+                                                <td class="py-3 px-4 text-center font-mono font-medium text-muted-foreground">
                                                     {c.mark != null && c.mark > 0 ? Number(c.mark).toFixed(2) : '-'}
                                                 </td>
                                                 <td class="py-3 px-4 text-center">
-                                                    <span class={`inline-block px-2.5 py-0.5 rounded-xs font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
+                                                    <span class={`inline-block px-2.5 py-0.5 rounded-md font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
                                                         {c.grade_letter || '-'}
                                                     </span>
                                                 </td>
-                                                <td class="py-3 px-4 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
+                                                <td class="py-3 px-4 text-center font-mono font-bold text-foreground/80">
                                                     {c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}
                                                 </td>
                                                 <td class="py-3 px-4 text-center">
                                                     <Show
                                                         when={c.grade_letter && c.grade_letter !== '-' && !c.grade_letter.toUpperCase().startsWith('E')}
                                                         fallback={
-                                                            <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
+                                                            <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-secondary text-muted-foreground">
                                                                 {c.grade_letter?.toUpperCase().startsWith('E') ? t('rt.tidakLulus') : t('rt.belumAdaNilai')}
                                                             </span>
                                                         }
                                                     >
-                                                        <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                        <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
                                                             {t('rt.lulus')}
                                                         </span>
                                                     </Show>
@@ -1038,13 +1038,13 @@ export default function RectoratStudentActivityDetail() {
                                         {/* Header Row: Index + Course Code + SKS Chip + Status Badge */}
                                         <div class="flex items-center justify-between gap-2 flex-wrap">
                                             <div class="flex items-center gap-1.5 flex-wrap">
-                                                <span class="px-1.5 py-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-700 font-mono text-neutral-500 dark:text-neutral-400 text-[10px] font-bold">
+                                                <span class="px-1.5 py-0.5 rounded-md bg-secondary font-mono text-muted-foreground text-[10px] font-bold">
                                                     #{idx() + 1}
                                                 </span>
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {c.course_code || '-'}
                                                 </span>
-                                                <span class="px-2 py-0.5 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
+                                                <span class="px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200/60 dark:border-indigo-800/60 font-mono text-[10px] font-bold">
                                                     {c.credit ?? 0} SKS
                                                 </span>
                                             </div>
@@ -1053,12 +1053,12 @@ export default function RectoratStudentActivityDetail() {
                                                 <Show
                                                     when={c.grade_letter && c.grade_letter !== '-' && !c.grade_letter.toUpperCase().startsWith('E')}
                                                     fallback={
-                                                        <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-500 dark:text-neutral-400">
+                                                        <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-secondary text-muted-foreground">
                                                             {c.grade_letter?.toUpperCase().startsWith('E') ? t('rt.tidakLulus') : t('rt.belumAdaNilai')}
                                                         </span>
                                                     }
                                                 >
-                                                    <span class="inline-block px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
+                                                    <span class="inline-block px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/80">
                                                         {t('rt.lulus')}
                                                     </span>
                                                 </Show>
@@ -1067,7 +1067,7 @@ export default function RectoratStudentActivityDetail() {
 
                                         {/* Course Name */}
                                         <div>
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                            <h3 class="text-sm font-bold text-foreground leading-snug">
                                                 {c.course_name || '-'}
                                             </h3>
                                             {/* TODO 
@@ -1080,7 +1080,7 @@ export default function RectoratStudentActivityDetail() {
                                         </div>
 
                                         {/* Lecturer */}
-                                        <div class="text-xs text-neutral-600 dark:text-neutral-300 flex items-start gap-1.5">
+                                        <div class="text-xs text-muted-foreground flex items-start gap-1.5">
                                             <span class="text-neutral-400 dark:text-neutral-500 shrink-0 font-medium text-[11px]">{t('rt.dosen2')}</span>
                                             <div class="flex-1 text-[11px]">
                                                 <Show
@@ -1091,7 +1091,7 @@ export default function RectoratStudentActivityDetail() {
                                                         <For each={c.lecturers}>
                                                             {(lecturer: any) => (
                                                                 <span class="inline-flex items-center gap-1.5 leading-snug">
-                                                                    <span class="size-1 rounded-xs bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
+                                                                    <span class="size-1 rounded-md bg-neutral-400 dark:bg-neutral-500 shrink-0"></span>
                                                                     <span>
                                                                         {lecturer.code ? (
                                                                             <span class="font-mono text-blue-600 dark:text-blue-400 me-1">{lecturer.code} -</span>
@@ -1108,23 +1108,23 @@ export default function RectoratStudentActivityDetail() {
 
                                         {/* Academic Performance KPI Grid */}
                                         <div class="grid grid-cols-3 gap-2 pt-2 mt-0.5 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.nilaiAngka')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {c.mark != null && c.mark > 0 ? Number(c.mark).toFixed(2) : '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.nilaiHuruf')}</span>
-                                                <span class={`inline-block px-2.5 py-0.5 rounded-xs font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
+                                                <span class={`inline-block px-2.5 py-0.5 rounded-md font-mono font-bold text-xs ${getGradeBadgeClass(c.grade_letter)}`}>
                                                     {c.grade_letter || '-'}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('rt.bobotIndeks2')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {c.grade_point != null ? Number(c.grade_point).toFixed(2) : '-'}
                                                 </span>
                                             </div>

@@ -149,19 +149,19 @@ export default function RectoratAcademicHub() {
     ]);
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10">
 
                 {/* Page Header */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-6">
-                    <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                <div class="border-b border-border pb-6">
+                    <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                         <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.akademik')}</span>
+                        <span class="text-foreground/80 font-semibold">{t('rt.akademik')}</span>
                     </nav>
 
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -173,10 +173,10 @@ export default function RectoratAcademicHub() {
                                 </span>
                                 {t('rt.hubAkademik')}
                             </div>
-                            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
                                 {t('rt.manajemenAkademik')}
                             </h1>
-                            <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1.5 max-w-xl">
+                            <p class="text-sm text-muted-foreground mt-1.5 max-w-xl">
                                 {t('rt.pusatPengelolaanSeluruhDataAkademikMahasiswa')}
                             </p>
                         </div>
@@ -201,7 +201,7 @@ export default function RectoratAcademicHub() {
 
                                 <div class="flex-1">
                                     <h3 class={`text-base font-bold ${section.text} mb-1`}>{section.title}</h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">{section.description}</p>
+                                    <p class="text-xs text-muted-foreground leading-relaxed">{section.description}</p>
                                 </div>
 
                                 <div class="mt-4 flex items-center justify-between">
@@ -227,15 +227,15 @@ export default function RectoratAcademicHub() {
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
                     {/* Recent Students */}
-                    <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                        <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
+                    <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-border">
                             <div class="flex items-center gap-3">
                                 <div class="size-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                     </svg>
                                 </div>
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.mahasiswa')}</h3>
+                                <h3 class="font-bold text-sm text-foreground">{t('rt.mahasiswa')}</h3>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40">
                                     {stats().students.toLocaleString()} total
                                 </span>
@@ -283,11 +283,11 @@ export default function RectoratAcademicHub() {
                                                 <li class="flex items-center gap-3 px-6 py-3.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
                                                     <div class="size-8 rounded-full bg-linear-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
                                                     <div class="flex-1 min-w-0">
-                                                        <p class="text-sm font-semibold text-neutral-900 dark:text-white truncate">{s.name || '-'}</p>
-                                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">{s.code || '-'} {s.unit_name ? `· ${s.unit_name}` : ''}</p>
+                                                        <p class="text-sm font-semibold text-foreground truncate">{s.name || '-'}</p>
+                                                        <p class="text-[11px] text-muted-foreground font-mono">{s.code || '-'} {s.unit_name ? `· ${s.unit_name}` : ''}</p>
                                                     </div>
                                                     <Show when={s.status_name}>
-                                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 shrink-0">{s.status_name}</span>
+                                                        <span class="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-secondary text-muted-foreground shrink-0">{s.status_name}</span>
                                                     </Show>
                                                 </li>
                                             );
@@ -299,15 +299,15 @@ export default function RectoratAcademicHub() {
                     </div>
 
                     {/* Recent Lecturers */}
-                    <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                        <div class="flex items-center justify-between px-6 py-4 border-b border-neutral-100 dark:border-neutral-800">
+                    <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                        <div class="flex items-center justify-between px-6 py-4 border-b border-border">
                             <div class="flex items-center gap-3">
                                 <div class="size-8 rounded-lg bg-violet-50 dark:bg-violet-900/30 flex items-center justify-center text-violet-600 dark:text-violet-400">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
                                     </svg>
                                 </div>
-                                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.dosen')}</h3>
+                                <h3 class="font-bold text-sm text-foreground">{t('rt.dosen')}</h3>
                                 <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 border border-violet-200 dark:border-violet-800/40">
                                     {stats().lecturers.toLocaleString()} total
                                 </span>
@@ -359,8 +359,8 @@ export default function RectoratAcademicHub() {
                                                 <li class="flex items-center gap-3 px-6 py-3.5 hover:bg-neutral-50 dark:hover:bg-neutral-800/40 transition-colors">
                                                     <div class="size-8 rounded-full bg-linear-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white text-[10px] font-bold shrink-0">{ini()}</div>
                                                     <div class="flex-1 min-w-0">
-                                                        <p class="text-sm font-semibold text-neutral-900 dark:text-white truncate">{fullName()}</p>
-                                                        <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">{lec.code || lec.nuptk || '-'}</p>
+                                                        <p class="text-sm font-semibold text-foreground truncate">{fullName()}</p>
+                                                        <p class="text-[11px] text-muted-foreground font-mono">{lec.code || lec.nuptk || '-'}</p>
                                                     </div>
                                                     <Show when={lec.end_date == null}>
                                                         <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800/40 shrink-0">{t('rt.aktif')}</span>
@@ -389,10 +389,10 @@ export default function RectoratAcademicHub() {
                         ].map((link) => (
                             <A
                                 href={link.href}
-                                class="flex flex-col items-center gap-2 p-4 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm hover:-translate-y-0.5 transition-all text-center group"
+                                class="flex flex-col items-center gap-2 p-4 rounded-xl bg-card border border-border hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm hover:-translate-y-0.5 transition-all text-center group"
                             >
                                 <span class="text-2xl">{link.icon}</span>
-                                <span class="text-xs font-semibold text-neutral-700 dark:text-neutral-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{link.label}</span>
+                                <span class="text-xs font-semibold text-foreground/80 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors leading-tight">{link.label}</span>
                             </A>
                         ))}
                     </div>

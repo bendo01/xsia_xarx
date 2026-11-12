@@ -132,13 +132,13 @@ export default function MasterShowPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
                             <span>{t('cd.academic')}</span>
@@ -147,9 +147,9 @@ export default function MasterShowPage() {
                             <span>/</span>
                             <a href={listUrl()} class="hover:text-blue-600 transition-colors">{t('cd.evaluationPlanning')}</a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.detail')}</span>
+                            <span class="font-medium text-foreground">{t('cd.detail')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('cd.courseEvaluationPlanningDetails')}
                         </h1>
                     </div>
@@ -157,7 +157,7 @@ export default function MasterShowPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href={listUrl()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
@@ -167,7 +167,7 @@ export default function MasterShowPage() {
                         <Show when={selectedId()}>
                             <a
                                 href={editUrl()}
-                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors"
+                                class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 20h9" />
@@ -179,7 +179,7 @@ export default function MasterShowPage() {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-6">
+                <div class="bg-card border border-border shadow-2xs p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -205,8 +205,8 @@ export default function MasterShowPage() {
                             <div class="space-y-6">
                                 <div class="flex items-center justify-between border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div>
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('cd.recordName')}</span>
-                                        <h2 class="text-xl font-bold text-neutral-900 dark:text-white font-mono">
+                                        <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground">{t('cd.recordName')}</span>
+                                        <h2 class="text-xl font-bold text-foreground font-mono">
                                             {record()?.name || record()?.nama || record()?.title || '-'}
                                         </h2>
                                     </div>
@@ -218,10 +218,10 @@ export default function MasterShowPage() {
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-xs">
-                                    <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                    <div class="p-4 bg-muted/50 border border-border/60">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.uuid')}</span>
                                         <div class="flex items-center justify-between gap-2">
-                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || record()?.uuid || '-'}</span>
+                                            <span class="font-mono text-foreground truncate">{record()?.id || record()?.uuid || '-'}</span>
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard(record()?.id || record()?.uuid, 'ID')}
@@ -232,34 +232,34 @@ export default function MasterShowPage() {
                                         </div>
                                     </div>
 
-                                    <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                    <div class="p-4 bg-muted/50 border border-border/60">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.codeSequence')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.code ?? record()?.kode ?? '-'}</span>
+                                        <span class="font-mono text-foreground block">{record()?.code ?? record()?.kode ?? '-'}</span>
                                     </div>
 
-                                    <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                    <div class="p-4 bg-muted/50 border border-border/60">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.percentage2')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.percentage != null ? `${record()?.percentage}%` : '-'}</span>
+                                        <span class="font-mono text-foreground block">{record()?.percentage != null ? `${record()?.percentage}%` : '-'}</span>
                                     </div>
 
-                                    <div class="p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60">
+                                    <div class="p-4 bg-muted/50 border border-border/60">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1">{t('cd.createdAt')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200 block">{record()?.created_at || '-'}</span>
+                                        <span class="font-mono text-foreground block">{record()?.created_at || '-'}</span>
                                     </div>
                                 </div>
 
                                 <div class="mt-6">
-                                    <h3 class="text-sm font-bold font-mono text-neutral-900 dark:text-white mb-3">{t('cd.allEntityAttributes')}</h3>
-                                    <div class="border border-neutral-200 dark:border-neutral-700 overflow-hidden">
+                                    <h3 class="text-sm font-bold font-mono text-foreground mb-3">{t('cd.allEntityAttributes')}</h3>
+                                    <div class="border border-border overflow-hidden">
                                         <table class="w-full text-xs text-left">
                                             <tbody class="divide-y divide-neutral-200 dark:divide-neutral-700">
                                                 <For each={Object.entries(record() || {})}>
                                                     {([key, val]) => (
                                                         <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/30">
-                                                            <td class="px-4 py-2.5 font-mono font-semibold text-neutral-600 dark:text-neutral-400 w-1/3 bg-neutral-50 dark:bg-neutral-900/30">
+                                                            <td class="px-4 py-2.5 font-mono font-semibold text-muted-foreground w-1/3 bg-muted/30">
                                                                 {key}
                                                             </td>
-                                                            <td class="px-4 py-2.5 font-mono text-neutral-900 dark:text-white break-all">
+                                                            <td class="px-4 py-2.5 font-mono text-foreground break-all">
                                                                 {typeof val === 'object' ? JSON.stringify(val) : String(val ?? '-')}
                                                             </td>
                                                         </tr>

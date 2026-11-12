@@ -71,20 +71,20 @@ export default function UnitDashboardPage() {
     });
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 font-sans">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground font-sans">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-                <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-5">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between border-b border-border pb-5">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <span class="hover:text-blue-600 cursor-pointer transition-colors">{t('cd.courseDepartment')}</span>
                             <span>/</span>
                             <span>{t('cd.institution')}</span>
                             <span>/</span>
                             <span>{t('cd.unitDashboard')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-blue-600 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-8 h-8">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z" />
@@ -92,7 +92,7 @@ export default function UnitDashboardPage() {
                             </span>
                             {t('cd.unitDashboard')}
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('cd.overviewAndDetailsOfTheSelected')}
                         </p>
                     </div>
@@ -114,14 +114,14 @@ export default function UnitDashboardPage() {
                     <Show
                         when={unit()}
                         fallback={
-                            <div class="flex flex-col items-center justify-center p-12 bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm text-center">
+                            <div class="flex flex-col items-center justify-center p-12 bg-card rounded-xl border border-border shadow-sm text-center">
                                 <div class="bg-neutral-100 dark:bg-neutral-900 p-4 rounded-full mb-4">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-lg font-semibold text-neutral-900 dark:text-white">{t('cd.unitNotFound')}</h3>
-                                <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1 max-w-md">
+                                <h3 class="text-lg font-semibold text-foreground">{t('cd.unitNotFound')}</h3>
+                                <p class="text-sm text-muted-foreground mt-1 max-w-md">
                                     {t('cd.weCouldnTFindTheUnit')}
                                 </p>
                             </div>
@@ -152,8 +152,8 @@ export default function UnitDashboardPage() {
 
                                 {/* Details Grid */}
                                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                    <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                        <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                    <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                        <h3 class="text-lg font-bold text-foreground mb-4 flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 11.25l.041-.02a.75.75 0 011.063.852l-.708 2.836a.75.75 0 001.063.853l.041-.021M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9-3.75h.008v.008H12V8.25z" />
                                             </svg>
@@ -161,61 +161,61 @@ export default function UnitDashboardPage() {
                                         </h3>
                                         <dl class="space-y-4">
                                             <div>
-                                                <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.unitID')}</dt>
-                                                <dd class="text-sm font-mono text-neutral-900 dark:text-neutral-200 bg-neutral-50 dark:bg-neutral-900 p-2 rounded border border-neutral-100 dark:border-neutral-700 break-all">{item().id}</dd>
+                                                <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.unitID')}</dt>
+                                                <dd class="text-sm font-mono text-neutral-900 dark:text-neutral-200 bg-muted p-2 rounded border border-neutral-100 dark:border-neutral-700 break-all">{item().id}</dd>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.institution')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.institution')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().institution?.name || '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.unitType')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.unitType')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().unit_type?.name || '-'}</dd>
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.educationLevel')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.educationLevel')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().education?.name || '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.parentUnit')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.parentUnit')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().parent?.name || '-'}</dd>
                                                 </div>
                                             </div>
                                             <div class="grid grid-cols-2 gap-4">
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.createdAt')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.createdAt')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().created_at ? new Date(item().created_at).toLocaleDateString() : '-'}</dd>
                                                 </div>
                                                 <div>
-                                                    <dt class="text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wider mb-1">{t('cd.updatedAt')}</dt>
+                                                    <dt class="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1">{t('cd.updatedAt')}</dt>
                                                     <dd class="text-sm font-medium text-neutral-900 dark:text-neutral-200">{item().updated_at ? new Date(item().updated_at).toLocaleDateString() : '-'}</dd>
                                                 </div>
                                             </div>
                                         </dl>
                                     </div>
 
-                                    <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                        <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                    <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                        <h3 class="text-lg font-bold text-foreground mb-4 flex items-center gap-2 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-indigo-500">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5M9 11.25v1.5M12 9v3.75m3-6v6" />
                                             </svg>
                                             {t('cd.academicStatistics')}
                                         </h3>
                                         <div class="grid grid-cols-1 gap-4">
-                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('cd.totalCurriculum')}</div>
-                                                <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().total_curriculum || 0}</div>
+                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-muted/50">
+                                                <div class="text-sm font-medium text-muted-foreground">{t('cd.totalCurriculum')}</div>
+                                                <div class="text-xl font-bold text-foreground font-mono">{item().total_curriculum || 0}</div>
                                             </div>
-                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('cd.totalCourses')}</div>
-                                                <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().matakuliah?.total_matakuliah || 0}</div>
+                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-muted/50">
+                                                <div class="text-sm font-medium text-muted-foreground">{t('cd.totalCourses')}</div>
+                                                <div class="text-xl font-bold text-foreground font-mono">{item().matakuliah?.total_matakuliah || 0}</div>
                                             </div>
-                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/50">
-                                                <div class="text-sm font-medium text-neutral-600 dark:text-neutral-400">{t('cd.totalCreditsSKS')}</div>
-                                                <div class="text-xl font-bold text-neutral-900 dark:text-white font-mono">{item().matakuliah?.total_credit || 0}</div>
+                                            <div class="flex items-center justify-between p-3 rounded-lg border border-neutral-100 dark:border-neutral-700 bg-muted/50">
+                                                <div class="text-sm font-medium text-muted-foreground">{t('cd.totalCreditsSKS')}</div>
+                                                <div class="text-xl font-bold text-foreground font-mono">{item().matakuliah?.total_credit || 0}</div>
                                             </div>
                                         </div>
                                     </div>
@@ -224,8 +224,8 @@ export default function UnitDashboardPage() {
                                 {/* Charts Grid */}
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     <Show when={item().student_academic_year_chart}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.studentTrendByAcademicYear')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -239,8 +239,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().course_category_distribution}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.courseCategoryDistribution')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -254,8 +254,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().registered_student_academic_year_chart}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.registeredStudentByGenderTrend')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -269,8 +269,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().student_regency_distribution || item().student_sub_district_distribution}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.studentDistributionByRegion')}
                                             </h3>
                                             <div class="h-[400px] w-full relative">
@@ -283,8 +283,8 @@ export default function UnitDashboardPage() {
                                         </div>
                                     </Show>
                                     <Show when={item().student_religion_distribution}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.studentDistributionByReligion')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -298,8 +298,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().average_gpa_trend}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow lg:col-span-2">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.averageGPAIPKTrend')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -313,8 +313,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().lecturer_academic_group_distribution}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.lecturerAcademicGroup')}
                                             </h3>
                                             <div class="h-80 w-full relative">
@@ -328,8 +328,8 @@ export default function UnitDashboardPage() {
                                     </Show>
 
                                     <Show when={item().lecturer_academic_rank_distribution}>
-                                        <div class="bg-white dark:bg-neutral-800 rounded-xl border border-neutral-200 dark:border-neutral-700 shadow-sm p-6 hover:shadow-md transition-shadow">
-                                            <h3 class="text-lg font-bold text-neutral-900 dark:text-white mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
+                                        <div class="bg-card rounded-xl border border-border shadow-sm p-6 hover:shadow-md transition-shadow">
+                                            <h3 class="text-lg font-bold text-foreground mb-4 border-b border-neutral-100 dark:border-neutral-700 pb-2">
                                                 {t('cd.lecturerAcademicRankHomebase')}
                                             </h3>
                                             <div class="h-80 w-full relative">

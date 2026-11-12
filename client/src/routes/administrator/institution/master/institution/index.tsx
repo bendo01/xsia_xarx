@@ -16,7 +16,7 @@ import { Spinner } from '~/components/loader';
 export default function InstitutionMasterInstitutionIndexPage() {
     let multiSelectRefCategory: HTMLSelectElement | undefined;
     let multiSelectRefVariety: HTMLSelectElement | undefined;
-    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-neutral-50 focus:outline-none focus:rounded-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
+    const inputClass = "block w-full p-3 text-sm text-neutral-900 border border-neutral-300 rounded-md bg-neutral-50 focus:outline-none focus:rounded-md focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder-neutral-400 dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-colors";
 
     const [items, setItems] = createSignal<InstitutionMasterInstitutionDataObject[]>([]);
     const [isLoading, setIsLoading] = createSignal(true);
@@ -188,24 +188,24 @@ export default function InstitutionMasterInstitutionIndexPage() {
     });
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Page Header */}
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
                             <span>{t('ad.institution')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.masterInstitution')}</span>
+                            <span class="font-medium text-foreground">{t('ad.masterInstitution')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
                             {t('ad.institutionMasterDirectory')}
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-sm text-muted-foreground mt-0.5">
                             {t('ad.manageInstitutionMasterDirectoryParentHierarchies')}
                         </p>
                     </div>
@@ -213,7 +213,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href="/administrator/institution/master/institution/create"
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors cursor-pointer"
                             id="btn-add-institution"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -237,7 +237,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder={t('ad.searchByInstitutionNameOrCode')}
                                 onInput={handleSearch}
                                 id="input-search-institution"
@@ -247,7 +247,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -261,7 +261,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -318,7 +318,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                 </div>
 
                 {/* Table & Cards Container */}
-                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
+                <div class="border border-border bg-card shadow-2xs overflow-hidden">
                     {/* Mobile View: Cards */}
                     <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
@@ -348,14 +348,14 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             <Show
                                 when={items().length > 0}
                                 fallback={
-                                    <div class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                    <div class="px-4 py-12 text-center text-muted-foreground">
                                         <div class="flex flex-col items-center justify-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noInstitutionsFound')}</span>
+                                            <span class="font-semibold text-sm text-foreground/80">{t('ad.noInstitutionsFound')}</span>
                                             <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourSearchQuery')}</span>
                                         </div>
                                     </div>
@@ -374,7 +374,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                         {item.institution.name || '-'}
                                                     </a>
                                                     <div class="flex flex-wrap items-center gap-1.5 mt-1">
-                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
+                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-secondary text-foreground border border-border">
                                                             {item.institution.code || '-'}
                                                         </span>
                                                         <Show when={item.institution.alphabet_code}>
@@ -390,7 +390,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                             </div>
 
                                             {/* Metadata */}
-                                            <div class="text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60 font-mono truncate" title={item.institution.id}>
+                                            <div class="text-xs text-muted-foreground pt-1 border-t border-neutral-100 dark:border-neutral-700/60 font-mono truncate" title={item.institution.id}>
                                                 {t('ad.uuid')} {item.institution.id}
                                             </div>
 
@@ -398,7 +398,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
                                                     href={`/administrator/institution/master/institution/${item.institution.id}`}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                     title={t('ad.viewProfileDetails')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -408,7 +408,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
 
                                                 <a
                                                     href={`/administrator/institution/master/institution/edit?id=${item.institution.id}`}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                     title={t('ad.editRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -420,7 +420,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-border transition-colors cursor-pointer"
                                                     title={t('ad.deleteRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -440,7 +440,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                     {/* Desktop View: Table */}
                     <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs sm:text-sm text-left">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-border">
                                 <tr>
                                     <th class="px-4 py-3.5 w-40">{t('ad.code2')}</th>
                                     <th class="px-4 py-3.5">{t('ad.institutionName')}</th>
@@ -470,14 +470,14 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="5" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="5" class="px-4 py-12 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center gap-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10" />
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('ad.noInstitutionsFound')}</span>
+                                                        <span class="font-semibold text-sm text-foreground/80">{t('ad.noInstitutionsFound')}</span>
                                                         <span class="text-xs text-neutral-500">{t('ad.noDataMatchesYourQueryTry')}</span>
                                                     </div>
                                                 </td>
@@ -488,8 +488,8 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
                                                     {/* Code */}
-                                                    <td class="px-4 py-3 font-mono font-medium text-neutral-900 dark:text-white">
-                                                        <span class="px-2 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600">
+                                                    <td class="px-4 py-3 font-mono font-medium text-foreground">
+                                                        <span class="px-2 py-0.5 text-xs bg-secondary border border-border">
                                                             {item.institution.code || '-'}
                                                         </span>
                                                     </td>
@@ -502,13 +502,13 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                         >
                                                             {item.institution.name || '-'}
                                                         </a>
-                                                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono block truncate max-w-xs">
+                                                        <span class="text-xs text-muted-foreground font-mono block truncate max-w-xs">
                                                             {item.institution.id}
                                                         </span>
                                                     </td>
 
                                                     {/* Alphabet Code */}
-                                                    <td class="px-4 py-3 text-neutral-700 dark:text-neutral-300 font-mono text-xs">
+                                                    <td class="px-4 py-3 text-foreground/80 font-mono text-xs">
                                                         {item.institution.alphabet_code || '-'}
                                                     </td>
 
@@ -525,7 +525,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                             {/* Show / View Details Button */}
                                                             <a
                                                                 href={`/administrator/institution/master/institution/${item.institution.id}`}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                                 title={t('ad.viewProfileDetails')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -536,7 +536,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                             {/* Edit Button */}
                                                             <a
                                                                 href={`/administrator/institution/master/institution/edit?id=${item.institution.id}`}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                                 title={t('ad.editRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -549,7 +549,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-border transition-colors cursor-pointer"
                                                                 title={t('ad.deleteRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -570,25 +570,25 @@ export default function InstitutionMasterInstitutionIndexPage() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> results
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
+                            {t('ad.showing')} <span class="font-semibold text-foreground">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> of <span class="font-semibold text-foreground">{totalData().toLocaleString()}</span> results
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
                                 {t('ad.previous')}
                             </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
@@ -604,21 +604,21 @@ export default function InstitutionMasterInstitutionIndexPage() {
                 ref={deleteDialogRef}
                 class="p-0 backdrop:bg-black/60 backdrop:backdrop-blur-xs bg-transparent fixed inset-0 m-auto max-w-md w-full"
             >
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-xl p-6 space-y-4">
+                <div class="bg-card border border-border shadow-xl p-6 space-y-4">
                     <div class="flex items-center gap-3 text-red-600 dark:text-red-400">
-                        <div class="size-10 rounded-xs bg-red-100 dark:bg-red-950/50 flex items-center justify-center shrink-0">
+                        <div class="size-10 rounded-md bg-red-100 dark:bg-red-950/50 flex items-center justify-center shrink-0">
                             <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold text-neutral-900 dark:text-white">{t('ad.confirmDeletion')}</h3>
+                            <h3 class="text-base font-bold text-foreground">{t('ad.confirmDeletion')}</h3>
                             <p class="text-xs text-neutral-500">{t('ad.thisActionWillSoftDeleteThe')}</p>
                         </div>
                     </div>
 
-                    <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                        {t('ad.areYouSureYouWantTo')} <span class="font-semibold text-neutral-900 dark:text-white">{selectedItem()?.institution.name || 'this institution'}</span>?
+                    <p class="text-xs sm:text-sm text-muted-foreground">
+                        {t('ad.areYouSureYouWantTo')} <span class="font-semibold text-foreground">{selectedItem()?.institution.name || 'this institution'}</span>?
                     </p>
 
                     <div class="flex items-center justify-end gap-2 pt-2">
@@ -626,7 +626,7 @@ export default function InstitutionMasterInstitutionIndexPage() {
                             type="button"
                             onClick={closeDeleteModal}
                             disabled={isSubmitting()}
-                            class="px-3.5 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors cursor-pointer"
+                            class="px-3.5 py-2 text-xs font-medium text-foreground/80 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </button>

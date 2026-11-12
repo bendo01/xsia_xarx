@@ -12,7 +12,7 @@ export default function ChangePasswordPage() {
     const [isLoading, setIsLoading] = createSignal(false);
     const [errorMessage, setErrorMessage] = createSignal<string | null>(null);
 
-    const inputClass = 'w-full bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white placeholder-neutral-400 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm';
+    const inputClass = 'w-full bg-card border border-border text-foreground placeholder-neutral-400 px-4 py-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 transition-all text-sm';
 
     const handleSubmit = async (e: SubmitEvent) => {
         e.preventDefault();
@@ -47,18 +47,18 @@ export default function ChangePasswordPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="border-b border-border pb-4">
                     <h1 class="text-xl font-bold">{t('au.ubahKataSandi')}</h1>
-                    <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{t('au.ubahKataSandiDeskripsi')}</p>
+                    <p class="text-sm text-muted-foreground mt-1">{t('au.ubahKataSandiDeskripsi')}</p>
                 </div>
 
                 <form
                     onSubmit={handleSubmit}
-                    class="w-full space-y-4 p-6 bg-white dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-lg"
+                    class="w-full space-y-4 p-6 bg-card/60 border border-border rounded-lg"
                 >
                     <Show when={errorMessage()}>
                         <div class="p-3 bg-red-50 dark:bg-red-500/15 border border-red-500/30 rounded-lg text-red-700 dark:text-red-200 text-xs font-medium">
@@ -107,7 +107,7 @@ export default function ChangePasswordPage() {
                         />
                     </div>
 
-                    <label class="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400 cursor-pointer">
+                    <label class="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
                         <input
                             type="checkbox"
                             checked={showPassword()}

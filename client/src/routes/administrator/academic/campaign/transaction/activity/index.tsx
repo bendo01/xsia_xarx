@@ -363,14 +363,14 @@ export default function AcademicCampaignTransactionActivityPage() {
     const endIndex = () => Math.min(startIndex() + activities().length, totalData());
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Section */}
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-5">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-5">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1.5 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">{t('ad.home')}</a>
                             <span>/</span>
                             <span>{t('ad.academic')}</span>
@@ -379,18 +379,18 @@ export default function AcademicCampaignTransactionActivityPage() {
                             <span>/</span>
                             <span>{t('ad.transaction')}</span>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('ad.activity')}</span>
+                            <span class="font-medium text-foreground">{t('ad.activity')}</span>
                         </nav>
                         <div class="flex items-center gap-2 mb-1">
-                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
                                 {t('ad.administratorWorkspace')}
                             </span>
                         </div>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('ad.campaignActivities')}
                         </h1>
-                        <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-1 max-w-2xl">
+                        <p class="text-xs sm:text-sm text-muted-foreground mt-1 max-w-2xl">
                             {t('ad.configureAcademicCampaignCyclesTargetStudent')}
                         </p>
                     </div>
@@ -400,7 +400,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                             type="button"
                             onClick={handleRefresh}
                             disabled={isRefreshing()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors cursor-pointer disabled:opacity-60"
                         >
                             <svg class={`size-4 ${isRefreshing() ? 'animate-spin text-blue-600' : ''}`} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
@@ -414,7 +414,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                         <button
                             type="button"
                             onClick={openCreateModal}
-                            class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 rounded-md shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14" />
@@ -426,10 +426,10 @@ export default function AcademicCampaignTransactionActivityPage() {
                 </div>
 
                 {/* Sub-Navigation Tabs */}
-                <div class="flex items-center gap-2 p-1.5 bg-white dark:bg-neutral-800/80 rounded-xs border border-neutral-200 dark:border-neutral-700/80 overflow-x-auto scrollbar-none shadow-2xs">
+                <div class="flex items-center gap-2 p-1.5 bg-card/80 rounded-md border border-border/80 overflow-x-auto scrollbar-none shadow-2xs">
                     <A
                         href={basePath}
-                        class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium transition-colors bg-blue-600 text-white shadow-2xs flex items-center gap-2 shrink-0"
+                        class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium transition-colors bg-blue-600 text-white shadow-2xs flex items-center gap-2 shrink-0"
                     >
                         <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect width="18" height="18" x="3" y="3" rx="2" />
@@ -439,25 +439,25 @@ export default function AcademicCampaignTransactionActivityPage() {
                     </A>
                     <A
                         href="/administrator/academic/campaign/transaction/class-code"
-                        class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
+                        class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
                     >
                         <span>{t('ad.classCodes')}</span>
                     </A>
                     <A
                         href="/administrator/academic/campaign/transaction/teach"
-                        class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
+                        class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
                     >
                         <span>{t('ad.teachingActivities')}</span>
                     </A>
                     <A
                         href="/administrator/academic/campaign/transaction/teach-lecturer"
-                        class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
+                        class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
                     >
                         <span>{t('ad.teachLecturers')}</span>
                     </A>
                     <A
                         href="/administrator/academic/campaign/transaction/teach-evaluation"
-                        class="px-3.5 py-1.5 rounded-xs text-xs font-mono font-medium text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
+                        class="px-3.5 py-1.5 rounded-md text-xs font-mono font-medium text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-100 dark:hover:bg-neutral-700/50 transition-colors flex items-center gap-2 shrink-0"
                     >
                         <span>{t('ad.evaluations')}</span>
                     </A>
@@ -465,24 +465,24 @@ export default function AcademicCampaignTransactionActivityPage() {
 
                 {/* KPI Metrics Summary Cards */}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.totalActivities')}</span>
-                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.totalActivities')}</span>
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                 {summaryStats().activeCount} Active
                             </span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
+                            <span class="text-2xl font-bold font-mono text-foreground">
                                 {summaryStats().totalCount}
                             </span>
                             <span class="text-xs text-neutral-500">records</span>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.totalTarget')}</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.totalTarget')}</span>
                             <svg class="size-4 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <circle cx="12" cy="12" r="10" />
                                 <circle cx="12" cy="12" r="6" />
@@ -490,37 +490,37 @@ export default function AcademicCampaignTransactionActivityPage() {
                             </svg>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
+                            <span class="text-2xl font-bold font-mono text-foreground">
                                 {summaryStats().totalTarget.toLocaleString()}
                             </span>
                             <span class="text-xs text-neutral-500">{t('ad.studentsTarget')}</span>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.candidates')}</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.candidates')}</span>
                             <span class="text-xs font-mono text-neutral-500">
                                 {summaryStats().totalPassed} passed
                             </span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
+                            <span class="text-2xl font-bold font-mono text-foreground">
                                 {summaryStats().totalCandidates.toLocaleString()}
                             </span>
                             <span class="text-xs text-neutral-500">applicants</span>
                         </div>
                     </div>
 
-                    <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card p-4 rounded-md border border-border shadow-2xs">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 font-semibold">{t('ad.enrolledStudents')}</span>
+                            <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground font-semibold">{t('ad.enrolledStudents')}</span>
                             <span class="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
                                 {summaryStats().fulfillmentRate}% quota
                             </span>
                         </div>
                         <div class="mt-2 flex items-baseline gap-2">
-                            <span class="text-2xl font-bold font-mono text-neutral-900 dark:text-white">
+                            <span class="text-2xl font-bold font-mono text-foreground">
                                 {summaryStats().totalEnrolled.toLocaleString()}
                             </span>
                             <span class="text-xs text-neutral-500">registered</span>
@@ -536,7 +536,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                 </div>
 
                 {/* Filter and Control Bar */}
-                <div class="bg-white dark:bg-neutral-800 p-4 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-3">
+                <div class="bg-card p-4 rounded-md border border-border shadow-2xs space-y-3">
                     <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
                         {/* Search Input */}
                         <div class="md:col-span-4 relative">
@@ -548,7 +548,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2 pl-9 text-xs sm:text-sm text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                class="block w-full p-2 pl-9 text-xs sm:text-sm text-foreground border border-border rounded-md bg-card focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 placeholder={t('ad.searchByActivityName')}
                                 value={searchQuery()}
                                 onInput={handleSearchInput}
@@ -570,7 +570,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Unit Filter */}
                         <div class="md:col-span-3">
                             <select
-                                class="w-full p-2 text-xs sm:text-sm text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                class="w-full p-2 text-xs sm:text-sm text-foreground border border-border rounded-md bg-card focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 value={selectedUnitId()}
                                 onChange={(e) => {
                                     setSelectedUnitId((e.target as HTMLSelectElement).value);
@@ -587,7 +587,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Academic Year Filter */}
                         <div class="md:col-span-2">
                             <select
-                                class="w-full p-2 text-xs sm:text-sm text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                class="w-full p-2 text-xs sm:text-sm text-foreground border border-border rounded-md bg-card focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 value={selectedAcademicYearId()}
                                 onChange={(e) => {
                                     setSelectedAcademicYearId((e.target as HTMLSelectElement).value);
@@ -604,7 +604,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Status Filter */}
                         <div class="md:col-span-2">
                             <select
-                                class="w-full p-2 text-xs sm:text-sm text-neutral-900 dark:text-white border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                class="w-full p-2 text-xs sm:text-sm text-foreground border border-border rounded-md bg-card focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-colors"
                                 value={selectedStatus()}
                                 onChange={(e) => {
                                     setSelectedStatus((e.target as HTMLSelectElement).value as any);
@@ -623,24 +623,24 @@ export default function AcademicCampaignTransactionActivityPage() {
                                 type="button"
                                 title={t('ad.resetAllFilters')}
                                 onClick={resetFilters}
-                                class="w-full p-2 text-xs flex items-center justify-center font-medium text-neutral-600 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs transition-colors"
+                                class="w-full p-2 text-xs flex items-center justify-center font-medium text-muted-foreground bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md transition-colors"
                             >
                                 {t('ad.reset')}
                             </button>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
+                    <div class="flex items-center justify-between text-xs text-muted-foreground pt-1 border-t border-neutral-100 dark:border-neutral-700/60">
                         <div class="flex items-center gap-3">
                             <span>
-                                {t('ad.showing')} <strong class="text-neutral-800 dark:text-neutral-200">{activities().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-neutral-800 dark:text-neutral-200">{endIndex()}</strong> of <strong class="text-neutral-800 dark:text-neutral-200">{totalData()}</strong> activities
+                                {t('ad.showing')} <strong class="text-foreground">{activities().length > 0 ? startIndex() + 1 : 0}</strong> - <strong class="text-foreground">{endIndex()}</strong> of <strong class="text-foreground">{totalData()}</strong> activities
                             </span>
                         </div>
 
                         <div class="flex items-center gap-2">
                             <span>{t('ad.sort')}</span>
                             <select
-                                class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
+                                class="p-1 text-xs border border-border rounded-md bg-card text-foreground"
                                 value={sortParam()}
                                 onChange={(e) => setSortParam((e.target as HTMLSelectElement).value)}
                             >
@@ -652,7 +652,7 @@ export default function AcademicCampaignTransactionActivityPage() {
 
                             <span>{t('ad.perPage')}</span>
                             <select
-                                class="p-1 text-xs border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200"
+                                class="p-1 text-xs border border-border rounded-md bg-card text-foreground"
                                 value={itemsPerPage()}
                                 onChange={(e) => {
                                     setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -668,7 +668,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                 </div>
 
                 {/* Data Presentation Container */}
-                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 rounded-xs shadow-2xs overflow-hidden">
+                <div class="border border-border bg-card rounded-md shadow-2xs overflow-hidden">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -676,13 +676,13 @@ export default function AcademicCampaignTransactionActivityPage() {
                                 <For each={Array.from({ length: 4 })}>
                                     {() => (
                                         <div class="p-4 animate-pulse space-y-2.5 border-b border-neutral-100 dark:border-neutral-700/50">
-                                            <div class="h-4 w-60 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
-                                            <div class="h-3 w-40 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
+                                            <div class="h-4 w-60 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
+                                            <div class="h-3 w-40 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
                                             <div class="grid grid-cols-4 gap-4 pt-2">
-                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
-                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
-                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
-                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-xs"></div>
+                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
+                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
+                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
+                                                <div class="h-3 bg-neutral-200 dark:bg-neutral-700 rounded-md"></div>
                                             </div>
                                         </div>
                                     )}
@@ -700,24 +700,24 @@ export default function AcademicCampaignTransactionActivityPage() {
                                             <path d="M3 9h18M9 21V9" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold font-mono text-foreground">
                                         {t('ad.noCampaignActivitiesFound')}
                                     </h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-1 max-w-sm mx-auto font-mono">
+                                    <p class="text-xs text-muted-foreground mt-1 max-w-sm mx-auto font-mono">
                                         {t('ad.thereAreNoActivityRecordsMatching')}
                                     </p>
                                     <div class="mt-4 flex items-center justify-center gap-2">
                                         <button
                                             type="button"
                                             onClick={resetFilters}
-                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs transition-colors"
+                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-200 bg-secondary hover:bg-neutral-200 rounded-md transition-colors"
                                         >
                                             {t('ad.clearFilters')}
                                         </button>
                                         <button
                                             type="button"
                                             onClick={openCreateModal}
-                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors"
+                                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors"
                                         >
                                             {t('ad.addActivity')}
                                         </button>
@@ -728,7 +728,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                             {/* Desktop Table View (>= 768px) */}
                             <div class="hidden md:block overflow-x-auto">
                                 <table class="w-full text-left text-xs">
-                                    <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 font-mono text-neutral-600 dark:text-neutral-300 uppercase tracking-wider">
+                                    <thead class="bg-muted/60 border-b border-border font-mono text-muted-foreground uppercase tracking-wider">
                                         <tr>
                                             <th class="px-4 py-3 font-semibold">{t('ad.activityUnit')}</th>
                                             <th class="px-4 py-3 font-semibold">{t('ad.academicPeriod')}</th>
@@ -749,7 +749,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                         {/* Activity & Unit */}
                                                         <td class="px-4 py-3.5 align-top">
-                                                            <div class="font-semibold text-sm text-neutral-900 dark:text-white">
+                                                            <div class="font-semibold text-sm text-foreground">
                                                                 <A
                                                                     href={`${basePath}/${item.id}`}
                                                                     class="text-blue-600 dark:text-blue-400 hover:underline font-mono"
@@ -758,13 +758,13 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                                 </A>
                                                             </div>
                                                             <div class="flex items-center gap-1.5 mt-1 flex-wrap">
-                                                                <span class="px-1.5 py-0.5 rounded-xs text-[10px] font-mono bg-neutral-100 dark:bg-neutral-700/70 text-neutral-700 dark:text-neutral-300 border border-neutral-200 dark:border-neutral-600">
+                                                                <span class="px-1.5 py-0.5 rounded-md text-[10px] font-mono bg-secondary/70 text-foreground/80 border border-border">
                                                                     {item.unit_name || 'Unit'}
                                                                 </span>
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => copyToClipboard(item.id, 'UUID')}
-                                                                    class="px-1.5 py-0.5 rounded-xs text-[10px] font-mono text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer flex items-center gap-1"
+                                                                    class="px-1.5 py-0.5 rounded-md text-[10px] font-mono text-neutral-500 hover:text-neutral-800 dark:hover:text-neutral-200 hover:bg-neutral-200/50 dark:hover:bg-neutral-700/50 transition-colors cursor-pointer flex items-center gap-1"
                                                                     title={t('ad.clickToCopyUUID')}
                                                                 >
                                                                     <span>{item.id.substring(0, 8)}...</span>
@@ -778,10 +778,10 @@ export default function AcademicCampaignTransactionActivityPage() {
 
                                                         {/* Academic Period */}
                                                         <td class="px-4 py-3.5 align-top font-mono">
-                                                            <div class="font-medium text-neutral-800 dark:text-neutral-200">
+                                                            <div class="font-medium text-foreground">
                                                                 {item.academic_year_name || 'Academic Year'}
                                                             </div>
-                                                            <div class="text-[11px] text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                                            <div class="text-[11px] text-muted-foreground mt-0.5">
                                                                 {t('ad.duration')} {item.week_quantity ? `${item.week_quantity} Weeks` : '-'}
                                                             </div>
                                                         </td>
@@ -789,7 +789,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                         {/* Quota & Funnel */}
                                                         <td class="px-4 py-3.5 align-top font-mono">
                                                             <div class="flex items-center justify-between text-[11px] mb-1">
-                                                                <span class="text-neutral-500">{t('ad.target')} <strong class="text-neutral-800 dark:text-neutral-200">{target}</strong></span>
+                                                                <span class="text-neutral-500">{t('ad.target')} <strong class="text-foreground">{target}</strong></span>
                                                                 <span class="text-neutral-500">{t('ad.enrolled')} <strong class="text-emerald-600 dark:text-emerald-400">{enrolled}</strong> ({pct}%)</span>
                                                             </div>
                                                             <div class="w-full bg-neutral-200 dark:bg-neutral-700 h-1.5 rounded-full overflow-hidden mb-1.5">
@@ -806,7 +806,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                         </td>
 
                                                         {/* Timeline */}
-                                                        <td class="px-4 py-3.5 align-top font-mono text-[11px] text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
+                                                        <td class="px-4 py-3.5 align-top font-mono text-[11px] text-muted-foreground whitespace-nowrap">
                                                             <div>{t('ad.period')} {formatDate(item.start_date)} - {formatDate(item.end_date)}</div>
                                                             <div class="text-[10px] text-neutral-500 mt-0.5">
                                                                 {t('ad.tx')} {formatDate(item.start_transaction)} - {formatDate(item.end_transaction)}
@@ -819,7 +819,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                                 class={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border ${
                                                                     item.is_active
                                                                         ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                                                                        : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700'
+                                                                        : 'bg-secondary text-muted-foreground border-border'
                                                                 }`}
                                                             >
                                                                 <span class={`size-1.5 rounded-full ${item.is_active ? 'bg-emerald-500 animate-pulse' : 'bg-neutral-400'}`}></span>
@@ -832,7 +832,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                             <div class="flex items-center justify-end gap-1.5">
                                                                 <A
                                                                     href={`${basePath}/${item.id}`}
-                                                                    class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors"
+                                                                    class="p-1.5 text-muted-foreground hover:text-blue-600 dark:hover:text-blue-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors"
                                                                     title={t('ad.viewDetails')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -843,7 +843,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => openEditModal(item)}
-                                                                    class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
+                                                                    class="p-1.5 text-muted-foreground hover:text-amber-600 dark:hover:text-amber-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors cursor-pointer"
                                                                     title={t('ad.editActivity')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -853,7 +853,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                                 <button
                                                                     type="button"
                                                                     onClick={() => openDeleteModal(item)}
-                                                                    class="p-1.5 text-neutral-600 dark:text-neutral-300 hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-xs transition-colors cursor-pointer"
+                                                                    class="p-1.5 text-muted-foreground hover:text-red-600 dark:hover:text-red-400 hover:bg-neutral-100 dark:hover:bg-neutral-700 rounded-md transition-colors cursor-pointer"
                                                                     title={t('ad.deleteActivity')}
                                                                 >
                                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -888,7 +888,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                         >
                                                             {item.name}
                                                         </A>
-                                                        <div class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400 mt-0.5">
+                                                        <div class="text-[11px] font-mono text-muted-foreground mt-0.5">
                                                             {item.unit_name || 'Unit'} • {item.academic_year_name || 'Academic Year'}
                                                         </div>
                                                     </div>
@@ -896,7 +896,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                         class={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold border shrink-0 ${
                                                             item.is_active
                                                                 ? 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
-                                                                : 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700'
+                                                                : 'bg-secondary text-muted-foreground border-border'
                                                         }`}
                                                     >
                                                         {item.is_active ? 'ACTIVE' : 'INACTIVE'}
@@ -904,14 +904,14 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                 </div>
 
                                                 {/* Metrics Grid */}
-                                                <div class="grid grid-cols-3 gap-2 p-2.5 bg-neutral-50 dark:bg-neutral-900/40 rounded-xs border border-neutral-200/80 dark:border-neutral-700/60 text-center font-mono">
+                                                <div class="grid grid-cols-3 gap-2 p-2.5 bg-muted/40 rounded-md border border-border/60 text-center font-mono">
                                                     <div>
                                                         <span class="text-[10px] text-neutral-500 block">{t('ad.target2')}</span>
-                                                        <span class="text-xs font-bold text-neutral-900 dark:text-white">{target}</span>
+                                                        <span class="text-xs font-bold text-foreground">{target}</span>
                                                     </div>
                                                     <div>
                                                         <span class="text-[10px] text-neutral-500 block">{t('ad.candidates')}</span>
-                                                        <span class="text-xs font-bold text-neutral-900 dark:text-white">{item.candidate_number || 0}</span>
+                                                        <span class="text-xs font-bold text-foreground">{item.candidate_number || 0}</span>
                                                     </div>
                                                     <div>
                                                         <span class="text-[10px] text-neutral-500 block">{t('ad.enrolled2')}</span>
@@ -943,20 +943,20 @@ export default function AcademicCampaignTransactionActivityPage() {
                                                         <button
                                                             type="button"
                                                             onClick={() => openEditModal(item)}
-                                                            class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 rounded-xs"
+                                                            class="px-2.5 py-1 font-mono text-xs text-neutral-700 dark:text-neutral-200 bg-secondary hover:bg-neutral-200 rounded-md"
                                                         >
                                                             {t('ad.edit')}
                                                         </button>
                                                         <button
                                                             type="button"
                                                             onClick={() => openDeleteModal(item)}
-                                                            class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-xs"
+                                                            class="px-2.5 py-1 font-mono text-xs text-red-600 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-md"
                                                         >
                                                             {t('ad.delete')}
                                                         </button>
                                                         <A
                                                             href={`${basePath}/${item.id}`}
-                                                            class="px-2.5 py-1 font-mono text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-xs"
+                                                            class="px-2.5 py-1 font-mono text-xs text-white bg-blue-600 hover:bg-blue-700 rounded-md"
                                                         >
                                                             {t('ad.detail')}
                                                         </A>
@@ -973,25 +973,25 @@ export default function AcademicCampaignTransactionActivityPage() {
 
                 {/* Pagination Controls */}
                 <Show when={totalPages() > 1}>
-                    <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-neutral-200 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400">
-                            {t('ad.showing')} <span class="font-semibold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-neutral-900 dark:text-white">{endIndex()}</span> of <span class="font-semibold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> activities
+                    <div class="flex flex-col sm:flex-row items-center justify-between border rounded-lg border-border bg-neutral-50/50 dark:bg-neutral-900/50 px-6 py-4 gap-3">
+                        <p class="text-sm text-muted-foreground">
+                            {t('ad.showing')} <span class="font-semibold text-foreground">{totalData() > 0 ? startIndex() + 1 : 0}</span>–<span class="font-semibold text-foreground">{endIndex()}</span> of <span class="font-semibold text-foreground">{totalData().toLocaleString()}</span> activities
                         </p>
                         <nav class="inline-flex -space-x-px rounded-lg overflow-hidden shadow-sm" aria-label={t('ad.pagination')}>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() <= 1 || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                             >
                                 {t('ad.previous')}
                             </button>
-                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-neutral-300 dark:border-neutral-600">
+                            <span class="inline-flex items-center px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 border-y border-border">
                                 {currentPage()} / {totalPages()}
                             </span>
                             <button
                                 type="button"
-                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
+                                class="inline-flex items-center px-3 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors cursor-pointer"
                                 disabled={currentPage() >= totalPages() || isLoading()}
                                 onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                             >
@@ -1005,22 +1005,22 @@ export default function AcademicCampaignTransactionActivityPage() {
             {/* Create & Edit Modal Dialog */}
             <dialog
                 ref={formDialogRef}
-                class="fixed inset-0 m-auto w-full max-w-2xl bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
+                class="fixed inset-0 m-auto w-full max-w-2xl bg-card rounded-md border border-border shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-foreground"
             >
                 <form onSubmit={handleFormSubmit} class="p-6 space-y-5">
-                    <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                    <div class="flex items-center justify-between border-b border-border pb-3">
                         <div>
                             <span class="text-xs font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 font-semibold">
                                 {modalMode() === 'create' ? t('ad.createRecord') : t('ad.editRecord')}
                             </span>
-                            <h3 class="text-lg font-bold font-mono text-neutral-900 dark:text-white">
+                            <h3 class="text-lg font-bold font-mono text-foreground">
                                 {modalMode() === 'create' ? t('ad.newCampaignActivity') : t('ad.updateCampaignActivity')}
                             </h3>
                         </div>
                         <button
                             type="button"
                             onClick={closeFormModal}
-                            class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-xs cursor-pointer"
+                            class="p-1 text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-200 rounded-md cursor-pointer"
                         >
                             <svg class="size-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -1032,13 +1032,13 @@ export default function AcademicCampaignTransactionActivityPage() {
                     <div class="space-y-4 max-h-[68vh] overflow-y-auto px-1 pr-2">
                         {/* Name */}
                         <div>
-                            <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                            <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                 {t('ad.activityName')} <span class="text-red-500">*</span>
                             </label>
                             <input
                                 type="text"
                                 required
-                                class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                                class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground focus:ring-1 focus:ring-blue-500"
                                 placeholder={t('ad.eGPenerimaanMahasiswaBaruGelombang')}
                                 value={formState().name || ''}
                                 onInput={(e) => setFormState({ ...formState(), name: (e.target as HTMLInputElement).value })}
@@ -1048,11 +1048,11 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Unit & Academic Year */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.unitStudyProgram')}
                                 </label>
                                 <select
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground focus:ring-1 focus:ring-blue-500"
                                     value={formState().unit_id || ''}
                                     onChange={(e) => setFormState({ ...formState(), unit_id: (e.target as HTMLSelectElement).value })}
                                 >
@@ -1064,11 +1064,11 @@ export default function AcademicCampaignTransactionActivityPage() {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.academicYear')}
                                 </label>
                                 <select
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white focus:ring-1 focus:ring-blue-500"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground focus:ring-1 focus:ring-blue-500"
                                     value={formState().academic_year_id || ''}
                                     onChange={(e) => setFormState({ ...formState(), academic_year_id: (e.target as HTMLSelectElement).value })}
                                 >
@@ -1083,52 +1083,52 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Quota Targets & Numbers */}
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.studentTarget')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().student_target || 0}
                                     onInput={(e) => setFormState({ ...formState(), student_target: Number((e.target as HTMLInputElement).value) })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.durationWeeks')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().week_quantity || 0}
                                     onInput={(e) => setFormState({ ...formState(), week_quantity: Number((e.target as HTMLInputElement).value) })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.candidates')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().candidate_number || 0}
                                     onInput={(e) => setFormState({ ...formState(), candidate_number: Number((e.target as HTMLInputElement).value) })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.candidatePassed')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().candidate_pass || 0}
                                     onInput={(e) => setFormState({ ...formState(), candidate_pass: Number((e.target as HTMLInputElement).value) })}
                                 />
@@ -1137,39 +1137,39 @@ export default function AcademicCampaignTransactionActivityPage() {
 
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.becameStudent')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().became_student || 0}
                                     onInput={(e) => setFormState({ ...formState(), became_student: Number((e.target as HTMLInputElement).value) })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.transferStudent')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().transfer_student || 0}
                                     onInput={(e) => setFormState({ ...formState(), transfer_student: Number((e.target as HTMLInputElement).value) })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.classMemberCount')}
                                 </label>
                                 <input
                                     type="number"
                                     min="0"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().total_class_member || 0}
                                     onInput={(e) => setFormState({ ...formState(), total_class_member: Number((e.target as HTMLInputElement).value) })}
                                 />
@@ -1179,24 +1179,24 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Dates */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.activityStartDate')}
                                 </label>
                                 <input
                                     type="date"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().start_date || ''}
                                     onInput={(e) => setFormState({ ...formState(), start_date: (e.target as HTMLInputElement).value })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.activityEndDate')}
                                 </label>
                                 <input
                                     type="date"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().end_date || ''}
                                     onInput={(e) => setFormState({ ...formState(), end_date: (e.target as HTMLInputElement).value })}
                                 />
@@ -1206,24 +1206,24 @@ export default function AcademicCampaignTransactionActivityPage() {
                         {/* Transaction Dates */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.transactionStartDate')}
                                 </label>
                                 <input
                                     type="date"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().start_transaction || ''}
                                     onInput={(e) => setFormState({ ...formState(), start_transaction: (e.target as HTMLInputElement).value })}
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-mono font-semibold text-neutral-700 dark:text-neutral-300 mb-1">
+                                <label class="block text-xs font-mono font-semibold text-foreground/80 mb-1">
                                     {t('ad.transactionEndDate')}
                                 </label>
                                 <input
                                     type="date"
-                                    class="w-full p-2 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-700 rounded-xs bg-white dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                                    class="w-full p-2 text-xs sm:text-sm border border-border rounded-md bg-card text-foreground"
                                     value={formState().end_transaction || ''}
                                     onInput={(e) => setFormState({ ...formState(), end_transaction: (e.target as HTMLInputElement).value })}
                                 />
@@ -1235,29 +1235,29 @@ export default function AcademicCampaignTransactionActivityPage() {
                             <label class="inline-flex items-center gap-2.5 cursor-pointer">
                                 <input
                                     type="checkbox"
-                                    class="size-4 text-blue-600 rounded-xs border-neutral-300 focus:ring-blue-500"
+                                    class="size-4 text-blue-600 rounded-md border-neutral-300 focus:ring-blue-500"
                                     checked={formState().is_active ?? true}
                                     onChange={(e) => setFormState({ ...formState(), is_active: (e.target as HTMLInputElement).checked })}
                                 />
-                                <span class="text-xs font-mono font-semibold text-neutral-800 dark:text-neutral-200">
+                                <span class="text-xs font-mono font-semibold text-foreground">
                                     {t('ad.activeStatusVisibleAndOpenFor')}
                                 </span>
                             </label>
                         </div>
                     </div>
 
-                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                    <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                         <button
                             type="button"
                             onClick={closeFormModal}
-                            class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
+                            class="px-4 py-2 text-xs sm:text-sm font-mono font-medium text-foreground/80 bg-secondary hover:bg-neutral-200 rounded-md transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </button>
                         <button
                             type="submit"
                             disabled={isSubmitting()}
-                            class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
+                            class="px-4 py-2 text-xs sm:text-sm font-mono font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         >
                             {isSubmitting() ? t('ad.saving') : modalMode() === 'create' ? t('ad.createActivity') : t('ad.updateActivity')}
                         </button>
@@ -1268,7 +1268,7 @@ export default function AcademicCampaignTransactionActivityPage() {
             {/* Delete Confirmation Modal Dialog */}
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto w-full max-w-md bg-white dark:bg-neutral-900 rounded-xs border border-neutral-300 dark:border-neutral-700 shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-neutral-900 dark:text-neutral-100"
+                class="fixed inset-0 m-auto w-full max-w-md bg-card rounded-md border border-border shadow-2xl p-0 backdrop:bg-black/50 backdrop:backdrop-blur-xs text-foreground"
             >
                 <div class="p-6 space-y-4">
                     <div class="flex items-center gap-3">
@@ -1278,24 +1278,24 @@ export default function AcademicCampaignTransactionActivityPage() {
                             </svg>
                         </div>
                         <div>
-                            <h3 class="text-base font-bold font-mono text-neutral-900 dark:text-white">
+                            <h3 class="text-base font-bold font-mono text-foreground">
                                 {t('ad.deleteActivity')}
                             </h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                            <p class="text-xs text-muted-foreground">
                                 {t('ad.thisActionCannotBeReversed')}
                             </p>
                         </div>
                     </div>
 
-                    <p class="text-xs text-neutral-600 dark:text-neutral-300 font-mono">
-                        {t('ad.areYouSureYouWantTo')} <strong class="text-neutral-900 dark:text-white">"{selectedActivity()?.name}"</strong>{t('ad.allAssociatedCampaignRegistrationMappingsMay')}
+                    <p class="text-xs text-muted-foreground font-mono">
+                        {t('ad.areYouSureYouWantTo')} <strong class="text-foreground">"{selectedActivity()?.name}"</strong>{t('ad.allAssociatedCampaignRegistrationMappingsMay')}
                     </p>
 
-                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                    <div class="flex items-center justify-end gap-2.5 pt-3 border-t border-border">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 rounded-xs transition-colors cursor-pointer"
+                            class="px-3.5 py-1.5 text-xs font-mono font-medium text-foreground/80 bg-secondary hover:bg-neutral-200 rounded-md transition-colors cursor-pointer"
                         >
                             {t('ad.cancel')}
                         </button>
@@ -1303,7 +1303,7 @@ export default function AcademicCampaignTransactionActivityPage() {
                             type="button"
                             disabled={isSubmitting()}
                             onClick={handleDeleteSubmit}
-                            class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xs transition-colors cursor-pointer disabled:opacity-50"
+                            class="px-4 py-1.5 text-xs font-mono font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors cursor-pointer disabled:opacity-50"
                         >
                             {isSubmitting() ? t('ad.deleting') : t('ad.confirmDelete')}
                         </button>

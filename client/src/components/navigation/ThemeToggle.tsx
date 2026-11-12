@@ -6,7 +6,7 @@ export default function ThemeToggle() {
         <button
             onClick={toggleTheme}
             type="button"
-            class="size-8 flex justify-center items-center rounded-xs bg-white dark:bg-white/10 hover:bg-neutral-100 dark:hover:bg-white/20 border border-neutral-300 dark:border-white/15 text-neutral-900 dark:text-white backdrop-blur-md transition-all shadow-lg"
+            class="size-8 flex justify-center items-center rounded-md bg-white dark:bg-white/10 hover:bg-neutral-100 dark:hover:bg-white/20 border border-neutral-300 dark:border-white/15 text-foreground backdrop-blur-md transition-all shadow-lg"
             aria-label={t('nav.toggleDarkMode')}
             title={t('nav.toggleDarkMode')}
         >

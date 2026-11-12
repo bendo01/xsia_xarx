@@ -64,23 +64,23 @@ export default function AuthRoleDetailPage() {
     const formatDate = (value: string | null | undefined) => (value ? new Date(value).toLocaleString() : '-');
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
                 {/* Header Section */}
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{t('ad.home')}</a>
                             <span class="shrink-0">/</span>
                             <span class="shrink-0">{t('ad.auth')}</span>
                             <span class="shrink-0">/</span>
                             <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{t('ad.role')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{t('ad.detail2')}</span>
+                            <span class="font-medium text-foreground shrink-0">{t('ad.detail2')}</span>
                         </nav>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground font-mono truncate">
                             {t('ad.rolePermissions')}
                         </h1>
                     </div>
@@ -88,7 +88,7 @@ export default function AuthRoleDetailPage() {
                     <div class="w-full sm:w-auto flex items-center gap-2 shrink-0">
                         <a
                             href={basePath}
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6" />
@@ -99,7 +99,7 @@ export default function AuthRoleDetailPage() {
                 </div>
 
                 {/* Content Box */}
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6">
+                <div class="bg-card border border-border shadow-2xs p-4 sm:p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -127,13 +127,13 @@ export default function AuthRoleDetailPage() {
                                 {/* Title and Badge Banner */}
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-700 pb-4">
                                     <div class="min-w-0">
-                                        <span class="text-xs font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400 block mb-0.5">{t('ad.roleName')}</span>
-                                        <h2 class="text-lg sm:text-xl font-bold text-neutral-900 dark:text-white font-mono break-all sm:break-normal">
+                                        <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground block mb-0.5">{t('ad.roleName')}</span>
+                                        <h2 class="text-lg sm:text-xl font-bold text-foreground font-mono break-all sm:break-normal">
                                             {record()?.name || '-'}
                                         </h2>
                                     </div>
                                     <div class="flex flex-wrap items-center gap-2 shrink-0">
-                                        <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-700">
+                                        <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-neutral-100 dark:bg-neutral-900 text-foreground border border-border">
                                             {record()?.roleable_type || '-'}
                                         </span>
                                     </div>
@@ -141,10 +141,10 @@ export default function AuthRoleDetailPage() {
 
                                 {/* Key Highlights Grid */}
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 text-xs">
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.uuid2')}</span>
                                         <div class="flex items-center justify-between gap-2 min-w-0">
-                                            <span class="font-mono text-neutral-800 dark:text-neutral-200 truncate">{record()?.id || '-'}</span>
+                                            <span class="font-mono text-foreground truncate">{record()?.id || '-'}</span>
                                             <button
                                                 type="button"
                                                 onClick={() => copyToClipboard(record()?.id || '', 'ID')}
@@ -154,19 +154,19 @@ export default function AuthRoleDetailPage() {
                                             </button>
                                         </div>
                                     </div>
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.createdAt')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(record()?.created_at)}</span>
+                                        <span class="font-mono text-foreground">{formatDate(record()?.created_at)}</span>
                                     </div>
-                                    <div class="p-3.5 sm:p-4 bg-neutral-50 dark:bg-neutral-900/50 border border-neutral-200 dark:border-neutral-700/60 min-w-0">
+                                    <div class="p-3.5 sm:p-4 bg-muted/50 border border-border/60 min-w-0">
                                         <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{t('ad.updatedAt')}</span>
-                                        <span class="font-mono text-neutral-800 dark:text-neutral-200">{formatDate(record()?.updated_at)}</span>
+                                        <span class="font-mono text-foreground">{formatDate(record()?.updated_at)}</span>
                                     </div>
                                 </div>
 
                                 {/* Role-specific permissions; position type permissions are managed on the position type page */}
                                 <div class="mt-6 space-y-2">
-                                    <p class="text-[11px] font-mono text-neutral-500 dark:text-neutral-400">
+                                    <p class="text-[11px] font-mono text-muted-foreground">
                                         {t('ad.permissionsBelowApplyToThisRole')}
                                     </p>
                                     <PermissionToggleList

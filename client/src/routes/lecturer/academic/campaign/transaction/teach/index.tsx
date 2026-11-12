@@ -233,24 +233,24 @@ export default function LecturerTeachIndexPage() {
     });
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
                 {/* Header Banner */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs relative overflow-hidden">
+                <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs relative overflow-hidden">
 
                     <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2">
-                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
+                            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-semibold border border-blue-200 dark:border-blue-800/80">
                                 <span>{t('lc.nidn2')} {lecturerNidn()}</span>
                                 <span>•</span>
                                 <span>{t('lc.semesterTeachingPortal')}</span>
                             </div>
-                            <h1 class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white tracking-tight">
+                            <h1 class="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
                                 {t('lc.assignedTeachingClasses')}
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl font-medium">
+                            <p class="text-xs sm:text-sm text-muted-foreground max-w-2xl font-medium">
                                 {t('lc.directCourseAssignmentsClassroomCodesPlanned')} {lecturerName()}.
                             </p>
                         </div>
@@ -259,7 +259,7 @@ export default function LecturerTeachIndexPage() {
                             <button
                                 type="button"
                                 onClick={loadLecturerTeaches}
-                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xs text-xs flex items-center gap-2 shadow-md transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-md text-xs flex items-center gap-2 shadow-md transition-colors"
                             >
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/>
@@ -268,7 +268,7 @@ export default function LecturerTeachIndexPage() {
                             </button>
                             <A
                                 href={user()?.individual_id || getStorageItem('individual_id') ? `/lecturer/person/master/individual/${user()?.individual_id || getStorageItem('individual_id')}/show` : '/lecturer/person/master/individual/[id]/show'}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 text-neutral-900 dark:text-white font-semibold rounded-xs text-xs flex items-center gap-2 border border-neutral-200 dark:border-neutral-600 transition-colors"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 text-foreground font-semibold rounded-md text-xs flex items-center gap-2 border border-border transition-colors"
                             >
                                 <span>{t('lc.facultyProfile')}</span>
                             </A>
@@ -279,24 +279,24 @@ export default function LecturerTeachIndexPage() {
                 {/* Summary Metric Stats */}
                 <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Stat 1: Total Classes */}
-                    <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                    <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.assignedClasses')}</span>
-                            <div class="size-7 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                            <span class="text-xs font-bold text-muted-foreground">{t('lc.assignedClasses')}</span>
+                            <div class="size-7 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                 📚
                             </div>
                         </div>
                         <div class="flex items-baseline gap-2">
-                            <span class="text-2xl font-black text-neutral-900 dark:text-white font-mono">{totalClasses()}</span>
+                            <span class="text-2xl font-black text-foreground font-mono">{totalClasses()}</span>
                             <span class="text-xs text-neutral-400 font-medium">{t('lc.classes')}</span>
                         </div>
                     </div>
 
                     {/* Stat 2: Total Credits */}
-                    <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                    <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.totalSKSCredits')}</span>
-                            <div class="size-7 rounded-xs bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
+                            <span class="text-xs font-bold text-muted-foreground">{t('lc.totalSKSCredits')}</span>
+                            <div class="size-7 rounded-md bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
                                 ⚖️
                             </div>
                         </div>
@@ -307,10 +307,10 @@ export default function LecturerTeachIndexPage() {
                     </div>
 
                     {/* Stat 3: Planned Sessions */}
-                    <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                    <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.plannedSessions')}</span>
-                            <div class="size-7 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                            <span class="text-xs font-bold text-muted-foreground">{t('lc.plannedSessions')}</span>
+                            <div class="size-7 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                 🎯
                             </div>
                         </div>
@@ -321,10 +321,10 @@ export default function LecturerTeachIndexPage() {
                     </div>
 
                     {/* Stat 4: Realized Sessions */}
-                    <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
+                    <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
                         <div class="flex items-center justify-between">
-                            <span class="text-xs font-bold text-neutral-500 dark:text-neutral-400">{t('lc.realizedSessions')}</span>
-                            <div class="size-7 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
+                            <span class="text-xs font-bold text-muted-foreground">{t('lc.realizedSessions')}</span>
+                            <div class="size-7 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold text-xs">
                                 ✅
                             </div>
                         </div>
@@ -336,21 +336,21 @@ export default function LecturerTeachIndexPage() {
                 </div>
 
                 {/* Chart Total Credit per Academic Year */}
-                <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-5">
+                <div class="min-w-0 p-6 rounded-md bg-card border border-border/60 shadow-2xs space-y-5">
                     {/* Header */}
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="space-y-1">
                             <div class="flex items-center gap-2">
-                                <div class="size-7 rounded-xs bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
+                                <div class="size-7 rounded-md bg-blue-100 dark:bg-blue-950/80 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold text-xs">
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-sm font-bold text-foreground">
                                     {t('lc.totalTeachingCreditsPerAcademicYear')}
                                 </h3>
                             </div>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                            <p class="text-xs text-muted-foreground">
                                 {t('lc.trenBebanSKSPerkuliahanYangDiampu')}
                             </p>
                         </div>
@@ -358,12 +358,12 @@ export default function LecturerTeachIndexPage() {
                         {/* Summary Badges */}
                         <div class="flex items-center gap-2 flex-wrap text-xs font-mono">
                             <Show when={maxYearCreditItem()}>
-                                <div class="px-3 py-1.5 rounded-xs bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-purple-700 dark:text-purple-300">
+                                <div class="px-3 py-1.5 rounded-md bg-purple-50 dark:bg-purple-950/60 border border-purple-200 dark:border-purple-800/60 text-purple-700 dark:text-purple-300">
                                     <span class="text-[10px] text-purple-500 block uppercase font-sans">{t('lc.bebanTertinggi')}</span>
                                     <span class="font-bold">{maxYearCreditItem()?.totalCredit} SKS ({maxYearCreditItem()?.yearName})</span>
                                 </div>
                             </Show>
-                            <div class="px-3 py-1.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300">
+                            <div class="px-3 py-1.5 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/60 text-blue-700 dark:text-blue-300">
                                 <span class="text-[10px] text-blue-500 block uppercase font-sans">{t('lc.rataRataTahun')}</span>
                                 <span class="font-bold">{avgCreditPerYear()} SKS</span>
                             </div>
@@ -393,7 +393,7 @@ export default function LecturerTeachIndexPage() {
                 </div>
 
                 {/* Filter & View Toolbar */}
-                <div class="p-4 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 shadow-2xs">
+                <div class="p-4 rounded-md bg-card border border-border/60 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 shadow-2xs">
                     {/* Search input */}
                     <div class="relative flex-1">
                         <input
@@ -401,7 +401,7 @@ export default function LecturerTeachIndexPage() {
                             placeholder={t('lc.searchCourseTitleCourseCodeE')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 bg-neutral-50 dark:bg-neutral-900/80 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-800 dark:text-neutral-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                            class="w-full pl-9 pr-4 py-2 bg-muted/80 border border-border rounded-md text-xs text-foreground focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                         />
                         <svg class="size-4 text-neutral-400 absolute left-3 top-2.5 pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
@@ -414,7 +414,7 @@ export default function LecturerTeachIndexPage() {
                         <select
                             value={selectedAcademicYearFilter()}
                             onChange={(e) => setSelectedAcademicYearFilter(e.currentTarget.value)}
-                            class="px-3 py-2 bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-xs text-xs text-neutral-700 dark:text-neutral-300 focus:outline-none focus:border-blue-500 font-medium"
+                            class="px-3 py-2 bg-muted border border-border rounded-md text-xs text-foreground/80 focus:outline-none focus:border-blue-500 font-medium"
                         >
                             <option value="all">{t('lc.semuaTahunAkademik')}</option>
                             <For each={distinctAcademicYears()}>
@@ -427,13 +427,13 @@ export default function LecturerTeachIndexPage() {
                         </select>
 
                         {/* View Switcher */}
-                        <div class="flex items-center p-0.5 rounded-xs bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700">
+                        <div class="flex items-center p-0.5 rounded-md bg-neutral-100 dark:bg-neutral-900 border border-border">
                             <button
                                 type="button"
                                 onClick={() => setViewMode('grid')}
-                                class={`p-1.5 rounded-xs text-xs font-bold transition-all flex items-center gap-1 ${
+                                class={`p-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
                                     viewMode() === 'grid'
-                                        ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
+                                        ? 'bg-card text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
                                 title={t('lc.gridView')}
@@ -445,9 +445,9 @@ export default function LecturerTeachIndexPage() {
                             <button
                                 type="button"
                                 onClick={() => setViewMode('table')}
-                                class={`p-1.5 rounded-xs text-xs font-bold transition-all flex items-center gap-1 ${
+                                class={`p-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-1 ${
                                     viewMode() === 'table'
-                                        ? 'bg-white dark:bg-neutral-800 text-blue-600 dark:text-blue-400 shadow-xs'
+                                        ? 'bg-card text-blue-600 dark:text-blue-400 shadow-xs'
                                         : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                                 }`}
                                 title={t('lc.tableRosterView')}
@@ -473,14 +473,14 @@ export default function LecturerTeachIndexPage() {
                     <Show
                         when={filteredTeaches().length > 0}
                         fallback={
-                            <div class="p-12 text-center rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-2xs">
-                                <div class="size-14 mx-auto rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl">
+                            <div class="p-12 text-center rounded-md bg-card border border-border/60 space-y-3 shadow-2xs">
+                                <div class="size-14 mx-auto rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center text-2xl">
                                     📖
                                 </div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                <h3 class="text-base font-bold text-foreground">
                                     {t('lc.noTeachingClassesFound')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto">
+                                <p class="text-xs text-muted-foreground max-w-sm mx-auto">
                                     {searchQuery()
                                         ? t('lc.noClassesMatchingQueryTryClearing', { query: searchQuery() })
                                         : t('lc.youHaveNotBeenAssignedTo')}
@@ -489,7 +489,7 @@ export default function LecturerTeachIndexPage() {
                                     <button
                                         type="button"
                                         onClick={() => { setSearchQuery(''); setSelectedAcademicYearFilter('all'); }}
-                                        class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors"
+                                        class="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-600 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-md text-xs transition-colors"
                                     >
                                         {t('lc.clearFilters')}
                                     </button>
@@ -507,23 +507,23 @@ export default function LecturerTeachIndexPage() {
                                             : 0;
 
                                         return (
-                                            <div class="p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-5 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between group">
+                                            <div class="p-6 rounded-md bg-card border border-border/60 space-y-5 shadow-2xs hover:shadow-md transition-shadow flex flex-col justify-between group">
                                                 <div class="space-y-3">
                                                     {/* Top Badges */}
                                                     <div class="flex items-center justify-between gap-2">
-                                                        <span class="px-2.5 py-1 rounded-xs text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
+                                                        <span class="px-2.5 py-1 rounded-md text-xs font-mono font-bold bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 border border-blue-200 dark:border-blue-800">
                                                             {item.course_code || 'COURSE'}
                                                         </span>
                                                         <div class="flex items-center gap-1.5 flex-wrap">
                                                             <Show when={item.academic_year_name}>
-                                                                <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono">
+                                                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300 font-mono">
                                                                     {item.academic_year_name}
                                                                 </span>
                                                             </Show>
-                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-mono">
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-purple-100 dark:bg-purple-950 text-purple-700 dark:text-purple-300 font-mono">
                                                                 {item.credit || item.course_total_credit || 0} SKS
                                                             </span>
-                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
                                                                 {item.class_name || `Kelas ${item.class_alphabet_code}`}
                                                             </span>
                                                         </div>
@@ -531,11 +531,11 @@ export default function LecturerTeachIndexPage() {
 
                                                     {/* Course Title */}
                                                     <div>
-                                                        <h3 class="text-base font-bold text-neutral-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
+                                                        <h3 class="text-base font-bold text-foreground group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors line-clamp-2">
                                                             {item.course_name}
                                                         </h3>
-                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5 flex items-center gap-2">
-                                                            <span>{t('lc.classCode')} <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{item.class_alphabet_code}</span></span>
+                                                        <p class="text-xs text-muted-foreground mt-0.5 flex items-center gap-2">
+                                                            <span>{t('lc.classCode')} <span class="font-bold text-foreground font-mono">{item.class_alphabet_code}</span></span>
                                                             <Show when={item.is_lecturer_home_base}>
                                                                 <span>•</span>
                                                                 <span class="text-emerald-600 dark:text-emerald-400 font-medium">{t('lc.homebase')}</span>
@@ -544,16 +544,16 @@ export default function LecturerTeachIndexPage() {
                                                     </div>
 
                                                     {/* Sessions & Teaching Progress */}
-                                                    <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2">
+                                                    <div class="p-3.5 rounded-md bg-muted/60 border border-border/60 space-y-2">
                                                         <div class="flex items-center justify-between text-xs">
                                                             <span class="text-neutral-500 font-medium">{t('lc.teachingSessions')}</span>
-                                                            <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">
+                                                            <span class="font-bold text-foreground font-mono">
                                                                 {item.realization} / {item.planning || 16} Pertemuan
                                                             </span>
                                                         </div>
-                                                        <div class="w-full h-2 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                                                        <div class="w-full h-2 rounded-md bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
                                                             <div
-                                                                class="h-full rounded-xs bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-500"
+                                                                class="h-full rounded-md bg-linear-to-r from-blue-500 to-indigo-500 transition-all duration-500"
                                                                 style={{ width: `${progressPercent()}%` }}
                                                             ></div>
                                                         </div>
@@ -568,13 +568,13 @@ export default function LecturerTeachIndexPage() {
                                                 <div class="pt-2 border-t border-neutral-100 dark:border-neutral-700/60 flex items-center justify-between gap-2">
                                                     <A
                                                         href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
-                                                        class="flex-1 py-2 px-3 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
+                                                        class="flex-1 py-2 px-3 text-center bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900/80 text-blue-700 dark:text-blue-300 font-semibold rounded-md text-xs transition-colors"
                                                     >
                                                         {t('lc.rosterPresensi')}
                                                     </A>
                                                     <A
                                                         href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
-                                                        class="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors shrink-0"
+                                                        class="py-2 px-3 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-600 dark:bg-neutral-700/80 text-neutral-700 dark:text-neutral-200 font-semibold rounded-md text-xs transition-colors shrink-0"
                                                         title={t('lc.nilaiMahasiswa')}
                                                     >
                                                         {t('lc.nilai')}
@@ -589,10 +589,10 @@ export default function LecturerTeachIndexPage() {
 
                         {/* Table Roster View */}
                         <Show when={viewMode() === 'table'}>
-                            <div class="rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 overflow-hidden shadow-2xs">
+                            <div class="rounded-md bg-card border border-border/60 overflow-hidden shadow-2xs">
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-left text-xs">
-                                        <thead class="bg-neutral-50 dark:bg-neutral-900/60 border-b border-neutral-200 dark:border-neutral-700 text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
+                                        <thead class="bg-muted/60 border-b border-border text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                             <tr>
                                                 <th class="px-6 py-4 font-bold">{t('lc.courseCodeName')}</th>
                                                 <th class="px-6 py-4 font-bold">{t('lc.classSection')}</th>
@@ -613,18 +613,18 @@ export default function LecturerTeachIndexPage() {
                                                                         {item.course_code}
                                                                     </span>
                                                                     <Show when={item.academic_year_name}>
-                                                                        <span class="px-1.5 py-0.2 rounded-xs text-[9px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
+                                                                        <span class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300">
                                                                             {item.academic_year_name}
                                                                         </span>
                                                                     </Show>
                                                                 </div>
-                                                                <h4 class="font-bold text-neutral-900 dark:text-white">
+                                                                <h4 class="font-bold text-foreground">
                                                                     {item.course_name}
                                                                 </h4>
                                                             </div>
                                                         </td>
                                                         <td class="px-6 py-4">
-                                                            <span class="px-2.5 py-1 rounded-xs text-xs font-bold bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200">
+                                                            <span class="px-2.5 py-1 rounded-md text-xs font-bold bg-secondary text-neutral-700 dark:text-neutral-200">
                                                                 {item.class_name || `Kelas ${item.class_alphabet_code}`}
                                                             </span>
                                                         </td>
@@ -633,12 +633,12 @@ export default function LecturerTeachIndexPage() {
                                                         </td>
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-1">
-                                                                <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">
+                                                                <span class="font-bold text-foreground font-mono">
                                                                     {item.realization} / {item.planning || 16}
                                                                 </span>
-                                                                <div class="w-24 h-1.5 rounded-xs bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
+                                                                <div class="w-24 h-1.5 rounded-md bg-neutral-200 dark:bg-neutral-700 overflow-hidden">
                                                                     <div
-                                                                        class="h-full rounded-xs bg-blue-600"
+                                                                        class="h-full rounded-md bg-blue-600"
                                                                         style={{ width: `${item.planning > 0 ? Math.min(100, Math.round((item.realization / item.planning) * 100)) : 0}%` }}
                                                                     ></div>
                                                                 </div>
@@ -649,7 +649,7 @@ export default function LecturerTeachIndexPage() {
                                                                 when={item.is_lecturer_home_base}
                                                                 fallback={<span class="text-neutral-400">-</span>}
                                                             >
-                                                                <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
+                                                                <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300">
                                                                     {t('lc.homebase')}
                                                                 </span>
                                                             </Show>
@@ -658,13 +658,13 @@ export default function LecturerTeachIndexPage() {
                                                             <div class="inline-flex items-center gap-2">
                                                                 <A
                                                                     href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/attendance`}
-                                                                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold rounded-xs text-xs transition-colors"
+                                                                    class="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 dark:bg-blue-950/60 dark:hover:bg-blue-900 text-blue-700 dark:text-blue-300 font-semibold rounded-md text-xs transition-colors"
                                                                 >
                                                                     {t('lc.presensi')}
                                                                 </A>
                                                                 <A
                                                                     href={`/lecturer/academic/campaign/transaction/teach/${item.teach_id}/grade`}
-                                                                    class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-200 font-semibold rounded-xs text-xs transition-colors"
+                                                                    class="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-700 dark:hover:bg-neutral-600 text-neutral-700 dark:text-neutral-200 font-semibold rounded-md text-xs transition-colors"
                                                                 >
                                                                     {t('lc.nilai2')}
                                                                 </A>

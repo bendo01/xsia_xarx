@@ -78,22 +78,22 @@ export default function LocationRegencyCreatePage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-4 sm:space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5">
                             <a href="/" class="hover:text-blue-600 transition-colors shrink-0">{tt('ad.home')}</a>
                             <span class="shrink-0">/</span>
                             <span class="shrink-0">{tt('ad.location')}</span>
                             <span class="shrink-0">/</span>
                             <a href={basePath} class="hover:text-blue-600 transition-colors shrink-0">{tt('ad.regency')}</a>
                             <span class="shrink-0">/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white shrink-0">{tt('ad.create')}</span>
+                            <span class="font-medium text-foreground shrink-0">{tt('ad.create')}</span>
                         </nav>
-                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono truncate">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight text-foreground font-mono truncate">
                             {tt('ad.addNewRegency')}
                         </h1>
                     </div>
@@ -101,7 +101,7 @@ export default function LocationRegencyCreatePage() {
                     <div class="w-full sm:w-auto">
                         <a
                             href={basePath}
-                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
+                            class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors"
                         >
                             <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
@@ -111,11 +111,11 @@ export default function LocationRegencyCreatePage() {
                     </div>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs p-4 sm:p-6 max-w-3xl">
+                <div class="bg-card border border-border shadow-2xs p-4 sm:p-6 max-w-3xl">
                     <form onSubmit={handleSubmit} class="space-y-6">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.regencyName')} <span class="text-red-500">*</span>
                                 </label>
                                 <input
@@ -124,12 +124,12 @@ export default function LocationRegencyCreatePage() {
                                     value={name()}
                                     onInput={(e) => setName(e.currentTarget.value)}
                                     placeholder={tt('ad.eGBandungSurabaya')}
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.code2')}
                                 </label>
                                 <input
@@ -137,18 +137,18 @@ export default function LocationRegencyCreatePage() {
                                     value={code()}
                                     onInput={(e) => setCode(e.currentTarget.value)}
                                     placeholder="e.g. 3273"
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.province')}
                                 </label>
                                 <select
                                     value={provinceId()}
                                     onChange={(e) => setProvinceId(e.currentTarget.value)}
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 >
                                     <option value="">{tt('ad.selectProvince2')}</option>
                                     <For each={provinceOptions()}>
@@ -158,13 +158,13 @@ export default function LocationRegencyCreatePage() {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.regencyType')}
                                 </label>
                                 <select
                                     value={regencyTypeId()}
                                     onChange={(e) => setRegencyTypeId(e.currentTarget.value)}
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 >
                                     <option value="">{tt('ad.selectRegencyType')}</option>
                                     <For each={regencyTypeOptions()}>
@@ -174,7 +174,7 @@ export default function LocationRegencyCreatePage() {
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.diktiCode2')}
                                 </label>
                                 <input
@@ -182,12 +182,12 @@ export default function LocationRegencyCreatePage() {
                                     value={diktiCode()}
                                     onInput={(e) => setDiktiCode(e.currentTarget.value)}
                                     placeholder="e.g. 010100"
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
 
                             <div>
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.epsbedCode')}
                                 </label>
                                 <input
@@ -195,12 +195,12 @@ export default function LocationRegencyCreatePage() {
                                     value={epsbedCode()}
                                     onInput={(e) => setEpsbedCode(e.currentTarget.value)}
                                     placeholder="e.g. 01"
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
 
                             <div class="sm:col-span-2">
-                                <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 font-mono mb-2">
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 font-mono mb-2">
                                     {tt('ad.description')}
                                 </label>
                                 <textarea
@@ -208,15 +208,15 @@ export default function LocationRegencyCreatePage() {
                                     value={description()}
                                     onInput={(e) => setDescription(e.currentTarget.value)}
                                     placeholder={tt('ad.optionalNotesOrDescription')}
-                                    class="w-full p-2.5 text-xs sm:text-sm border border-neutral-300 dark:border-neutral-600 bg-white dark:bg-neutral-900 text-neutral-900 dark:text-white font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
+                                    class="w-full p-2.5 text-xs sm:text-sm border border-border bg-card text-foreground font-mono focus:ring-2 focus:ring-blue-500 outline-hidden transition-colors"
                                 />
                             </div>
                         </div>
 
-                        <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+                        <div class="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-2 sm:gap-3 pt-4 border-t border-border">
                             <a
                                 href={basePath}
-                                class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
+                                class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 text-xs sm:text-sm font-medium text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 {tt('ad.cancel')}
                             </a>

@@ -150,7 +150,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-muted text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -165,21 +165,21 @@ export default function CourseDepartmentStudentMasterShowPage() {
                     )}
                 >
                     {/* Header Banner */}
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 sm:p-8 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
+                    <div class="bg-card rounded-md p-6 sm:p-8 border border-border shadow-2xs">
                         <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                             <div class="flex items-center gap-5">
-                                <div class="size-16 sm:size-20 rounded-xs bg-linear-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
+                                <div class="size-16 sm:size-20 rounded-md bg-linear-to-tr from-teal-500 to-cyan-600 text-white font-black text-2xl flex items-center justify-center shadow-md">
                                     {(student()?.name || 'S').charAt(0).toUpperCase()}
                                 </div>
                                 <div class="space-y-1">
-                                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
-                                        <span class="size-1.5 rounded-xs bg-teal-500"></span>
+                                    <div class="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 text-xs font-mono font-semibold border border-teal-200 dark:border-teal-800/80">
+                                        <span class="size-1.5 rounded-md bg-teal-500"></span>
                                         <span>{t('cd.nim2')} {student()?.code || '-'}</span>
                                     </div>
-                                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white">
+                                    <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground">
                                         {student()?.name || t('cd.studentDetails')}
                                     </h1>
-                                    <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                                    <p class="text-xs sm:text-sm text-muted-foreground">
                                         {student()?.unit_name || 'Program Studi'} • Academic Year {student()?.academic_year_name || '-'}
                                     </p>
                                 </div>
@@ -188,7 +188,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             <div class="flex items-center gap-3">
                                 <A
                                     href="/course-department/academic/student/master/student"
-                                    class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors inline-flex items-center gap-1.5"
+                                    class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors inline-flex items-center gap-1.5"
                                 >
                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6" /></svg>
                                     <span>{t('cd.backToStudentList')}</span>
@@ -208,10 +208,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                     }>
                         {/* 4 Academic Summary Stat Cards */}
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('cd.ipkKumulatif')}</span>
-                                    <div class="size-8 rounded-xs bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" /></svg>
                                     </div>
                                 </div>
@@ -221,15 +221,15 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </span>
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {t('cd.indeksPrestasiKumulatif')}
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('cd.ipsTerakhir')}</span>
-                                    <div class="size-8 rounded-xs bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-md bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
                                 </div>
@@ -239,20 +239,20 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </span>
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {t('cd.indeksPrestasiSemester')}
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('cd.totalSKSLulus')}</span>
-                                    <div class="size-8 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z" /></svg>
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                    <span class="text-2xl sm:text-3xl font-black text-foreground font-mono">
                                         {currentTotalSks()}
                                     </span>
                                     <span class="text-xs text-neutral-400 font-medium">{t('cd.sks')}</span>
@@ -262,10 +262,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                 </div>
                             </div>
 
-                            <div class="p-5 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-2xs space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-md bg-card border border-border/60 shadow-2xs space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('cd.statusSemester')}</span>
-                                    <div class="size-8 rounded-xs bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
+                                    <div class="size-8 rounded-md bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><path d="m9 11 3 3L22 4" /></svg>
                                     </div>
                                 </div>
@@ -274,7 +274,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                         {student()?.status_name || t('cd.aktif')}
                                     </span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {activities().length} Semester Tercatat
                                 </div>
                             </div>
@@ -282,19 +282,19 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                         {/* Visualizations Section Powered by Apache ECharts */}
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-700 pb-3">
+                            <div class="flex items-center justify-between border-b border-border pb-3">
                                 <div>
-                                    <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
-                                        <span class="size-2.5 rounded-xs bg-teal-500"></span>
+                                    <h2 class="text-base font-bold text-foreground flex items-center gap-2">
+                                        <span class="size-2.5 rounded-md bg-teal-500"></span>
                                         {t('cd.visualisasiAkademikMahasiswa')}
                                     </h2>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                    <p class="text-xs text-muted-foreground">
                                         {t('cd.grafikPerkembanganIndeksPrestasiIPSIPK')}
                                     </p>
                                 </div>
                                 {/*
                                 <div class="flex items-center gap-2">
-                                    <span class="px-2.5 py-1 rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
+                                    <span class="px-2.5 py-1 rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-700 dark:text-teal-300 font-mono text-[11px] font-semibold border border-teal-200 dark:border-teal-800">
                                         {t('cd.apacheEChartsV6')}
                                     </span>
                                 </div>
@@ -302,36 +302,36 @@ export default function CourseDepartmentStudentMasterShowPage() {
                             </div>
 
                             <Show when={academicTrendData().length > 0} fallback={
-                                <div class="p-8 rounded-xs bg-white dark:bg-neutral-800 border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-3">
-                                    <div class="size-12 mx-auto rounded-xs bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
+                                <div class="p-8 rounded-md bg-card border border-dashed border-border text-center space-y-3">
+                                    <div class="size-12 mx-auto rounded-md bg-teal-50 dark:bg-teal-950/60 text-teal-600 dark:text-teal-400 flex items-center justify-center">
                                         <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m19 9-5 5-4-4-3 3" /><path d="M3 3v18h18" /></svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('cd.belumAdaRiwayatNilaiSemester')}</h3>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto">
+                                    <h3 class="text-sm font-bold text-foreground">{t('cd.belumAdaRiwayatNilaiSemester')}</h3>
+                                    <p class="text-xs text-muted-foreground max-w-md mx-auto">
                                         {t('cd.dataAktivitasPerkuliahanKHSMahasiswaDengan')} <span class="font-mono font-bold text-teal-600 dark:text-teal-400">{student()?.code || '-'}</span> {t('cd.belumTercatatDiSistemAkademikGrafik')}
                                     </p>
                                 </div>
                             }>
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Chart 1: Academic Performance (IPS & IPK Trend) with Apache ECharts */}
-                                    <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-md bg-card border border-border shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                <h3 class="text-sm font-bold text-foreground">
                                                     {t('cd.trenIndeksPrestasiIPSIPK')}
                                                 </h3>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                <p class="text-xs text-muted-foreground">
                                                     {t('cd.grafikFluktuasiIPSemesterDanIP')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-xs bg-indigo-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('cd.ipk')}</span>
+                                                    <span class="size-2.5 rounded-md bg-indigo-500"></span>
+                                                    <span class="text-muted-foreground">{t('cd.ipk')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-xs bg-sky-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('cd.ips')}</span>
+                                                    <span class="size-2.5 rounded-md bg-sky-500"></span>
+                                                    <span class="text-muted-foreground">{t('cd.ips')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -340,24 +340,24 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </div>
 
                                     {/* Chart 2: Credit SKS Load Progression with Apache ECharts */}
-                                    <div class="min-w-0 p-6 rounded-xs bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
+                                    <div class="min-w-0 p-6 rounded-md bg-card border border-border shadow-2xs space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                <h3 class="text-sm font-bold text-foreground">
                                                     {t('cd.progresBebanKreditSKS')}
                                                 </h3>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                <p class="text-xs text-muted-foreground">
                                                     {t('cd.akumulasiSKSLulusKumulatifDanSKS')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-xs bg-teal-600"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('cd.sksKumulatif')}</span>
+                                                    <span class="size-2.5 rounded-md bg-teal-600"></span>
+                                                    <span class="text-muted-foreground">{t('cd.sksKumulatif')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
-                                                    <span class="size-2.5 rounded-xs bg-amber-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('cd.sksSemester')}</span>
+                                                    <span class="size-2.5 rounded-md bg-amber-500"></span>
+                                                    <span class="text-muted-foreground">{t('cd.sksSemester')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -370,13 +370,13 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                         {/* Semester Breakdown Table (KHS) */}
                         <Show when={activities().length > 0}>
-                            <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
-                                <div class="p-5 border-b border-neutral-200 dark:border-neutral-700 flex items-center justify-between">
+                            <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
+                                <div class="p-5 border-b border-border flex items-center justify-between">
                                     <div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <h3 class="text-sm font-bold text-foreground">
                                             {t('cd.riwayatAktivitasSemesterNilaiKHS')}
                                         </h3>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('cd.rincianCapaianAkademikPerSemesterMahasiswa')}
                                         </p>
                                     </div>
@@ -387,7 +387,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
 
                                 <div class="hidden md:block overflow-x-auto">
                                     <table class="w-full text-xs text-left border-collapse">
-                                        <thead class="bg-neutral-50 dark:bg-neutral-900/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-700">
+                                        <thead class="bg-muted/60 text-muted-foreground uppercase font-mono text-[10px] tracking-wider border-b border-border">
                                             <tr>
                                                 <th class="px-5 py-3">{t('cd.no')}</th>
                                                 <th class="px-5 py-3">{t('cd.semesterTahunAjaran')}</th>
@@ -404,10 +404,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                 {(act, idx) => (
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/30 transition-colors">
                                                         <td class="px-5 py-3 font-mono text-neutral-400">{idx() + 1}</td>
-                                                        <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">
+                                                        <td class="px-5 py-3 font-medium text-foreground">
                                                             {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || t('cd.semesterN', { n: idx() + 1 })}
                                                         </td>
-                                                        <td class="px-5 py-3 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
+                                                        <td class="px-5 py-3 text-center font-mono font-bold text-foreground/80">
                                                             {act.total_credit || 0}
                                                         </td>
                                                         <td class="px-5 py-3 text-center font-mono font-bold text-teal-600 dark:text-teal-400">
@@ -420,14 +420,14 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                             {Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}
                                                         </td>
                                                         <td class="px-5 py-3 text-center">
-                                                            <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                                 {act.status_name || t('cd.selesai')}
                                                             </span>
                                                         </td>
                                                         <td class="px-5 py-3 text-center">
                                                             <A
                                                                 href={`/course-department/academic/student/campaign/activity/${act.id}`}
-                                                                class="inline-flex items-center px-2.5 py-1 rounded-xs text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
+                                                                class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
                                                             >
                                                                 {t('cd.detail')}
                                                             </A>
@@ -447,35 +447,35 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                                 <div class="flex items-start justify-between gap-3">
                                                     <div>
                                                         <p class="text-[10px] font-mono text-neutral-400">#{idx() + 1}</p>
-                                                        <p class="text-sm font-medium text-neutral-900 dark:text-white">
+                                                        <p class="text-sm font-medium text-foreground">
                                                             {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || t('cd.semesterN', { n: idx() + 1 })}
                                                         </p>
                                                     </div>
-                                                    <span class="px-2 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                                                    <span class="px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                                         {act.status_name || t('cd.selesai')}
                                                     </span>
                                                 </div>
                                                 <div class="grid grid-cols-4 gap-2 text-center text-xs">
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.sks')}</p>
-                                                        <p class="font-mono font-bold text-neutral-700 dark:text-neutral-300">{act.total_credit || 0}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.sks')}</p>
+                                                        <p class="font-mono font-bold text-foreground/80">{act.total_credit || 0}</p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.sksKum')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.sksKum')}</p>
                                                         <p class="font-mono font-bold text-teal-600 dark:text-teal-400">{act.grand_total_credit || act.total_credit || 0}</p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.ips')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.ips')}</p>
                                                         <p class="font-mono font-bold text-sky-600 dark:text-sky-400">{Number(act.cumulative_index || 0).toFixed(2)}</p>
                                                     </div>
                                                     <div>
-                                                        <p class="text-[10px] uppercase text-neutral-500 dark:text-neutral-400">{t('cd.ipk')}</p>
+                                                        <p class="text-[10px] uppercase text-muted-foreground">{t('cd.ipk')}</p>
                                                         <p class="font-mono font-bold text-indigo-600 dark:text-indigo-400">{Number(act.grand_cumulative_index || act.cumulative_index || 0).toFixed(2)}</p>
                                                     </div>
                                                 </div>
                                                 <A
                                                     href={`/course-department/academic/student/campaign/activity/${act.id}`}
-                                                    class="block w-full text-center px-3 py-2 rounded-xs text-xs font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
+                                                    class="block w-full text-center px-3 py-2 rounded-md text-xs font-bold bg-sky-100 text-sky-800 hover:bg-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:hover:bg-sky-900 transition-colors"
                                                 >
                                                     {t('cd.lihatDetail')}
                                                 </A>
@@ -489,10 +489,10 @@ export default function CourseDepartmentStudentMasterShowPage() {
                         {/* Existing Cards: Academic Information & Biodata */}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
                             {/* Admission Card */}
-                            <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('cd.academicEnrolmentInformation')}</h3>
-                                    <span class="px-2.5 py-0.5 rounded-xs text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+                            <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="text-sm font-bold text-foreground">{t('cd.academicEnrolmentInformation')}</h3>
+                                    <span class="px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                                         {student()?.status_name || t('cd.active')}
                                     </span>
                                 </div>
@@ -504,54 +504,54 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.registrationNumber')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.registration_id || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{student()?.registration_id || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.admissionPath')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.selection_type_name || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.selection_type_name || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.enrolmentDate')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.registered || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.registered || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.studyProgramUnit')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.unit_name || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.unit_name || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.academicYearCohort2')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.academic_year_name || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.academic_year_name || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.curriculum2')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.curriculum_name || student()?.curriculum_id || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.curriculum_name || student()?.curriculum_id || '-'}</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Personal & Demographics Card */}
-                            <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
-                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('cd.individualBiodataIdentity')}</h3>
+                            <div class="bg-card rounded-md p-6 border border-border shadow-2xs space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
+                                    <h3 class="text-sm font-bold text-foreground">{t('cd.individualBiodataIdentity')}</h3>
                                     <span class="text-xs text-neutral-400 font-mono">{t('cd.studentRegistry')}</span>
                                 </div>
 
                                 <div class="space-y-3">
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.fullLegalName')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{student()?.name || '-'}</span>
+                                        <span class="font-bold text-foreground">{student()?.name || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.nationalIDNIK')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{ind()?.code || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.nisn')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{student()?.nisn || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{student()?.nisn || '-'}</span>
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.birthPlaceDate')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                        <span class="font-bold text-foreground">
                                             {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : (ind()?.birth_date || '-')}
                                         </span>
                                     </div>
@@ -563,7 +563,7 @@ export default function CourseDepartmentStudentMasterShowPage() {
                                     </div>
                                     <div class="flex justify-between py-1.5 border-b border-neutral-100 dark:border-neutral-700/50">
                                         <span class="text-neutral-400 font-mono">{t('cd.permanentAddress')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-100">{individual()?.biodata?.address || '-'}</span>
+                                        <span class="font-bold text-foreground">{individual()?.biodata?.address || '-'}</span>
                                     </div>
                                 </div>
                             </div>

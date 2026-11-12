@@ -38,15 +38,15 @@ export default function PreferenceApplicationPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
             <main class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="border-b border-border pb-4">
                     <h1 class="text-2xl font-bold tracking-tight font-mono">{t('ad.applicationPreference')}</h1>
                 </div>
 
                 <Show when={!isLoading()} fallback={<p class="text-sm text-neutral-500">{t('au.memproses')}</p>}>
-                    <form onSubmit={save} class="max-w-lg space-y-4 p-6 bg-white dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+                    <form onSubmit={save} class="max-w-lg space-y-4 p-6 bg-card/60 border border-border rounded-lg">
                         <label class="flex items-start gap-3 cursor-pointer">
                             <input
                                 type="checkbox"
@@ -56,7 +56,7 @@ export default function PreferenceApplicationPage() {
                             />
                             <span>
                                 <span class="block text-sm font-semibold">{t('ad.llmEnable')}</span>
-                                <span class="block text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('ad.llmEnableHint')}</span>
+                                <span class="block text-xs text-muted-foreground mt-0.5">{t('ad.llmEnableHint')}</span>
                             </span>
                         </label>
                         <div>
@@ -65,7 +65,7 @@ export default function PreferenceApplicationPage() {
                             </label>
                             <select
                                 id="llm-backend"
-                                class="w-full rounded-lg border border-neutral-300 dark:border-neutral-700 bg-white dark:bg-neutral-900 px-3 py-2 text-sm"
+                                class="w-full rounded-lg border border-border bg-card px-3 py-2 text-sm"
                                 value={llmBackend()}
                                 onChange={(e) => setLlmBackend(e.currentTarget.value as LlmBackend)}
                             >
@@ -78,7 +78,7 @@ export default function PreferenceApplicationPage() {
                                     )}
                                 </For>
                             </select>
-                            <span class="block text-xs text-neutral-500 dark:text-neutral-400 mt-1">{t('ad.llmBackendHint')}</span>
+                            <span class="block text-xs text-muted-foreground mt-1">{t('ad.llmBackendHint')}</span>
                         </div>
                         <button
                             type="submit"

@@ -64,27 +64,27 @@ export default function RectoratCourseDetail() {
     };
 
     const metric = (label: string, value: any) => (
-        <div class="p-4 bg-neutral-50 dark:bg-neutral-950/50 border border-neutral-200 dark:border-neutral-800 rounded-lg min-w-0">
+        <div class="p-4 bg-neutral-50 dark:bg-neutral-950/50 border border-border rounded-lg min-w-0">
             <span class="text-neutral-500 uppercase tracking-wider block font-semibold mb-1 text-[11px]">{label}</span>
-            <span class="font-mono text-neutral-800 dark:text-neutral-200 block truncate">{value ?? '-'}</span>
+            <span class="font-mono text-foreground block truncate">{value ?? '-'}</span>
         </div>
     );
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
                     <div class="min-w-0">
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}/academic`} class="hover:text-violet-600 transition-colors">{t('rt.akademik')}</A>
                             <span>/</span>
                             <A href={listHref()} class="hover:text-violet-600 transition-colors">{t('rt.mataKuliah')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detail')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.detail')}</span>
                         </nav>
                         <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-violet-600 dark:text-violet-400">
                             {t('rt.detailMataKuliah')}
@@ -92,13 +92,13 @@ export default function RectoratCourseDetail() {
                     </div>
                     <A
                         href={listHref()}
-                        class="inline-flex items-center justify-center px-3.5 py-2 text-sm font-medium border border-neutral-300 dark:border-neutral-700 rounded-lg bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
+                        class="inline-flex items-center justify-center px-3.5 py-2 text-sm font-medium border border-border rounded-lg bg-card hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors"
                     >
                         {t('rt.backToList')}
                     </A>
                 </div>
 
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm p-4 sm:p-6">
+                <div class="bg-card border border-border rounded-xl shadow-sm p-4 sm:p-6">
                     <Show
                         when={!isLoading()}
                         fallback={
@@ -113,7 +113,7 @@ export default function RectoratCourseDetail() {
                             fallback={<p class="py-12 text-center text-neutral-500 font-semibold">{t('rt.mataKuliahTidakDitemukan')}</p>}
                         >
                             <div class="space-y-6">
-                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-neutral-100 dark:border-neutral-800 pb-4">
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-4">
                                     <h2 class="text-xl font-bold wrap-break-words">{record()?.name || '-'}</h2>
                                     <span class="px-2.5 py-1 text-xs font-mono font-semibold bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-200 dark:border-violet-800/60 rounded-full">
                                         {t('rt.code')} {record()?.code || '-'}
@@ -138,11 +138,11 @@ export default function RectoratCourseDetail() {
                                             {t('rt.copy')} ID
                                         </button>
                                     </div>
-                                    <div class="border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden divide-y divide-neutral-200 dark:divide-neutral-800">
+                                    <div class="border border-border rounded-lg overflow-hidden divide-y divide-neutral-200 dark:divide-neutral-800">
                                         <For each={Object.entries(record() || {})}>
                                             {([key, val]) => (
                                                 <div class="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-4 px-4 py-2.5 text-xs hover:bg-neutral-50 dark:hover:bg-neutral-800/40">
-                                                    <div class="font-mono font-semibold text-neutral-500 dark:text-neutral-400">{key}</div>
+                                                    <div class="font-mono font-semibold text-muted-foreground">{key}</div>
                                                     <div class="md:col-span-2 font-mono break-all">
                                                         {typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val ?? '-')}
                                                     </div>

@@ -73,27 +73,27 @@ export default function StudentAdviserIndexPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="border-b border-border pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                         <div class="space-y-1">
-                            <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                            <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                                 <span>{t('st.student')}</span>
                                 <span>/</span>
                                 <span>{t('st.academic')}</span>
                                 <span>/</span>
                                 <span>{t('st.student')}</span>
                                 <span>/</span>
-                                <span class="font-medium text-neutral-900 dark:text-white">{t('st.adviser')}</span>
+                                <span class="font-medium text-foreground">{t('st.adviser')}</span>
                             </nav>
-                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                                 {t('st.myAcademicAdvisersCounsellors')}
                             </h1>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            <p class="text-sm text-muted-foreground mt-0.5">
                                 {t('st.viewYourDesignatedAcademicAdvisorsDosen')}
                             </p>
                         </div>
@@ -101,13 +101,13 @@ export default function StudentAdviserIndexPage() {
                         <div class="flex items-center gap-3">
                             <A
                                 href={currentUserSignal()?.individual_id || getStorageItem('individual_id') ? `/student/person/master/individual/${currentUserSignal()?.individual_id || getStorageItem('individual_id')}/show` : '/student/person/master/individual/[id]/show'}
-                                class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-700 hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-xs text-xs font-bold transition-colors"
+                                class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-600 rounded-md text-xs font-bold transition-colors"
                             >
                                 {t('st.myProfile')}
                             </A>
                             <A
                                 href="/student/academic/student/campaign/activity"
-                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xs text-xs font-bold shadow-xs transition-colors"
+                                class="px-4 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-xs font-bold shadow-xs transition-colors"
                             >
                                 {t('st.semesterStudyPlanKRS')}
                             </A>
@@ -116,14 +116,14 @@ export default function StudentAdviserIndexPage() {
                 </div>
 
                 {/* Filter & Search Bar */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs p-4 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
+                <div class="bg-card rounded-md p-4 border border-border shadow-2xs flex flex-col sm:flex-row items-center justify-between gap-3">
                     <div class="relative w-full sm:w-80">
                         <input
                             type="text"
                             placeholder={t('st.searchByAdvisorNameNIDNOr')}
                             value={searchQuery()}
                             onInput={(e) => setSearchQuery(e.currentTarget.value)}
-                            class="w-full pl-9 pr-4 py-2 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
+                            class="w-full pl-9 pr-4 py-2 text-xs rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-blue-500"
                         />
                         <svg class="size-4 absolute left-3 top-2.5 text-neutral-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
                     </div>
@@ -133,7 +133,7 @@ export default function StudentAdviserIndexPage() {
                         <select
                             value={selectedRoleFilter()}
                             onChange={(e) => setSelectedRoleFilter(e.currentTarget.value)}
-                            class="py-2 px-3 text-xs rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-blue-500"
+                            class="py-2 px-3 text-xs rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-blue-500"
                         >
                             <option value="all">{t('st.allAdvisers')}</option>
                             <option value="academic">{t('st.academicAdvisorPA')}</option>
@@ -151,43 +151,43 @@ export default function StudentAdviserIndexPage() {
                 }>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <For each={filteredAdvisers()} fallback={
-                            <div class="col-span-2 py-12 text-center text-neutral-400 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700">
+                            <div class="col-span-2 py-12 text-center text-neutral-400 bg-card rounded-md border border-border">
                                 <p class="text-sm font-semibold">{t('st.noAssignedAdvisersFound')}</p>
                             </div>
                         }>
                             {(adv) => (
-                                <div class="bg-white dark:bg-neutral-800 rounded-xs p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col justify-between gap-5 hover:border-amber-500/50 transition-all">
+                                <div class="bg-card rounded-md p-6 border border-border shadow-2xs flex flex-col justify-between gap-5 hover:border-amber-500/50 transition-all">
                                     <div class="space-y-4">
                                         {/* Top Card Header */}
                                         <div class="flex items-start justify-between gap-3">
                                             <div class="flex items-center gap-3.5">
-                                                <div class="size-12 rounded-xs bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-black text-lg flex items-center justify-center">
+                                                <div class="size-12 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 font-black text-lg flex items-center justify-center">
                                                     {(adv.lecturer_name || 'A').charAt(0)}
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                    <h3 class="text-sm font-bold text-foreground">
                                                         {adv.lecturer_name || '-'}
                                                     </h3>
-                                                    <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono">
+                                                    <p class="text-xs text-muted-foreground font-mono">
                                                         {t('st.nidn')} {adv.lecturer_nidn || '-'}
                                                     </p>
                                                 </div>
                                             </div>
 
-                                            <span class="px-2.5 py-1 rounded-xs text-[10px] font-bold tracking-wide uppercase bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                                            <span class="px-2.5 py-1 rounded-md text-[10px] font-bold tracking-wide uppercase bg-amber-50 text-amber-700 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                                                 {adv.role_type || t('st.academicAdvisor')}
                                             </span>
                                         </div>
 
                                         {/* Details Grid */}
-                                        <div class="p-3.5 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 space-y-2 text-xs">
+                                        <div class="p-3.5 rounded-md bg-muted/60 border border-border/60 space-y-2 text-xs">
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">{t('st.assignmentDecree')}</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{adv.decree_number || '-'}</span>
+                                                <span class="font-bold text-foreground font-mono">{adv.decree_number || '-'}</span>
                                             </div>
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">{t('st.decreeDate')}</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-200">{adv.decree_date || '-'}</span>
+                                                <span class="font-bold text-foreground">{adv.decree_date || '-'}</span>
                                             </div>
                                             <div class="flex justify-between">
                                                 <span class="text-neutral-400 font-mono">{t('st.email')}</span>
@@ -195,7 +195,7 @@ export default function StudentAdviserIndexPage() {
                                             </div>
                                         </div>
 
-                                        <p class="text-xs text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                                        <p class="text-xs text-muted-foreground leading-relaxed">
                                             {adv.notes || ''}
                                         </p>
                                     </div>
@@ -203,14 +203,14 @@ export default function StudentAdviserIndexPage() {
                                     {/* Action buttons */}
                                     <div class="pt-3 border-t border-neutral-100 dark:border-neutral-700/50 flex items-center justify-between gap-3">
                                         <span class="inline-flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
-                                            <span class="size-2 rounded-xs bg-emerald-500"></span>
+                                            <span class="size-2 rounded-md bg-emerald-500"></span>
                                             {t('st.availableForConsultation')}
                                         </span>
 
                                         <button
                                             type="button"
                                             onClick={() => handleOpenConsultModal(adv)}
-                                            class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xs text-xs font-bold transition-colors shadow-xs"
+                                            class="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-md text-xs font-bold transition-colors shadow-xs"
                                         >
                                             {t('st.requestConsultation')}
                                         </button>
@@ -225,16 +225,16 @@ export default function StudentAdviserIndexPage() {
             {/* Consultation Request Modal */}
             <Show when={isConsultModalOpen()}>
                 <div class="fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-neutral-800 rounded-xs max-w-lg w-full p-6 border border-neutral-200 dark:border-neutral-700 shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
-                        <div class="flex justify-between items-center pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                    <div class="bg-card rounded-md max-w-lg w-full p-6 border border-border shadow-2xl space-y-4 animate-in fade-in zoom-in-95">
+                        <div class="flex justify-between items-center pb-3 border-b border-border">
                             <div>
-                                <h3 class="text-base font-bold text-neutral-900 dark:text-white">{t('st.academicConsultationRequest')}</h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">{t('st.to')} {selectedAdviser()?.lecturer_name}</p>
+                                <h3 class="text-base font-bold text-foreground">{t('st.academicConsultationRequest')}</h3>
+                                <p class="text-xs text-muted-foreground">{t('st.to')} {selectedAdviser()?.lecturer_name}</p>
                             </div>
                             <button
                                 type="button"
                                 onClick={() => setIsConsultModalOpen(false)}
-                                class="p-1 rounded-xs text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
+                                class="p-1 rounded-md text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-700"
                             >
                                 ✕
                             </button>
@@ -242,45 +242,45 @@ export default function StudentAdviserIndexPage() {
 
                         <form onSubmit={handleSendConsultRequest} class="space-y-4 text-xs">
                             <div class="space-y-1.5">
-                                <label class="font-bold text-neutral-700 dark:text-neutral-300">{t('st.consultationCategoryTopic')}</label>
+                                <label class="font-bold text-foreground/80">{t('st.consultationCategoryTopic')}</label>
                                 <input
                                     type="text"
                                     placeholder={t('st.eGStudyPlanApprovalSKS')}
                                     value={consultTopic()}
                                     onInput={(e) => setConsultTopic(e.currentTarget.value)}
-                                    class="w-full p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-amber-500"
+                                    class="w-full p-3 rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-amber-500"
                                     required
                                 />
                             </div>
 
                             <div class="space-y-1.5">
-                                <label class="font-bold text-neutral-700 dark:text-neutral-300">{t('st.preferredMeetingDateTime')}</label>
+                                <label class="font-bold text-foreground/80">{t('st.preferredMeetingDateTime')}</label>
                                 <input
                                     type="datetime-local"
-                                    class="w-full p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-amber-500"
+                                    class="w-full p-3 rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-amber-500"
                                 />
                             </div>
 
                             <div class="space-y-1.5">
-                                <label class="font-bold text-neutral-700 dark:text-neutral-300">{t('st.consultationNotesDescription')}</label>
+                                <label class="font-bold text-foreground/80">{t('st.consultationNotesDescription')}</label>
                                 <textarea
                                     rows="3"
                                     placeholder={t('st.brieflyDescribeTheItemsYouWish')}
-                                    class="w-full p-3 rounded-xs bg-neutral-50 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 text-neutral-900 dark:text-white focus:outline-hidden focus:border-amber-500"
+                                    class="w-full p-3 rounded-md bg-muted border border-border text-foreground focus:outline-hidden focus:border-amber-500"
                                 ></textarea>
                             </div>
 
-                            <div class="pt-3 border-t border-neutral-200 dark:border-neutral-700 flex justify-end gap-2">
+                            <div class="pt-3 border-t border-border flex justify-end gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setIsConsultModalOpen(false)}
-                                    class="px-4 py-2 rounded-xs bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 font-bold hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
+                                    class="px-4 py-2 rounded-md bg-secondary text-foreground/80 font-bold hover:bg-neutral-200 dark:hover:bg-neutral-600 transition-colors"
                                 >
                                     {t('st.cancel')}
                                 </button>
                                 <button
                                     type="submit"
-                                    class="px-5 py-2 rounded-xs bg-amber-600 hover:bg-amber-700 text-white font-bold transition-colors shadow-xs"
+                                    class="px-5 py-2 rounded-md bg-amber-600 hover:bg-amber-700 text-white font-bold transition-colors shadow-xs"
                                 >
                                     {t('st.submitRequest')}
                                 </button>

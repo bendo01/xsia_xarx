@@ -189,7 +189,7 @@ export default function Home() {
     };
 
     return (
-        <div class="min-h-screen flex flex-col bg-neutral-50 dark:bg-[#0A0F1D] text-neutral-800 dark:text-neutral-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+        <div class="min-h-screen flex flex-col bg-neutral-50 dark:bg-[#0A0F1D] text-foreground selection:bg-emerald-500/30 selection:text-emerald-200">
             <TopBar />
 
             <main class="flex-1 relative overflow-hidden">
@@ -222,12 +222,12 @@ export default function Home() {
                         </div>
 
                         {/* Main Headline */}
-                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-neutral-900 dark:text-white max-w-3xl leading-tight sm:leading-tight mb-4">
+                        <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground max-w-3xl leading-tight sm:leading-tight mb-4">
                             {t('au.homeHeroTitle')}
                         </h1>
 
                         {/* Subtitle */}
-                        <p class="text-base sm:text-lg text-neutral-600 dark:text-neutral-300 max-w-2xl font-normal leading-relaxed mb-8">
+                        <p class="text-base sm:text-lg text-muted-foreground max-w-2xl font-normal leading-relaxed mb-8">
                             {t('au.homeHeroSubtitle')}
                         </p>
 
@@ -235,7 +235,7 @@ export default function Home() {
                         <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-4 w-full max-w-xl">
                             <A
                                 href="/authentification/login_with_session"
-                                class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:-translate-y-0.5"
+                                class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-sm transition-all shadow-[0_0_25px_rgba(16,185,129,0.4)] hover:shadow-[0_0_30px_rgba(16,185,129,0.6)] hover:-translate-y-0.5"
                             >
                                 <svg class="size-4 shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
@@ -246,7 +246,7 @@ export default function Home() {
 
                             <A
                                 href="/authentification/account-acquisition-request"
-                                class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xs bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-500 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all hover:-translate-y-0.5"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-md bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-500 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all hover:-translate-y-0.5"
                             >
                                 <svg class="size-4 shrink-0 text-teal-700 dark:text-teal-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -259,7 +259,7 @@ export default function Home() {
 
                             <A
                                 href="/authentification/candidate-addmission-procedure"
-                                class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-xs bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-amber-500/40 hover:border-amber-400/70 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all hover:-translate-y-0.5"
+                                class="inline-flex items-center justify-center gap-2 px-5 py-3.5 rounded-md bg-neutral-100 dark:bg-slate-800/80 hover:bg-neutral-200 dark:hover:bg-slate-700/80 border border-amber-500/40 hover:border-amber-400/70 text-neutral-700 dark:text-neutral-200 text-sm font-semibold transition-all hover:-translate-y-0.5"
                             >
                                 <svg class="size-4 shrink-0 text-amber-700 dark:text-amber-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
@@ -270,7 +270,7 @@ export default function Home() {
                             {/*
                             <A
                                 href="/authentification/login"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-900/5 dark:hover:bg-white/5 text-xs font-medium transition-colors"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-3.5 rounded-md text-muted-foreground hover:text-neutral-900 dark:hover:text-white hover:bg-neutral-900/5 dark:hover:bg-white/5 text-xs font-medium transition-colors"
                                 title="Login alternatif berbasis JWT Bearer Token"
                             >
                                 <svg class="size-3.5 shrink-0 text-blue-700 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -285,26 +285,26 @@ export default function Home() {
                     </header>
 
                     {/* Candidate Admission Banner */}
-                    <section class="mb-12 bg-linear-to-r from-amber-50 dark:from-amber-950/40 via-white/60 dark:via-slate-900/60 to-emerald-50 dark:to-emerald-950/40 border border-amber-500/25 rounded-xs p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <section class="mb-12 bg-linear-to-r from-amber-50 dark:from-amber-950/40 via-white/60 dark:via-slate-900/60 to-emerald-50 dark:to-emerald-950/40 border border-amber-500/25 rounded-md p-6 sm:p-8 flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2 max-w-2xl">
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold uppercase border border-amber-500/30">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-700 dark:text-amber-300 text-xs font-mono font-bold uppercase border border-amber-500/30">
                                 {t('au.homeBannerBadge')}
                             </div>
-                            <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white">{t('au.homeBannerTitle')}</h2>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed">
+                            <h2 class="text-xl sm:text-2xl font-bold text-foreground">{t('au.homeBannerTitle')}</h2>
+                            <p class="text-sm text-muted-foreground leading-relaxed">
                                 {t('au.homeBannerDesc')}
                             </p>
                         </div>
                         <div class="flex flex-wrap gap-3 shrink-0">
                             <A
                                 href="/authentification/candidate-addmission-procedure"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-neutral-100 dark:bg-slate-800 hover:bg-neutral-200 dark:hover:bg-slate-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-600 text-xs font-semibold transition-all"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-neutral-100 dark:bg-slate-800 hover:bg-neutral-200 dark:hover:bg-slate-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-600 text-xs font-semibold transition-all"
                             >
                                 {t('au.homeBannerRead')}
                             </A>
                             <A
                                 href="/authentification/candidate-addmission-form"
-                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-900/40 transition-all"
+                                class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold shadow-md shadow-emerald-900/40 transition-all"
                             >
                                 {t('au.homeBannerForm')}
                             </A>
@@ -313,13 +313,13 @@ export default function Home() {
 
                     {/* Interactive Filter Pills */}
                     <div class="flex items-center justify-center mb-10 overflow-x-auto pb-2">
-                        <div class="inline-flex items-center gap-1.5 p-1.5 bg-white/80 dark:bg-slate-900/80 border border-neutral-200 dark:border-slate-800 rounded-xs backdrop-blur-md">
+                        <div class="inline-flex items-center gap-1.5 p-1.5 bg-white/80 dark:bg-slate-900/80 border border-neutral-200 dark:border-slate-800 rounded-md backdrop-blur-md">
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory('all')}
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-xs transition-colors ${selectedCategory() === 'all'
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${selectedCategory() === 'all'
                                     ? 'bg-blue-600 text-white shadow-xs'
-                                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    : 'text-muted-foreground hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 {t('au.homeFilterAll')}
@@ -327,9 +327,9 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory('login')}
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-xs transition-colors ${selectedCategory() === 'login'
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${selectedCategory() === 'login'
                                     ? 'bg-emerald-600 text-white shadow-xs'
-                                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    : 'text-muted-foreground hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 1. {t('au.homeCtaLogin')}
@@ -337,9 +337,9 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory('acquisition')}
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-xs transition-colors ${selectedCategory() === 'acquisition'
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${selectedCategory() === 'acquisition'
                                     ? 'bg-teal-600 text-white shadow-xs'
-                                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    : 'text-muted-foreground hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 2. {t('au.homeCtaAccount')}
@@ -347,9 +347,9 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory('forgot')}
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-xs transition-colors ${selectedCategory() === 'forgot'
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${selectedCategory() === 'forgot'
                                     ? 'bg-amber-600 text-white shadow-xs'
-                                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    : 'text-muted-foreground hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 {t('au.homeFilterForgot')}
@@ -357,9 +357,9 @@ export default function Home() {
                             <button
                                 type="button"
                                 onClick={() => setSelectedCategory('reset')}
-                                class={`px-3 py-1.5 text-xs font-semibold rounded-xs transition-colors ${selectedCategory() === 'reset'
+                                class={`px-3 py-1.5 text-xs font-semibold rounded-md transition-colors ${selectedCategory() === 'reset'
                                     ? 'bg-purple-600 text-white shadow-xs'
-                                    : 'text-neutral-500 dark:text-neutral-400 hover:text-neutral-800 dark:hover:text-neutral-200'
+                                    : 'text-muted-foreground hover:text-neutral-800 dark:hover:text-neutral-200'
                                     }`}
                             >
                                 {t('au.homeFilterReset')}
@@ -371,26 +371,26 @@ export default function Home() {
                     <div class="space-y-8 mb-16">
                         <For each={filteredFlows()}>
                             {(flow) => (
-                                <article class="relative bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-neutral-200 dark:border-slate-800 hover:border-neutral-400 dark:hover:border-slate-700/80 rounded-xs p-6 sm:p-8 shadow-xl transition-all">
+                                <article class="relative bg-white/80 dark:bg-slate-900/60 backdrop-blur-xl border border-neutral-200 dark:border-slate-800 hover:border-neutral-400 dark:hover:border-slate-700/80 rounded-md p-6 sm:p-8 shadow-xl transition-all">
                                     {/* Card Header */}
                                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-neutral-200 dark:border-slate-800/80">
                                         <div class="space-y-1.5">
                                             <div class="flex flex-wrap items-center gap-2">
-                                                <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white tracking-wide">
+                                                <h2 class="text-xl sm:text-2xl font-bold text-foreground tracking-wide">
                                                     {flow.title}
                                                 </h2>
-                                                <span class={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-xs border ${flow.badgeColor}`}>
+                                                <span class={`text-[11px] font-mono font-bold px-2 py-0.5 rounded-md border ${flow.badgeColor}`}>
                                                     {flow.badge}
                                                 </span>
                                             </div>
-                                            <p class="text-sm text-neutral-500 dark:text-neutral-400 max-w-2xl leading-relaxed">
+                                            <p class="text-sm text-muted-foreground max-w-2xl leading-relaxed">
                                                 {flow.subtitle}
                                             </p>
                                         </div>
 
                                         <A
                                             href={flow.route}
-                                            class={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xs text-xs font-semibold shrink-0 transition-all ${flow.recommended
+                                            class={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-md text-xs font-semibold shrink-0 transition-all ${flow.recommended
                                                 ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-md shadow-emerald-900/40 hover:-translate-y-0.5'
                                                 : 'bg-neutral-100 dark:bg-slate-800 hover:bg-neutral-200 dark:hover:bg-slate-700 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-slate-700 hover:border-neutral-400 dark:hover:border-slate-600 hover:-translate-y-0.5'
                                                 }`}
@@ -405,12 +405,12 @@ export default function Home() {
 
                                     {/* Requirements Bar */}
                                     <div class="py-4 flex flex-wrap items-center gap-2 text-xs">
-                                        <span class="font-mono text-neutral-500 dark:text-neutral-400 uppercase tracking-wider font-semibold">
+                                        <span class="font-mono text-muted-foreground uppercase tracking-wider font-semibold">
                                             {t('au.homeRequirements')}
                                         </span>
                                         <For each={flow.requirements}>
                                             {(req) => (
-                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xs bg-neutral-100 dark:bg-slate-800/60 border border-neutral-300 dark:border-slate-700/60 text-neutral-600 dark:text-neutral-300 font-medium">
+                                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-neutral-100 dark:bg-slate-800/60 border border-neutral-300 dark:border-slate-700/60 text-muted-foreground font-medium">
                                                     <span class="size-1.5 rounded-full bg-slate-400"></span>
                                                     <span>{req}</span>
                                                 </span>
@@ -422,17 +422,17 @@ export default function Home() {
                                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 my-4">
                                         <For each={flow.steps}>
                                             {(step) => (
-                                                <div class="p-4 rounded-xs bg-neutral-100/80 dark:bg-slate-950/40 border border-neutral-200 dark:border-slate-800/60 flex flex-col justify-between space-y-3">
+                                                <div class="p-4 rounded-md bg-neutral-100/80 dark:bg-slate-950/40 border border-neutral-200 dark:border-slate-800/60 flex flex-col justify-between space-y-3">
                                                     <div class="space-y-2">
                                                         <div class="flex items-center gap-2">
-                                                            <span class="size-6 rounded-xs bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 text-neutral-900 dark:text-white text-xs font-bold font-mono flex items-center justify-center">
+                                                            <span class="size-6 rounded-md bg-neutral-100 dark:bg-slate-800 border border-neutral-300 dark:border-slate-700 text-foreground text-xs font-bold font-mono flex items-center justify-center">
                                                                 {step.step}
                                                             </span>
                                                             <h3 class="text-xs font-bold text-neutral-700 dark:text-neutral-200 leading-snug">
                                                                 {step.title}
                                                             </h3>
                                                         </div>
-                                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 leading-relaxed">
+                                                        <p class="text-xs text-muted-foreground leading-relaxed">
                                                             {step.description}
                                                         </p>
                                                     </div>
@@ -442,7 +442,7 @@ export default function Home() {
                                     </div>
 
                                     {/* Pro Tip Box */}
-                                    <div class="mt-4 p-3 bg-neutral-100/80 dark:bg-slate-950/60 border border-neutral-200 dark:border-slate-800/80 rounded-xs flex items-start gap-2.5 text-xs text-neutral-600 dark:text-neutral-300">
+                                    <div class="mt-4 p-3 bg-neutral-100/80 dark:bg-slate-950/60 border border-neutral-200 dark:border-slate-800/80 rounded-md flex items-start gap-2.5 text-xs text-muted-foreground">
                                         <svg class="size-4 shrink-0 text-amber-700 dark:text-amber-400 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <circle cx="12" cy="12" r="10" />
                                             <line x1="12" y1="16" x2="12" y2="12" />
@@ -458,21 +458,21 @@ export default function Home() {
                     </div>
 
                     {/* Comparison Box: Session vs JWT
-                    <section class="bg-linear-to-r from-emerald-50 dark:from-emerald-950/30 via-white/60 dark:via-slate-900/60 to-blue-50 dark:to-blue-950/30 border border-emerald-500/20 rounded-xs p-6 sm:p-8 mb-16">
+                    <section class="bg-linear-to-r from-emerald-50 dark:from-emerald-950/30 via-white/60 dark:via-slate-900/60 to-blue-50 dark:to-blue-950/30 border border-emerald-500/20 rounded-md p-6 sm:p-8 mb-16">
                         <div class="max-w-3xl">
-                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
+                            <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 text-xs font-mono font-bold uppercase mb-2 border border-emerald-500/20">
                                 Rekomendasi Keamanan
                             </div>
-                            <h2 class="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-white mb-2">
+                            <h2 class="text-xl sm:text-2xl font-bold text-foreground mb-2">
                                 Mengapa Masuk Sesi (Session Login) Dijadikan Pilihan Standar?
                             </h2>
-                            <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300 leading-relaxed mb-5">
+                            <p class="text-xs sm:text-sm text-muted-foreground leading-relaxed mb-5">
                                 Mode Masuk Sesi (<code class="text-emerald-700 dark:text-emerald-400 font-mono">/authentification/login_with_session</code>) menggunakan pengikatan sesi server dengan proteksi cookie <span class="font-mono text-emerald-700 dark:text-emerald-300">HttpOnly</span>, perlindungan CSRF terintegrasi, dan sinkronisasi otomatis status multi-peran (Dosen, Mahasiswa, Rektorat). Ini memberikan keamanan tertinggi saat mengakses sistem dari peramban web publik atau komputer bersama.
                             </p>
                             <div class="flex flex-wrap items-center gap-3">
                                 <A
                                     href="/authentification/login_with_session"
-                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-xs bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors"
+                                    class="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition-colors"
                                 >
                                     <span>Gunakan Masuk Sesi Sekarang</span>
                                     <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -481,7 +481,7 @@ export default function Home() {
                                 </A>
                                 <A
                                     href="/authentification/login"
-                                    class="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-white underline transition-colors"
+                                    class="text-xs text-muted-foreground hover:text-neutral-900 dark:hover:text-white underline transition-colors"
                                 >
                                     Beralih ke Masuk Standar (JWT)
                                 </A>

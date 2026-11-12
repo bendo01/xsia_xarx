@@ -388,9 +388,9 @@ export default function RectoratStudentDetail() {
         };
 
         return (
-            <div class="flex justify-between py-2 border-b border-neutral-100 dark:border-neutral-800 text-xs">
-                <span class="text-neutral-500 dark:text-neutral-400 font-medium">{props.label}</span>
-                <span class={`font-semibold text-neutral-900 dark:text-neutral-100 text-right ${props.mono ? 'font-mono' : ''}`}>
+            <div class="flex justify-between py-2 border-b border-border text-xs">
+                <span class="text-muted-foreground font-medium">{props.label}</span>
+                <span class={`font-semibold text-foreground text-right ${props.mono ? 'font-mono' : ''}`}>
                     {displayValue()}
                 </span>
             </div>
@@ -398,13 +398,13 @@ export default function RectoratStudentDetail() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Breadcrumb Navigation */}
-                <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-medium flex-wrap">
+                <nav class="flex items-center gap-2 text-xs text-muted-foreground font-medium flex-wrap">
                     <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                     <span>/</span>
                     <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
@@ -413,13 +413,13 @@ export default function RectoratStudentDetail() {
                     <span>/</span>
                     <A href={`/rectorat/institution/${institutionId()}/academic/student/master/student`} class="hover:text-blue-600 transition-colors">{t('rt.mahasiswa')}</A>
                     <span>/</span>
-                    <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detailMahasiswa')}</span>
+                    <span class="text-foreground/80 font-semibold">{t('rt.detailMahasiswa')}</span>
                 </nav>
 
                 {/* Loading skeleton */}
                 <Show when={isLoading()}>
                     <div class="animate-pulse space-y-6">
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-6 shadow-sm">
+                        <div class="bg-card rounded-2xl border border-border p-6 shadow-sm">
                             <div class="flex items-center gap-5">
                                 <div class="size-20 rounded-2xl bg-neutral-200 dark:bg-neutral-800 shrink-0" />
                                 <div class="space-y-3 flex-1">
@@ -431,7 +431,7 @@ export default function RectoratStudentDetail() {
                         </div>
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {Array.from({ length: 4 }).map(() => (
-                                <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-5 shadow-sm space-y-2">
+                                <div class="bg-card rounded-xl border border-border p-5 shadow-sm space-y-2">
                                     <div class="h-4 w-20 bg-neutral-200 dark:bg-neutral-800 rounded" />
                                     <div class="h-8 w-16 bg-neutral-200 dark:bg-neutral-800 rounded" />
                                 </div>
@@ -442,15 +442,15 @@ export default function RectoratStudentDetail() {
 
                 {/* Error State */}
                 <Show when={!isLoading() && error()}>
-                    <div class="flex flex-col items-center justify-center py-20 gap-4 text-center bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm p-8">
+                    <div class="flex flex-col items-center justify-center py-20 gap-4 text-center bg-card rounded-2xl border border-border shadow-sm p-8">
                         <div class="p-5 rounded-full bg-red-50 dark:bg-red-900/20 text-red-500">
                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                             </svg>
                         </div>
                         <div>
-                            <p class="font-bold text-lg text-neutral-800 dark:text-neutral-200">{t('rt.gagalMemuatDetailMahasiswa')}</p>
-                            <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">{error()}</p>
+                            <p class="font-bold text-lg text-foreground">{t('rt.gagalMemuatDetailMahasiswa')}</p>
+                            <p class="text-sm text-muted-foreground mt-1">{error()}</p>
                         </div>
                         <div class="flex items-center gap-3">
                             <button
@@ -463,7 +463,7 @@ export default function RectoratStudentDetail() {
                             </button>
                             <A
                                 href={`/rectorat/institution/${institutionId()}/academic/student/master/student`}
-                                class="px-4 py-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg transition-colors"
+                                class="px-4 py-2 text-sm font-medium text-foreground/80 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-700 rounded-lg transition-colors"
                             >
                                 {t('rt.kembali')}
                             </A>
@@ -476,7 +476,7 @@ export default function RectoratStudentDetail() {
                     <div class="space-y-6">
 
                         {/* Header Banner */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
+                        <div class="bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
                             <div class="h-2 w-full bg-linear-to-r from-blue-500 via-indigo-500 to-cyan-500" />
                             <div class="p-6 sm:p-8">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
@@ -489,10 +489,10 @@ export default function RectoratStudentDetail() {
                                                 <span class="size-1.5 rounded-full bg-blue-500"></span>
                                                 <span>{t('rt.nim2')} {student()?.code || '-'}</span>
                                             </div>
-                                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-neutral-900 dark:text-white truncate">
+                                            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-foreground truncate">
                                                 {student()?.name || 'Detail Mahasiswa'}
                                             </h1>
-                                            <p class="text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+                                            <p class="text-xs sm:text-sm text-muted-foreground">
                                                 {student()?.unit_name || 'Program Studi'} • Tahun Akademik {student()?.academic_year_name || '-'}
                                             </p>
                                         </div>
@@ -502,7 +502,7 @@ export default function RectoratStudentDetail() {
                                         <A
                                             href={`/rectorat/institution/${institutionId()}/academic/student/master/student`}
                                             id="student-detail-back-btn"
-                                            class="px-4 py-2.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 border border-neutral-200 dark:border-neutral-700 shadow-xs"
+                                            class="px-4 py-2.5 bg-secondary hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-lg text-xs font-bold transition-colors inline-flex items-center gap-1.5 border border-border shadow-xs"
                                         >
                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="m15 18-6-6 6-6" />
@@ -517,8 +517,8 @@ export default function RectoratStudentDetail() {
                         {/* 4 Academic Summary Stat Cards */}
                         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* IPK Kumulatif */}
-                            <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-xl bg-card border border-border shadow-sm space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.ipkKumulatif')}</span>
                                     <div class="size-8 rounded-lg bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -532,14 +532,14 @@ export default function RectoratStudentDetail() {
                                     </span>
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {t('rt.indeksPrestasiKumulatif')}
                                 </div>
                             </div>
 
                             {/* IPS Terakhir */}
-                            <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-xl bg-card border border-border shadow-sm space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.ipsTerakhir')}</span>
                                     <div class="size-8 rounded-lg bg-sky-50 dark:bg-sky-950/60 text-sky-600 dark:text-sky-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -554,14 +554,14 @@ export default function RectoratStudentDetail() {
                                     </span>
                                     <span class="text-xs text-neutral-400 font-mono">/ 4.00</span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {t('rt.indeksPrestasiSemester')}
                                 </div>
                             </div>
 
                             {/* Total SKS Lulus */}
-                            <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-xl bg-card border border-border shadow-sm space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.totalSKSLulus')}</span>
                                     <div class="size-8 rounded-lg bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -570,7 +570,7 @@ export default function RectoratStudentDetail() {
                                     </div>
                                 </div>
                                 <div class="flex items-baseline gap-2">
-                                    <span class="text-2xl sm:text-3xl font-black text-neutral-900 dark:text-white font-mono">
+                                    <span class="text-2xl sm:text-3xl font-black text-foreground font-mono">
                                         {currentTotalSks()}
                                     </span>
                                     <span class="text-xs text-neutral-400 font-medium">{t('rt.sks')}</span>
@@ -581,8 +581,8 @@ export default function RectoratStudentDetail() {
                             </div>
 
                             {/* Status & Semester */}
-                            <div class="p-5 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-2">
-                                <div class="flex items-center justify-between text-neutral-500 dark:text-neutral-400">
+                            <div class="p-5 rounded-xl bg-card border border-border shadow-sm space-y-2">
+                                <div class="flex items-center justify-between text-muted-foreground">
                                     <span class="text-xs font-mono font-semibold uppercase tracking-wider">{t('rt.statusSemester')}</span>
                                     <div class="size-8 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -596,7 +596,7 @@ export default function RectoratStudentDetail() {
                                         {student()?.status_name || 'Aktif'}
                                     </span>
                                 </div>
-                                <div class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                <div class="text-[11px] text-muted-foreground font-mono">
                                     {sortedActivities().length} Semester Tercatat
                                 </div>
                             </div>
@@ -604,13 +604,13 @@ export default function RectoratStudentDetail() {
 
                         {/* Visualizations Section Powered by Apache ECharts */}
                         <div class="space-y-4">
-                            <div class="flex items-center justify-between border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div class="flex items-center justify-between border-b border-border pb-3">
                                 <div>
-                                    <h2 class="text-base font-bold text-neutral-900 dark:text-white flex items-center gap-2">
+                                    <h2 class="text-base font-bold text-foreground flex items-center gap-2">
                                         <span class="size-2.5 rounded-full bg-blue-500"></span>
                                         {t('rt.visualisasiAkademikMahasiswa')}
                                     </h2>
-                                    <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                    <p class="text-xs text-muted-foreground">
                                         {t('rt.grafikPerkembanganIndeksPrestasiIPSIPK')}
                                     </p>
                                 </div>
@@ -626,15 +626,15 @@ export default function RectoratStudentDetail() {
                             <Show
                                 when={academicTrendData().length > 0}
                                 fallback={
-                                    <div class="p-8 rounded-xl bg-white dark:bg-neutral-900 border border-dashed border-neutral-300 dark:border-neutral-700 text-center space-y-3">
+                                    <div class="p-8 rounded-xl bg-card border border-dashed border-border text-center space-y-3">
                                         <div class="size-12 mx-auto rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                                             <svg class="size-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="m19 9-5 5-4-4-3 3" />
                                                 <path d="M3 3v18h18" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.belumAdaRiwayatAktivitasNilai')}</h3>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400 max-w-md mx-auto">
+                                        <h3 class="text-sm font-bold text-foreground">{t('rt.belumAdaRiwayatAktivitasNilai')}</h3>
+                                        <p class="text-xs text-muted-foreground max-w-md mx-auto">
                                             {t('rt.dataAktivitasPerkuliahanMahasiswaDenganNIM')} <span class="font-mono font-bold text-blue-600 dark:text-blue-400">{student()?.code || '-'}</span> {t('rt.belumTercatatDiSistemAkademikGrafik')}
                                         </p>
                                     </div>
@@ -642,24 +642,24 @@ export default function RectoratStudentDetail() {
                             >
                                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                     {/* Chart 1: Academic Performance (IPS & IPK Trend) */}
-                                    <div class="min-w-0 p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
+                                    <div class="min-w-0 p-6 rounded-xl bg-card border border-border shadow-sm space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                <h3 class="text-sm font-bold text-foreground">
                                                     {t('rt.trenIndeksPrestasiIPSIPK')}
                                                 </h3>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                <p class="text-xs text-muted-foreground">
                                                     {t('rt.grafikFluktuasiIPSemesterDanIP')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-indigo-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.ipk2')}</span>
+                                                    <span class="text-muted-foreground">{t('rt.ipk2')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-sky-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.ips')}</span>
+                                                    <span class="text-muted-foreground">{t('rt.ips')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -668,24 +668,24 @@ export default function RectoratStudentDetail() {
                                     </div>
 
                                     {/* Chart 2: Credit SKS Load Progression */}
-                                    <div class="min-w-0 p-6 rounded-xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
+                                    <div class="min-w-0 p-6 rounded-xl bg-card border border-border shadow-sm space-y-4">
                                         <div class="flex items-center justify-between">
                                             <div>
-                                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                                <h3 class="text-sm font-bold text-foreground">
                                                     {t('rt.progresBebanKreditSKS')}
                                                 </h3>
-                                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                                <p class="text-xs text-muted-foreground">
                                                     {t('rt.akumulasiSKSLulusKumulatifDanSKS')}
                                                 </p>
                                             </div>
                                             <div class="flex items-center gap-3 text-xs font-mono">
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-teal-600"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.sksKumulatif')}</span>
+                                                    <span class="text-muted-foreground">{t('rt.sksKumulatif')}</span>
                                                 </div>
                                                 <div class="flex items-center gap-1.5">
                                                     <span class="size-2.5 rounded-full bg-amber-500"></span>
-                                                    <span class="text-neutral-600 dark:text-neutral-300">{t('rt.sksSemester')}</span>
+                                                    <span class="text-muted-foreground">{t('rt.sksSemester')}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -698,13 +698,13 @@ export default function RectoratStudentDetail() {
 
                         {/* Semester Breakdown Table (KHS) */}
                         <Show when={sortedActivities().length > 0}>
-                            <div class="bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 shadow-sm overflow-hidden">
-                                <div class="p-5 border-b border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                            <div class="bg-card rounded-xl border border-border shadow-sm overflow-hidden">
+                                <div class="p-5 border-b border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <h3 class="text-sm font-bold text-foreground">
                                             {t('rt.riwayatAktivitasSemesterNilaiKHS')}
                                         </h3>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('rt.rincianCapaianAkademikPerSemesterMahasiswa')}
                                         </p>
                                     </div>
@@ -712,7 +712,7 @@ export default function RectoratStudentDetail() {
 
                                 <div class="overflow-x-auto">
                                     <table class="w-full text-xs text-left border-collapse">
-                                        <thead class="bg-neutral-50 dark:bg-neutral-800/60 text-neutral-500 dark:text-neutral-400 uppercase font-mono text-[10px] tracking-wider border-b border-neutral-200 dark:border-neutral-800">
+                                        <thead class="bg-muted/60 text-muted-foreground uppercase font-mono text-[10px] tracking-wider border-b border-border">
                                             <tr>
                                                 <th class="px-5 py-3">{t('rt.no')}</th>
                                                 <th class="px-5 py-3">{t('rt.semesterTahunAjaran')}</th>
@@ -729,10 +729,10 @@ export default function RectoratStudentDetail() {
                                                 {(act, idx) => (
                                                     <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-800/40 transition-colors">
                                                         <td class="px-5 py-3 font-mono text-neutral-400">{idx() + 1}</td>
-                                                        <td class="px-5 py-3 font-medium text-neutral-900 dark:text-white">
+                                                        <td class="px-5 py-3 font-medium text-foreground">
                                                             {act.academic_year?.name || act.academic_year_name || act.name || act.semester_name || t('rt.semesterN', { n: idx() + 1 })}
                                                         </td>
-                                                        <td class="px-5 py-3 text-center font-mono font-bold text-neutral-700 dark:text-neutral-300">
+                                                        <td class="px-5 py-3 text-center font-mono font-bold text-foreground/80">
                                                             {act.total_credit || 0}
                                                         </td>
                                                         <td class="px-5 py-3 text-center font-mono font-bold text-teal-600 dark:text-teal-400">
@@ -807,15 +807,15 @@ export default function RectoratStudentDetail() {
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 
                             {/* Academic & Enrolment Information Card */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-xl p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                            <div class="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
                                     <div class="flex items-center gap-2">
                                         <div class="p-1.5 rounded-lg bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 3.741-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.informasiAkademikPendaftaran')}</h3>
+                                        <h3 class="text-sm font-bold text-foreground">{t('rt.informasiAkademikPendaftaran')}</h3>
                                     </div>
                                     <Show when={student()?.status_name}>
                                         <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800">
@@ -838,15 +838,15 @@ export default function RectoratStudentDetail() {
                             </div>
 
                             {/* Personal & Demographics Card */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-xl p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
-                                <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-800">
+                            <div class="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
+                                <div class="flex items-center justify-between pb-3 border-b border-border">
                                     <div class="flex items-center gap-2">
                                         <div class="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                                             </svg>
                                         </div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.biodataPribadiIdentitas')}</h3>
+                                        <h3 class="text-sm font-bold text-foreground">{t('rt.biodataPribadiIdentitas')}</h3>
                                     </div>
                                     <span class="text-xs text-neutral-400 font-mono">{t('rt.registry')}</span>
                                 </div>
@@ -875,27 +875,27 @@ export default function RectoratStudentDetail() {
                         </div>
 
                         {/* System Metadata Section */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-xl p-6 border border-neutral-200 dark:border-neutral-800 shadow-sm space-y-4">
-                            <div class="flex items-center gap-2 pb-3 border-b border-neutral-200 dark:border-neutral-800">
-                                <div class="p-1.5 rounded-lg bg-neutral-100 dark:bg-neutral-800 text-neutral-500 dark:text-neutral-400">
+                        <div class="bg-card rounded-xl p-6 border border-border shadow-sm space-y-4">
+                            <div class="flex items-center gap-2 pb-3 border-b border-border">
+                                <div class="p-1.5 rounded-lg bg-secondary text-muted-foreground">
                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="size-4">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                                     </svg>
                                 </div>
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">{t('rt.informasiSistemAudit')}</h3>
+                                <h3 class="text-sm font-bold text-foreground">{t('rt.informasiSistemAudit')}</h3>
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
                                 <div>
                                     <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.idMahasiswa')}</span>
-                                    <span class="font-mono text-neutral-700 dark:text-neutral-300 font-medium break-all">{student()?.id || '-'}</span>
+                                    <span class="font-mono text-foreground/80 font-medium break-all">{student()?.id || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.waktuDibuat')}</span>
-                                    <span class="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(student()?.created_at)}</span>
+                                    <span class="font-medium text-foreground/80">{formatDate(student()?.created_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 font-mono text-[11px] uppercase tracking-wider block">{t('rt.terakhirDiperbarui')}</span>
-                                    <span class="font-medium text-neutral-700 dark:text-neutral-300">{formatDate(student()?.updated_at)}</span>
+                                    <span class="font-medium text-foreground/80">{formatDate(student()?.updated_at)}</span>
                                 </div>
                             </div>
                         </div>

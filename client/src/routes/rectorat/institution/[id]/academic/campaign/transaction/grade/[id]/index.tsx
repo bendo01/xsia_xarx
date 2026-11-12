@@ -181,13 +181,13 @@ export default function RectoratGradeDetail() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100 flex flex-col font-sans transition-colors duration-200">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground flex flex-col font-sans transition-colors duration-200">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 {/* Navigation and Breadcrumb */}
                 <div class="space-y-4">
-                    <nav class="flex items-center gap-2 text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                    <nav class="flex items-center gap-2 text-xs font-mono text-muted-foreground">
                         <A href="/rectorat" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                             {t('rt.rektorat')}
                         </A>
@@ -204,21 +204,21 @@ export default function RectoratGradeDetail() {
                             {t('rt.skalaNilai')}
                         </A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
+                        <span class="text-foreground/80 font-semibold truncate max-w-xs">
                             {grade()?.alphabet_code ? t('rt.gradeCodeName', { code: grade()?.alphabet_code ?? '', name: grade()?.name ?? '' }) : t('rt.detailSkalaNilai')}
                         </span>
                     </nav>
 
                     <Show when={!isLoading() && grade()}>
                         {/* Header Banner */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
+                        <div class="bg-card rounded-2xl p-6 sm:p-8 border border-neutral-200/80 dark:border-neutral-800 shadow-sm relative overflow-hidden backdrop-blur-xs">
                             <div class="absolute -right-20 -top-20 w-72 h-72 bg-linear-to-br from-emerald-500/10 via-amber-500/10 to-blue-500/10 rounded-full blur-3xl pointer-events-none" />
                             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 relative z-10">
                                 <div class="space-y-3">
                                     <div class="flex flex-wrap items-center gap-2">
                                         <A
                                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade`}
-                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 text-xs font-semibold transition-all"
+                                            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-foreground/80 text-xs font-semibold transition-all"
                                         >
                                             <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -238,10 +238,10 @@ export default function RectoratGradeDetail() {
                                             {grade()?.alphabet_code || 'N/A'}
                                         </div>
                                         <div>
-                                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-neutral-900 dark:text-white">
+                                            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                                                 {grade()?.name}
                                             </h1>
-                                            <p class="text-xs text-neutral-500 dark:text-neutral-400 font-mono mt-1">
+                                            <p class="text-xs text-muted-foreground font-mono mt-1">
                                                 {t('rt.idEntitas')} {grade()?.id}
                                             </p>
                                         </div>
@@ -280,7 +280,7 @@ export default function RectoratGradeDetail() {
 
                 {/* Loading State */}
                 <Show when={isLoading()}>
-                    <div class="bg-white dark:bg-neutral-900 rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
+                    <div class="bg-card rounded-2xl p-16 border border-neutral-200/80 dark:border-neutral-800 flex flex-col items-center justify-center gap-3">
                         <Spinner size="lg" color="emerald" aria-hidden={true} />
                         <span class="text-sm text-neutral-500 font-medium">{t('rt.memuatDetailDataSkalaNilai')}</span>
                     </div>
@@ -296,7 +296,7 @@ export default function RectoratGradeDetail() {
                         <p class="text-xs text-red-700 dark:text-red-300 max-w-md mx-auto">{error()}</p>
                         <A
                             href={`/rectorat/institution/${institutionId()}/academic/campaign/transaction/grade`}
-                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-white dark:bg-neutral-800 text-neutral-800 dark:text-neutral-200 text-xs font-semibold border border-neutral-200 dark:border-neutral-700 shadow-2xs hover:bg-neutral-50"
+                            class="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-card text-foreground text-xs font-semibold border border-border shadow-2xs hover:bg-neutral-50"
                         >
                             {t('rt.kembaliKeDaftarSkalaNilai')}
                         </A>
@@ -309,10 +309,10 @@ export default function RectoratGradeDetail() {
                         {/* Highlights Grid */}
                         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Card 1: Bobot IPK */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.bobotIndeksPrestasi')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('rt.bobotIndeksPrestasi')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
-                                    <span class="text-3xl font-extrabold text-neutral-900 dark:text-white font-mono">
+                                    <span class="text-3xl font-extrabold text-foreground font-mono">
                                         {grade()?.grade.toFixed(2)}
                                     </span>
                                     <span class="text-xs text-neutral-500">{t('rt.skala400')}</span>
@@ -321,8 +321,8 @@ export default function RectoratGradeDetail() {
                             </div>
 
                             {/* Card 2: Rentang Skor Angka */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.rentangSkorAngka')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('rt.rentangSkorAngka')}</span>
                                 <div class="mt-3 flex items-baseline gap-2">
                                     <span class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 font-mono">
                                         {grade()?.minimum.toFixed(2)}
@@ -336,10 +336,10 @@ export default function RectoratGradeDetail() {
                             </div>
 
                             {/* Card 3: Program Studi */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.programStudiUnit')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('rt.programStudiUnit')}</span>
                                 <div class="mt-3">
-                                    <span class="text-base font-bold text-neutral-900 dark:text-white block truncate">
+                                    <span class="text-base font-bold text-foreground block truncate">
                                         {unit()?.name || 'Unit Terdaftar'}
                                     </span>
                                     <span class="text-xs text-neutral-500 font-mono">
@@ -349,10 +349,10 @@ export default function RectoratGradeDetail() {
                             </div>
 
                             {/* Card 4: Masa Berlaku */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
-                                <span class="text-xs font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">{t('rt.masaBerlaku')}</span>
+                            <div class="bg-card rounded-2xl p-5 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{t('rt.masaBerlaku')}</span>
                                 <div class="mt-3 text-xs font-mono space-y-0.5">
-                                    <div class="text-neutral-800 dark:text-neutral-200 font-medium">
+                                    <div class="text-foreground font-medium">
                                         {formatDate(grade()?.start_date)}
                                     </div>
                                     <div class="text-neutral-500">
@@ -365,14 +365,14 @@ export default function RectoratGradeDetail() {
                         {/* Information Sections Grid */}
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Panel 1: Data Pokok Nilai */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                                <div class="flex items-center gap-2 border-b border-border pb-3">
                                     <div class="p-2 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {t('rt.spesifikasiStandarNilai')}
                                     </h3>
                                 </div>
@@ -384,19 +384,19 @@ export default function RectoratGradeDetail() {
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{t('rt.predikatKeterangan')}</dt>
-                                        <dd class="font-semibold text-neutral-900 dark:text-white">{grade()?.name}</dd>
+                                        <dd class="font-semibold text-foreground">{grade()?.name}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{t('rt.bobotNilaiIPK')}</dt>
-                                        <dd class="font-mono font-bold text-neutral-900 dark:text-white">{grade()?.grade.toFixed(2)}</dd>
+                                        <dd class="font-mono font-bold text-foreground">{grade()?.grade.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{t('rt.batasNilaiMinimum')}</dt>
-                                        <dd class="font-mono text-neutral-800 dark:text-neutral-200">{grade()?.minimum.toFixed(2)}</dd>
+                                        <dd class="font-mono text-foreground">{grade()?.minimum.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{t('rt.batasNilaiMaksimum')}</dt>
-                                        <dd class="font-mono text-neutral-800 dark:text-neutral-200">{grade()?.maximum.toFixed(2)}</dd>
+                                        <dd class="font-mono text-foreground">{grade()?.maximum.toFixed(2)}</dd>
                                     </div>
                                     <div class="py-2.5 flex justify-between">
                                         <dt class="text-neutral-500">{t('rt.kodeNumerik')}</dt>
@@ -405,14 +405,14 @@ export default function RectoratGradeDetail() {
                                 </dl>
 
                                 {/* Visual Score Distribution Meter */}
-                                <div class="pt-3 border-t border-neutral-100 dark:border-neutral-800 space-y-2">
+                                <div class="pt-3 border-t border-border space-y-2">
                                     <div class="flex items-center justify-between text-2xs text-neutral-500 font-mono">
                                         <span>{t('rt.skor0')}</span>
                                         <span>{t('rt.batasMin')} {grade()?.minimum.toFixed(1)}</span>
                                         <span>{t('rt.batasMax')} {grade()?.maximum.toFixed(1)}</span>
                                         <span>100</span>
                                     </div>
-                                    <div class="relative w-full h-3 bg-neutral-100 dark:bg-neutral-800 rounded-full overflow-hidden">
+                                    <div class="relative w-full h-3 bg-secondary rounded-full overflow-hidden">
                                         <div
                                             class="absolute top-0 bottom-0 bg-emerald-500 rounded-full"
                                             style={{
@@ -425,28 +425,28 @@ export default function RectoratGradeDetail() {
                             </div>
 
                             {/* Panel 2: Unit Pengelola & Feeder Dikti */}
-                            <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                            <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                                <div class="flex items-center gap-2 border-b border-border pb-3">
                                     <div class="p-2 rounded-xl bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.333A1.5 1.5 0 0 0 18 8.833H6a1.5 1.5 0 0 0-1.5 1.5V21" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-base font-bold text-neutral-900 dark:text-white">
+                                    <h3 class="text-base font-bold text-foreground">
                                         {t('rt.unitIntegrasiDikti')}
                                     </h3>
                                 </div>
 
                                 <div class="space-y-4 text-xs">
                                     {/* Program Studi Box */}
-                                    <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
+                                    <div class="p-4 rounded-xl bg-muted/60 border border-border/80 space-y-2">
                                         <div class="flex items-center justify-between">
                                             <span class="text-neutral-500 font-semibold uppercase text-2xs">{t('rt.programStudiUnitPengelola')}</span>
-                                            <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300">
+                                            <span class="font-mono text-2xs px-2 py-0.5 rounded-md bg-neutral-200 dark:bg-neutral-700 text-foreground/80">
                                                 {t('rt.id')} {grade()?.unit_id || '-'}
                                             </span>
                                         </div>
-                                        <p class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <p class="text-sm font-bold text-foreground">
                                             {unit()?.name || 'Unit Belum Terhubung'}
                                         </p>
                                         <Show when={unit()?.code}>
@@ -457,14 +457,14 @@ export default function RectoratGradeDetail() {
                                     </div>
 
                                     {/* Feeder Dikti Box */}
-                                    <div class="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200 dark:border-neutral-700/80 space-y-2">
+                                    <div class="p-4 rounded-xl bg-muted/60 border border-border/80 space-y-2">
                                         <div class="flex items-center justify-between">
                                             <span class="text-neutral-500 font-semibold uppercase text-2xs">{t('rt.integrasiPDDiktiFeeder')}</span>
                                             <span class="inline-flex items-center gap-1 text-2xs font-medium px-2 py-0.5 rounded-full bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400">
                                                 {grade()?.feeder_id ? t('rt.tersinkronisasi') : t('rt.lokalBelumSinkron')}
                                             </span>
                                         </div>
-                                        <div class="font-mono text-xs text-neutral-800 dark:text-neutral-200">
+                                        <div class="font-mono text-xs text-foreground">
                                             {t('rt.idFeeder')} {grade()?.feeder_id || 'Tidak ada ID Feeder'}
                                         </div>
                                     </div>
@@ -473,22 +473,22 @@ export default function RectoratGradeDetail() {
                         </div>
 
                         {/* Audit Trail & Metadata */}
-                        <div class="bg-white dark:bg-neutral-900 rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
-                            <h3 class="text-sm font-bold uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                        <div class="bg-card rounded-2xl p-6 border border-neutral-200/80 dark:border-neutral-800 shadow-2xs space-y-4">
+                            <h3 class="text-sm font-bold uppercase tracking-wider text-muted-foreground">
                                 {t('rt.metadataSistemLogAudit')}
                             </h3>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{t('rt.dibuatPADA')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.created_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(grade()?.created_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{t('rt.diperbaruiPADA')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.updated_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(grade()?.updated_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{t('rt.sinkronisasi')}</span>
-                                    <span class="text-neutral-800 dark:text-neutral-200">{formatDateTime(grade()?.sync_at)}</span>
+                                    <span class="text-foreground">{formatDateTime(grade()?.sync_at)}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 text-2xs block">{t('rt.statusREKAMAN')}</span>

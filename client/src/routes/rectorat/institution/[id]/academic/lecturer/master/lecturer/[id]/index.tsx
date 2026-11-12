@@ -322,15 +322,15 @@ export default function RectoratLecturerDetail() {
     const currentContractName = () => latestHomebase()?.contract_name || '';
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-800 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-muted text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
                 <PopupBlockedAlert />
 
                 {/* Breadcrumb Navigation */}
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-4">
-                    <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 font-medium">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
+                    <nav class="flex items-center gap-2 text-xs text-muted-foreground font-medium">
                         <A href="/rectorat" class="hover:text-violet-600 transition-colors">{t('rt.rektorat')}</A>
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-violet-600 transition-colors">{t('rt.institusi')}</A>
@@ -339,12 +339,12 @@ export default function RectoratLecturerDetail() {
                         <span>/</span>
                         <A href={`/rectorat/institution/${institutionId()}/academic/lecturer/master/lecturer`} class="hover:text-violet-600 transition-colors">{t('rt.dosen')}</A>
                         <span>/</span>
-                        <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.detailDosen')}</span>
+                        <span class="text-foreground/80 font-semibold">{t('rt.detailDosen')}</span>
                     </nav>
 
                     <A
                         href={`/rectorat/institution/${institutionId()}/academic/lecturer/master/lecturer`}
-                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs self-start sm:self-auto"
+                        class="inline-flex items-center gap-2 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border rounded-md hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors shadow-2xs self-start sm:self-auto"
                     >
                         <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
@@ -411,14 +411,14 @@ export default function RectoratLecturerDetail() {
                 </div>
 
                 {/* Navigation Tabs */}
-                <div class="flex items-center gap-2 border-b border-neutral-200 dark:border-neutral-700/80 pb-px">
+                <div class="flex items-center gap-2 border-b border-border/80 pb-px">
                     <button
                         type="button"
                         id="tab-btn-overview"
                         onClick={() => setActiveTab('overview')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-t-lg transition-all border-b-2 -mb-px flex items-center gap-2 ${
                             activeTab() === 'overview'
-                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-white dark:bg-neutral-800'
+                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-card'
                                 : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                         }`}
                     >
@@ -433,7 +433,7 @@ export default function RectoratLecturerDetail() {
                         onClick={() => setActiveTab('biodata')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-t-lg transition-all border-b-2 -mb-px flex items-center gap-2 ${
                             activeTab() === 'biodata'
-                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-white dark:bg-neutral-800'
+                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-card'
                                 : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                         }`}
                     >
@@ -449,7 +449,7 @@ export default function RectoratLecturerDetail() {
                         onClick={() => setActiveTab('academic')}
                         class={`px-4 py-2.5 text-xs font-bold rounded-t-lg transition-all border-b-2 -mb-px flex items-center gap-2 ${
                             activeTab() === 'academic'
-                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-white dark:bg-neutral-800'
+                                ? 'border-violet-600 text-violet-600 dark:text-violet-400 bg-card'
                                 : 'border-transparent text-neutral-500 hover:text-neutral-900 dark:hover:text-white'
                         }`}
                     >
@@ -478,9 +478,9 @@ export default function RectoratLecturerDetail() {
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Faculty Assignment Card */}
-                                <div class="p-5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-sm">
+                                <div class="p-5 rounded-xl bg-card border border-border/60 space-y-3 shadow-sm">
                                     <div class="flex items-center justify-between">
-                                        <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                        <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
                                             {t('rt.penugasanStatusDosen')}
                                         </h3>
                                         <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-violet-100 text-violet-700 dark:bg-violet-950 dark:text-violet-300 font-mono">
@@ -490,23 +490,23 @@ export default function RectoratLecturerDetail() {
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.nidn')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNidn() || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{lecturerNidn() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.nuptk')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{lecturerNuptk() || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{lecturerNuptk() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.programStudiHomebase')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentUnitName()}</span>
+                                            <span class="font-bold text-foreground">{currentUnitName()}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.jabatanFungsional')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentRankName()}</span>
+                                            <span class="font-bold text-foreground">{currentRankName()}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.golonganPangkat')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentGroupName() || '-'}</span>
+                                            <span class="font-bold text-foreground">{currentGroupName() || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.statusDosen')}</span>
@@ -515,37 +515,37 @@ export default function RectoratLecturerDetail() {
                                         <Show when={currentContractName()}>
                                             <div class="col-span-2">
                                                 <span class="text-neutral-400 block">{t('rt.perjanjianKontrak')}</span>
-                                                <span class="font-bold text-neutral-800 dark:text-neutral-100">{currentContractName()}</span>
+                                                <span class="font-bold text-foreground">{currentContractName()}</span>
                                             </div>
                                         </Show>
                                     </div>
                                 </div>
 
                                 {/* Identity Summary Card */}
-                                <div class="p-5 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-3 shadow-sm">
-                                    <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-neutral-500 dark:text-neutral-400">
+                                <div class="p-5 rounded-xl bg-card border border-border/60 space-y-3 shadow-sm">
+                                    <h3 class="text-xs font-bold font-mono uppercase tracking-wider text-muted-foreground">
                                         {t('rt.identitasKontak')}
                                     </h3>
                                     <div class="grid grid-cols-2 gap-3 text-xs">
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.nikNomorIndukKependudukan')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
+                                            <span class="font-bold text-foreground font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.jenisKelamin')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                            <span class="font-bold text-foreground">
                                                 {individualData()?.gender?.name || '-'}
                                             </span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.tempatTanggalLahir')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100">
+                                            <span class="font-bold text-foreground">
                                                 {ind()?.birth_place ? `${ind()?.birth_place}, ${ind()?.birth_date || '-'}` : ind()?.birth_date || '-'}
                                             </span>
                                         </div>
                                         <div>
                                             <span class="text-neutral-400 block">{t('rt.emailTerdaftar')}</span>
-                                            <span class="font-bold text-neutral-800 dark:text-neutral-100 truncate block">
+                                            <span class="font-bold text-foreground truncate block">
                                                 {individualData()?.user?.email || '-'}
                                             </span>
                                         </div>
@@ -554,7 +554,7 @@ export default function RectoratLecturerDetail() {
                             </div>
 
                             {/* Teaching Credit Progression Visualization with Apache ECharts */}
-                            <div class="min-w-0 p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 shadow-sm space-y-4">
+                            <div class="min-w-0 p-6 rounded-xl bg-card border border-border/60 shadow-sm space-y-4">
                                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div class="space-y-1">
                                         <div class="flex items-center gap-2">
@@ -563,11 +563,11 @@ export default function RectoratLecturerDetail() {
                                                     <path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
                                                 </svg>
                                             </div>
-                                            <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                            <h3 class="text-sm font-bold text-foreground">
                                                 {t('rt.trenBebanSKSMengajarPerkuliahan')}
                                             </h3>
                                         </div>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('rt.trenAkumulasiBebanSKSPerkuliahanYang')}
                                         </p>
                                     </div>
@@ -617,12 +617,12 @@ export default function RectoratLecturerDetail() {
 
                     {/* Tab 2: Biodata */}
                     <Show when={activeTab() === 'biodata'}>
-                        <div class="p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-sm">
-                            <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4">
-                                <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                        <div class="p-6 rounded-xl bg-card border border-border/60 space-y-6 shadow-sm">
+                            <div class="border-b border-border/60 pb-4">
+                                <h3 class="text-sm font-bold text-foreground">
                                     {t('rt.biodataPribadiKependudukan')}
                                 </h3>
-                                <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                <p class="text-xs text-muted-foreground">
                                     {t('rt.dataIdentitasKependudukanResmiYangTercatat')}
                                 </p>
                             </div>
@@ -630,39 +630,39 @@ export default function RectoratLecturerDetail() {
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.namaLengkap')}</span>
-                                    <span class="font-bold text-neutral-900 dark:text-white">{formattedFullName()}</span>
+                                    <span class="font-bold text-foreground">{formattedFullName()}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.gelarDepan')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.front_title || lecturerMaster()?.front_title || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.front_title || lecturerMaster()?.front_title || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.gelarBelakang')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.last_title || lecturerMaster()?.last_title || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.last_title || lecturerMaster()?.last_title || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.nikNomorIndukKependudukan')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{ind()?.code || lecturerMaster()?.identification_number || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.jenisKelamin')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.gender?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.gender?.name || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.agama')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.religion?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.religion?.name || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.tempatLahir')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{ind()?.birth_place || '-'}</span>
+                                    <span class="font-bold text-foreground">{ind()?.birth_place || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.tanggalLahir')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{ind()?.birth_date || '-'}</span>
+                                    <span class="font-bold text-foreground font-mono">{ind()?.birth_date || '-'}</span>
                                 </div>
                                 <div>
                                     <span class="text-neutral-400 block mb-0.5">{t('rt.statusPernikahan')}</span>
-                                    <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.marital_status?.name || '-'}</span>
+                                    <span class="font-bold text-foreground">{individualData()?.marital_status?.name || '-'}</span>
                                 </div>
                             </div>
                         </div>
@@ -672,13 +672,13 @@ export default function RectoratLecturerDetail() {
                     <Show when={activeTab() === 'academic'}>
                         <div class="space-y-6">
                             {/* Primary Faculty Credentials Card */}
-                            <div class="p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-6 shadow-sm">
-                                <div class="border-b border-neutral-200/80 dark:border-neutral-700/80 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="p-6 rounded-xl bg-card border border-border/60 space-y-6 shadow-sm">
+                                <div class="border-b border-border/60 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div>
-                                        <h3 class="text-sm font-bold text-neutral-900 dark:text-white">
+                                        <h3 class="text-sm font-bold text-foreground">
                                             {t('rt.statusKepegawaianAkademikRegistrasiDosen')}
                                         </h3>
-                                        <p class="text-xs text-neutral-500 dark:text-neutral-400">
+                                        <p class="text-xs text-muted-foreground">
                                             {t('rt.kredensialMengajarDiPendidikanTinggiPenugasan')}
                                         </p>
                                     </div>
@@ -690,23 +690,23 @@ export default function RectoratLecturerDetail() {
                                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 text-xs">
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.nidnNomorIndukDosenNasional')}</span>
-                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNidn() || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{lecturerNidn() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.nuptkNUPN')}</span>
-                                        <span class="font-bold text-neutral-900 dark:text-white font-mono">{lecturerNuptk() || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{lecturerNuptk() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.jabatanFungsional')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentRankName()}</span>
+                                        <span class="font-bold text-foreground">{currentRankName()}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.golonganPangkat')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentGroupName() || '-'}</span>
+                                        <span class="font-bold text-foreground">{currentGroupName() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.programStudiHomebase2')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentUnitName()}</span>
+                                        <span class="font-bold text-foreground">{currentUnitName()}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.statusKepegawaian')}</span>
@@ -714,15 +714,15 @@ export default function RectoratLecturerDetail() {
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.perjanjianKontrak')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{currentContractName() || '-'}</span>
+                                        <span class="font-bold text-foreground">{currentContractName() || '-'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.jenjangPendidikanTertinggi')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200">{individualData()?.education?.name || 'Magister (S2)'}</span>
+                                        <span class="font-bold text-foreground">{individualData()?.education?.name || 'Magister (S2)'}</span>
                                     </div>
                                     <div>
                                         <span class="text-neutral-400 block mb-0.5">{t('rt.emailTerdaftar')}</span>
-                                        <span class="font-bold text-neutral-800 dark:text-neutral-200 font-mono">{individualData()?.user?.email || '-'}</span>
+                                        <span class="font-bold text-foreground font-mono">{individualData()?.user?.email || '-'}</span>
                                     </div>
                                 </div>
                             </div>
@@ -730,18 +730,18 @@ export default function RectoratLecturerDetail() {
                             {/* Homebases & Rank History Records */}
                             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                                 {/* Homebase Assignment History */}
-                                <div class="p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-sm">
-                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                <div class="p-6 rounded-xl bg-card border border-border/60 space-y-4 shadow-sm">
+                                    <div class="flex items-center justify-between pb-3 border-b border-border">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-lg bg-violet-50 dark:bg-violet-950/60 text-violet-600 dark:text-violet-400 flex items-center justify-center font-bold text-xs">
                                                 {t('rt.hb')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('rt.riwayatHomebaseDosen')}</h4>
+                                                <h4 class="text-xs font-bold text-foreground">{t('rt.riwayatHomebaseDosen')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_lecturer_transaction.homebases</p>
                                             </div>
                                         </div>
-                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
                                             {allHomebases().length} Data
                                         </span>
                                     </div>
@@ -750,17 +750,17 @@ export default function RectoratLecturerDetail() {
                                         when={allHomebases().length > 0}
                                         fallback={
                                             <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                                {t('rt.homebaseAktif')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentUnitName()}</span>
+                                                {t('rt.homebaseAktif')} <span class="font-bold text-foreground/80">{currentUnitName()}</span>
                                             </div>
                                         }
                                     >
                                         <div class="space-y-3">
                                             <For each={allHomebases()}>
                                                 {(hb, idx) => (
-                                                    <div class="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-lg bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{hb.unit_name || 'Program Studi'}</span>
+                                                                <span class="font-bold text-foreground">{hb.unit_name || 'Program Studi'}</span>
                                                                 <Show when={idx() === 0}>
                                                                     <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">{t('rt.aktif')}</span>
                                                                 </Show>
@@ -769,7 +769,7 @@ export default function RectoratLecturerDetail() {
                                                                 <span>{hb.status_name || 'Dosen Tetap'}</span>
                                                                 <Show when={hb.contract_name}>
                                                                     <span>•</span>
-                                                                    <span class="font-medium text-neutral-600 dark:text-neutral-400">{hb.contract_name}</span>
+                                                                    <span class="font-medium text-muted-foreground">{hb.contract_name}</span>
                                                                 </Show>
                                                             </div>
                                                         </div>
@@ -784,18 +784,18 @@ export default function RectoratLecturerDetail() {
                                 </div>
 
                                 {/* Academic Rank Progression */}
-                                <div class="p-6 rounded-xl bg-white dark:bg-neutral-800 border border-neutral-200/80 dark:border-neutral-700/80 space-y-4 shadow-sm">
-                                    <div class="flex items-center justify-between pb-3 border-b border-neutral-200 dark:border-neutral-700">
+                                <div class="p-6 rounded-xl bg-card border border-border/60 space-y-4 shadow-sm">
+                                    <div class="flex items-center justify-between pb-3 border-b border-border">
                                         <div class="flex items-center gap-2">
                                             <div class="size-8 rounded-lg bg-purple-50 dark:bg-purple-950/60 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold text-xs">
                                                 {t('rt.jf')}
                                             </div>
                                             <div>
-                                                <h4 class="text-xs font-bold text-neutral-900 dark:text-white">{t('rt.riwayatJabatanFungsionalGolongan')}</h4>
+                                                <h4 class="text-xs font-bold text-foreground">{t('rt.riwayatJabatanFungsionalGolongan')}</h4>
                                                 <p class="text-[10px] text-neutral-500 font-mono">academic_ranks & academic_groups</p>
                                             </div>
                                         </div>
-                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-300">
+                                        <span class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-secondary text-muted-foreground">
                                             {allAcademicRanks().length + allAcademicGroups().length} Data
                                         </span>
                                     </div>
@@ -804,17 +804,17 @@ export default function RectoratLecturerDetail() {
                                         when={allAcademicRanks().length > 0 || allAcademicGroups().length > 0}
                                         fallback={
                                             <div class="py-6 text-center text-xs text-neutral-400 font-mono">
-                                                {t('rt.jabatanFungsional2')} <span class="font-bold text-neutral-700 dark:text-neutral-300">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
+                                                {t('rt.jabatanFungsional2')} <span class="font-bold text-foreground/80">{currentRankName()}</span> {currentGroupName() ? `• ${currentGroupName()}` : ''}
                                             </div>
                                         }
                                     >
                                         <div class="space-y-3">
                                             <For each={allAcademicRanks()}>
                                                 {(rk, idx) => (
-                                                    <div class="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-lg bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{rk.rank_name || 'Jabatan Fungsional'}</span>
+                                                                <span class="font-bold text-foreground">{rk.rank_name || 'Jabatan Fungsional'}</span>
                                                                 <Show when={idx() === 0}>
                                                                     <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-violet-100 text-violet-800 dark:bg-violet-950 dark:text-violet-300">{t('rt.terbaru')}</span>
                                                                 </Show>
@@ -829,10 +829,10 @@ export default function RectoratLecturerDetail() {
                                             </For>
                                             <For each={allAcademicGroups()}>
                                                 {(gp, idx) => (
-                                                    <div class="p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/60 dark:border-neutral-700/60 flex items-center justify-between text-xs">
+                                                    <div class="p-3 rounded-lg bg-muted/60 border border-border/60 flex items-center justify-between text-xs">
                                                         <div class="space-y-0.5">
                                                             <div class="flex items-center gap-2">
-                                                                <span class="font-bold text-neutral-900 dark:text-white">{t('rt.golongan')} {gp.group_name || 'Golongan'}</span>
+                                                                <span class="font-bold text-foreground">{t('rt.golongan')} {gp.group_name || 'Golongan'}</span>
                                                                 <Show when={idx() === 0}>
                                                                     <span class="px-1.5 py-0.2 rounded-full text-[9px] font-bold bg-purple-100 text-purple-800 dark:bg-purple-950 dark:text-purple-300">{t('rt.terbaru')}</span>
                                                                 </Show>

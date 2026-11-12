@@ -199,16 +199,16 @@ export default function StudentCampaignActivityIndexPage() {
     const semesterSKS = () => latestAct()?.total_credit ?? 0;
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 flex flex-col">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground flex flex-col">
             <TopBar />
 
             <main class="flex-1 w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header Card */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="border-b border-border pb-4">
                     <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
                         <div class="space-y-2">
                             <div class="flex flex-wrap items-center gap-2">
-                                <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                                <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                                     <span>{t('st.student')}</span>
                                     <span>/</span>
                                     <span>{t('st.academic')}</span>
@@ -217,10 +217,10 @@ export default function StudentCampaignActivityIndexPage() {
                                     <span>/</span>
                                     <span>{t('st.campaign')}</span>
                                     <span>/</span>
-                                    <span class="font-medium text-neutral-900 dark:text-white">{t('st.activity')}</span>
+                                    <span class="font-medium text-foreground">{t('st.activity')}</span>
                                 </nav>
                                 <Show when={activeStudent()}>
-                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-bold border border-blue-200 dark:border-blue-800">
+                                    <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 text-xs font-mono font-bold border border-blue-200 dark:border-blue-800">
                                         <span>{t('st.nim')} {activeStudent()?.code}</span>
                                         <span class="text-neutral-400">•</span>
                                         <span>{activeStudent()?.unit_name || t('st.programStudi')}</span>
@@ -228,22 +228,22 @@ export default function StudentCampaignActivityIndexPage() {
                                 </Show>
                             </div>
 
-                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                                 {t('st.academicActivitiesSemesterRecords')}
                             </h1>
-                            <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 max-w-2xl">
+                            <p class="text-sm text-muted-foreground mt-0.5 max-w-2xl">
                                 {t('st.trackSemesterActivityCampaignsStudyPlan')} <span class="font-mono text-blue-600 dark:text-blue-400">academic_student_campaign.student_activities</span>.
                             </p>
                         </div>
 
                         {/* Top KPI Stats */}
                         <div class="grid grid-cols-2 sm:grid-cols-2 gap-3">
-                            <div class="p-3.5 px-5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-center">
+                            <div class="p-3.5 px-5 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-center">
                                 <span class="text-[10px] font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 block">{t('st.cumulativeGPAIPK')}</span>
                                 <span class="text-xl font-black text-blue-900 dark:text-blue-200">{currentIPK()}</span>
                                 <span class="text-[10px] text-blue-500/80 font-mono block">{t('st.ips')} {semesterIPS()}</span>
                             </div>
-                            <div class="p-3.5 px-5 rounded-xs bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-center">
+                            <div class="p-3.5 px-5 rounded-md bg-blue-50 dark:bg-blue-950/60 border border-blue-200 dark:border-blue-800/80 text-center">
                                 <span class="text-[10px] font-mono uppercase tracking-wider text-blue-600 dark:text-blue-400 block">{t('st.creditsTakenSKS')}</span>
                                 <span class="text-xl font-black text-blue-900 dark:text-blue-200">{totalSKS()} <span class="text-xs font-normal">{t('st.sks')}</span></span>
                                 <span class="text-[10px] text-blue-500/80 font-mono block">{t('st.sem')} {semesterSKS()} SKS</span>
@@ -254,16 +254,16 @@ export default function StudentCampaignActivityIndexPage() {
 
                 {/* Multiple Student Identity Switcher (if user has multiple student records e.g. NIM 111301760 & 141302134) */}
                 <Show when={availableStudents().length > 1}>
-                    <div class="p-4 bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="p-4 bg-card rounded-md border border-border shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                         <div class="flex items-center gap-2.5">
-                            <div class="size-8 rounded-xs bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
+                            <div class="size-8 rounded-md bg-blue-50 dark:bg-blue-950/60 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
                                 <svg class="size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
                                 </svg>
                             </div>
                             <div>
-                                <h3 class="text-xs font-bold text-neutral-900 dark:text-white">{t('st.pilihProfilMahasiswaAktif')}</h3>
-                                <p class="text-[11px] text-neutral-500 dark:text-neutral-400">{t('st.pilihIdentitasNIMUntukMelihatAktivitas')}</p>
+                                <h3 class="text-xs font-bold text-foreground">{t('st.pilihProfilMahasiswaAktif')}</h3>
+                                <p class="text-[11px] text-muted-foreground">{t('st.pilihIdentitasNIMUntukMelihatAktivitas')}</p>
                             </div>
                         </div>
 
@@ -275,10 +275,10 @@ export default function StudentCampaignActivityIndexPage() {
                                         <button
                                             type="button"
                                             onClick={() => handleSelectStudent(std)}
-                                            class={`px-3 py-1.5 rounded-xs text-xs font-bold transition-all flex items-center gap-2 ${
+                                            class={`px-3 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${
                                                 isSel()
                                                     ? 'bg-blue-600 text-white shadow-xs'
-                                                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-neutral-600'
+                                                    : 'bg-secondary text-foreground/80 hover:bg-neutral-200 dark:hover:bg-neutral-600'
                                             }`}
                                         >
                                             <span class="font-mono">{t('st.nim2')} {std.code}</span>
@@ -297,7 +297,7 @@ export default function StudentCampaignActivityIndexPage() {
                 </Show>
 
                 {/* Semester Activities Table */}
-                <div class="bg-white dark:bg-neutral-800 rounded-xs border border-neutral-200 dark:border-neutral-700 shadow-2xs overflow-hidden">
+                <div class="bg-card rounded-md border border-border shadow-2xs overflow-hidden">
                     <Show when={!isLoading()} fallback={
                         <div class="py-16 flex flex-col items-center justify-center gap-3 text-neutral-400">
                             <Spinner size="lg" color="blue" aria-hidden={true} />
@@ -307,7 +307,7 @@ export default function StudentCampaignActivityIndexPage() {
                         {/* Desktop Table View (md and above) */}
                         <div class="hidden md:block overflow-x-auto">
                             <table class="w-full text-xs text-start">
-                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-neutral-200 dark:border-neutral-700">
+                                <thead class="bg-neutral-100 dark:bg-neutral-900/60 text-neutral-500 font-mono uppercase text-[10px] border-b border-border">
                                     <tr>
                                         <th class="py-3.5 px-4 text-start">{t('st.academicSemester')}</th>
                                         <th class="py-3.5 px-4 text-center">{t('st.semesterSKS')}</th>
@@ -328,9 +328,9 @@ export default function StudentCampaignActivityIndexPage() {
                                     }>
                                         {(act) => (
                                             <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-900/30 transition-colors">
-                                                <td class="py-4 px-4 font-bold text-neutral-900 dark:text-white">
+                                                <td class="py-4 px-4 font-bold text-foreground">
                                                     <div class="flex items-center gap-2.5">
-                                                        <div class="size-8 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center">
+                                                        <div class="size-8 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center">
                                                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                                                         </div>
                                                         <div>
@@ -357,12 +357,12 @@ export default function StudentCampaignActivityIndexPage() {
                                                 </td>
 
                                                 <td class="py-4 px-4 text-center">
-                                                    <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-xs border ${
+                                                    <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-md border ${
                                                         act.is_lock
                                                             ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800'
                                                             : 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                                                     }`}>
-                                                        <span class={`size-1.5 rounded-xs ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                                                        <span class={`size-1.5 rounded-md ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
                                                         {act.is_lock ? t('st.lockedFinalized') : t('st.activeKRSOpen')}
                                                     </span>
                                                 </td>
@@ -374,7 +374,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                             onClick={() => handlePrintKRS(act)}
                                                             disabled={printingId() === `krs-${act.id}`}
                                                             title={t('st.printDownloadKRSStudyPlanCard')}
-                                                            class="px-2.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                            class="px-2.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                         >
                                                             <Show when={printingId() === `krs-${act.id}`} fallback={
                                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
@@ -388,7 +388,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                             onClick={() => handlePrintKHS(act)}
                                                             disabled={printingId() === `khs-${act.id}`}
                                                             title={t('st.printDownloadKHSStudyResultCard')}
-                                                            class="px-2.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
+                                                            class="px-2.5 py-1.5 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-semibold inline-flex items-center gap-1 transition-colors disabled:opacity-50"
                                                         >
                                                             <Show when={printingId() === `khs-${act.id}`} fallback={
                                                                 <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
@@ -399,14 +399,14 @@ export default function StudentCampaignActivityIndexPage() {
                                                         </button>
                                                         <A
                                                             href={`/student/academic/student/campaign/activity/${act.id}`}
-                                                            class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold transition-colors"
+                                                            class="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-md text-xs font-bold transition-colors"
                                                         >
                                                             {t('st.details')}
                                                         </A>
                                                         <Show when={!act.is_lock}>
                                                             <A
                                                                 href={`/student/academic/student/campaign/activity/${act.id}/enrollment`}
-                                                                class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold transition-colors shadow-2xs"
+                                                                class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold transition-colors shadow-2xs"
                                                             >
                                                                 {t('st.enrollKRS')}
                                                             </A>
@@ -432,11 +432,11 @@ export default function StudentCampaignActivityIndexPage() {
                                         {/* Header Row: Icon + Title + ID & Status Badge */}
                                         <div class="flex items-start justify-between gap-2">
                                             <div class="flex items-start gap-2.5">
-                                                <div class="size-8 rounded-xs bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                                <div class="size-8 rounded-md bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-300 font-bold flex items-center justify-center shrink-0 mt-0.5">
                                                     <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/></svg>
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-sm font-bold text-neutral-900 dark:text-white leading-snug">
+                                                    <h3 class="text-sm font-bold text-foreground leading-snug">
                                                         {act.name || t('st.academicSemester')}
                                                     </h3>
                                                     <span class="text-[10px] text-neutral-400 font-mono">
@@ -445,40 +445,40 @@ export default function StudentCampaignActivityIndexPage() {
                                                 </div>
                                             </div>
 
-                                            <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-xs border shrink-0 ${
+                                            <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold rounded-md border shrink-0 ${
                                                 act.is_lock
                                                     ? 'bg-amber-50 text-amber-800 dark:bg-amber-950/70 dark:text-amber-300 border-amber-200 dark:border-amber-800'
                                                     : 'bg-emerald-50 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800'
                                             }`}>
-                                                <span class={`size-1.5 rounded-xs ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
+                                                <span class={`size-1.5 rounded-md ${act.is_lock ? 'bg-amber-500' : 'bg-emerald-500'}`}></span>
                                                 {act.is_lock ? t('st.locked') : t('st.krsOpen')}
                                             </span>
                                         </div>
 
                                         {/* Academic Performance KPI Grid */}
                                         <div class="grid grid-cols-4 gap-2 pt-2 border-t border-neutral-100 dark:border-neutral-700/40 text-center">
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.sks')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {act.total_credit ?? 0}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.cumSKS')}</span>
-                                                <span class="font-mono font-bold text-xs text-neutral-800 dark:text-neutral-200">
+                                                <span class="font-mono font-bold text-xs text-foreground">
                                                     {act.grand_total_credit ?? act.total_credit ?? 0}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.ips2')}</span>
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {(act.cumulative_index ?? 0).toFixed(2)}
                                                 </span>
                                             </div>
 
-                                            <div class="p-2 rounded-xs bg-neutral-50 dark:bg-neutral-900/60 border border-neutral-200/50 dark:border-neutral-700/50">
+                                            <div class="p-2 rounded-md bg-muted/60 border border-neutral-200/50 dark:border-neutral-700/50">
                                                 <span class="text-[9px] font-mono uppercase tracking-wider text-neutral-400 block mb-0.5">{t('st.ipk')}</span>
                                                 <span class="font-mono font-bold text-xs text-blue-600 dark:text-blue-400">
                                                     {(act.grand_cumulative_index ?? act.cumulative_index ?? 0).toFixed(2)}
@@ -492,7 +492,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                 type="button"
                                                 onClick={() => handlePrintKRS(act)}
                                                 disabled={printingId() === `krs-${act.id}`}
-                                                class="flex-1 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-bold text-center inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                class="flex-1 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-bold text-center inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                             >
                                                 <Show when={printingId() === `krs-${act.id}`} fallback={
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
@@ -505,7 +505,7 @@ export default function StudentCampaignActivityIndexPage() {
                                                 type="button"
                                                 onClick={() => handlePrintKHS(act)}
                                                 disabled={printingId() === `khs-${act.id}`}
-                                                class="flex-1 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-xs text-xs font-bold text-center inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
+                                                class="flex-1 py-2 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-200 rounded-md text-xs font-bold text-center inline-flex items-center justify-center gap-1 transition-colors disabled:opacity-50"
                                             >
                                                 <Show when={printingId() === `khs-${act.id}`} fallback={
                                                     <svg class="size-3.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6z"/></svg>
@@ -516,14 +516,14 @@ export default function StudentCampaignActivityIndexPage() {
                                             </button>
                                             <A
                                                 href={`/student/academic/student/campaign/activity/${act.id}`}
-                                                class="flex-1 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-xs text-xs font-bold text-center transition-colors"
+                                                class="flex-1 py-2 bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900 rounded-md text-xs font-bold text-center transition-colors"
                                             >
                                                 {t('st.details')}
                                             </A>
                                             <Show when={!act.is_lock}>
                                                 <A
                                                     href={`/student/academic/student/campaign/activity/${act.id}/enrollment`}
-                                                    class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xs text-xs font-bold text-center transition-colors shadow-2xs"
+                                                    class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-md text-xs font-bold text-center transition-colors shadow-2xs"
                                                 >
                                                     {t('st.enroll')}
                                                 </A>

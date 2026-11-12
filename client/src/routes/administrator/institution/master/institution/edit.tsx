@@ -187,33 +187,33 @@ export default function InstitutionMasterInstitutionEditPage() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 pb-12">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground pb-12">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
                 {/* Header with Breadcrumbs */}
-                <div class="border-b border-neutral-200 dark:border-neutral-800 pb-4">
-                    <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                <div class="border-b border-border pb-4">
+                    <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                         <a href="/" class="hover:text-blue-600 transition-colors">{t('ad.home')}</a>
                         <span>/</span>
                         <span>{t('ad.institution')}</span>
                         <span>/</span>
                         <a href="/administrator/institution/master/institution" class="hover:text-blue-600 transition-colors">{t('ad.masterInstitution')}</a>
                         <span>/</span>
-                        <span class="font-medium text-neutral-900 dark:text-white">{t('ad.edit')}</span>
+                        <span class="font-medium text-foreground">{t('ad.edit')}</span>
                     </nav>
                     <div class="flex items-center justify-between">
                         <div>
-                            <h1 class="text-2xl font-bold tracking-tight text-neutral-900 dark:text-white">
+                            <h1 class="text-2xl font-bold tracking-tight text-foreground">
                                 {t('ad.editInstitution')}
                             </h1>
-                            <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                            <p class="text-xs sm:text-sm text-muted-foreground mt-0.5">
                                 {t('ad.updateThisInstitutionSClassificationAnd')}
                             </p>
                         </div>
                         <a
                             href={`/administrator/institution/master/institution/${institutionId}`}
-                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                            class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-foreground/80 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                         >
                             {t('ad.cancel')}
                         </a>
@@ -221,7 +221,7 @@ export default function InstitutionMasterInstitutionEditPage() {
                 </div>
 
                 <Show when={isLoadingReferences()}>
-                    <div class="p-8 text-center bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 space-y-2">
+                    <div class="p-8 text-center bg-card border border-border space-y-2">
                         <Spinner size="md" color="blue" aria-hidden={true} />
                         <p class="text-xs text-neutral-500">{t('ad.loadingFormReferenceData')}</p>
                     </div>
@@ -230,9 +230,9 @@ export default function InstitutionMasterInstitutionEditPage() {
                 <Show when={!isLoadingReferences()}>
                     <form onSubmit={handleSubmit} class="space-y-6">
                         {/* Section 1: Basic Information */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                            <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                                <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                        <div class="bg-card border border-border shadow-2xs">
+                            <div class="px-6 py-4 border-b border-border">
+                                <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                     <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M3 21h18" />
                                         <path d="M3 7v1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7m0 1a3 3 0 0 0 6 0V7H3l2-4h14l2 4" />
@@ -247,12 +247,12 @@ export default function InstitutionMasterInstitutionEditPage() {
                             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Name */}
                                 <div class="md:col-span-2">
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.institutionName')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-xs`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().name ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-border focus:ring-blue-500 focus:border-blue-500'} text-foreground rounded-md`}
                                         placeholder={t('ad.eGInstitutTeknologiDanKesehatan')}
                                         value={formData().name}
                                         onInput={(e) => updateField('name', (e.target as HTMLInputElement).value)}
@@ -265,12 +265,12 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Code */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.institutionCode')} <span class="text-red-500">*</span>
                                     </label>
                                     <input
                                         type="text"
-                                        class={`block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border ${errors().code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-neutral-300 dark:border-neutral-700 focus:ring-blue-500 focus:border-blue-500'} text-neutral-900 dark:text-white rounded-xs`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm font-mono bg-card border ${errors().code ? 'border-red-500 focus:ring-red-500 focus:border-red-500' : 'border-border focus:ring-blue-500 focus:border-blue-500'} text-foreground rounded-md`}
                                         placeholder="e.g. 092010"
                                         value={formData().code}
                                         onInput={(e) => updateField('code', (e.target as HTMLInputElement).value)}
@@ -283,12 +283,12 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Alphabet Code */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.alphabetCodeAcronym')}
                                     </label>
                                     <input
                                         type="text"
-                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         placeholder={t('ad.eGITEKESTTN')}
                                         value={formData().alphabet_code}
                                         onInput={(e) => updateField('alphabet_code', (e.target as HTMLInputElement).value)}
@@ -297,15 +297,15 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Active Toggle */}
                                 <div class="md:col-span-2">
-                                    <label class="relative flex items-center gap-3 p-3.5 border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
+                                    <label class="relative flex items-center gap-3 p-3.5 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-750 transition-colors cursor-pointer">
                                         <input
                                             type="checkbox"
-                                            class="size-4 text-blue-600 border-neutral-300 rounded-xs focus:ring-blue-500"
+                                            class="size-4 text-blue-600 border-neutral-300 rounded-md focus:ring-blue-500"
                                             checked={formData().is_active}
                                             onChange={(e) => updateField('is_active', (e.target as HTMLInputElement).checked)}
                                         />
                                         <div>
-                                            <span class="text-xs font-semibold uppercase tracking-wider text-neutral-900 dark:text-white">{t('ad.operationalStatus')}</span>
+                                            <span class="text-xs font-semibold uppercase tracking-wider text-foreground">{t('ad.operationalStatus')}</span>
                                             <p class="text-xs text-neutral-500">{t('ad.institutionIsCurrentlyActiveAndOperating')}</p>
                                         </div>
                                     </label>
@@ -314,9 +314,9 @@ export default function InstitutionMasterInstitutionEditPage() {
                         </div>
 
                         {/* Section 2: Classifications & Relations */}
-                        <div class="bg-white dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 shadow-2xs">
-                            <div class="px-6 py-4 border-b border-neutral-200 dark:border-neutral-700">
-                                <h2 class="text-sm font-bold uppercase tracking-wider text-neutral-900 dark:text-white flex items-center gap-2">
+                        <div class="bg-card border border-border shadow-2xs">
+                            <div class="px-6 py-4 border-b border-border">
+                                <h2 class="text-sm font-bold uppercase tracking-wider text-foreground flex items-center gap-2">
                                     <svg class="size-4 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
                                         <circle cx="9" cy="7" r="4" />
@@ -330,11 +330,11 @@ export default function InstitutionMasterInstitutionEditPage() {
                             <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                                 {/* Variety */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.variety')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().variety_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().variety_id ? 'border-red-500' : 'border-border'} text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().variety_id}
                                         onChange={(e) => updateField('variety_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -351,11 +351,11 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Category */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.category')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().category_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().category_id ? 'border-red-500' : 'border-border'} text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().category_id}
                                         onChange={(e) => updateField('category_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -372,11 +372,11 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Country */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.country')} <span class="text-red-500">*</span>
                                     </label>
                                     <select
-                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border ${errors().country_id ? 'border-red-500' : 'border-neutral-300 dark:border-neutral-700'} text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500`}
+                                        class={`block w-full p-2.5 text-xs sm:text-sm bg-card border ${errors().country_id ? 'border-red-500' : 'border-border'} text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500`}
                                         value={formData().country_id}
                                         onChange={(e) => updateField('country_id', (e.target as HTMLSelectElement).value)}
                                         required
@@ -393,11 +393,11 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Parent Institution */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.parentInstitutionOptional')}
                                     </label>
                                     <select
-                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().parent_id}
                                         onChange={(e) => updateField('parent_id', (e.target as HTMLSelectElement).value)}
                                     >
@@ -410,11 +410,11 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Academic Year */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.academicYearOptional')}
                                     </label>
                                     <select
-                                        class="block w-full p-2.5 text-xs sm:text-sm bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         value={formData().academic_year_id}
                                         onChange={(e) => updateField('academic_year_id', (e.target as HTMLSelectElement).value)}
                                     >
@@ -427,12 +427,12 @@ export default function InstitutionMasterInstitutionEditPage() {
 
                                 {/* Feeder ID */}
                                 <div>
-                                    <label class="block text-xs font-semibold uppercase tracking-wider text-neutral-700 dark:text-neutral-300 mb-1">
+                                    <label class="block text-xs font-semibold uppercase tracking-wider text-foreground/80 mb-1">
                                         {t('ad.feederIDOptional')}
                                     </label>
                                     <input
                                         type="text"
-                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-white dark:bg-neutral-900 border border-neutral-300 dark:border-neutral-700 text-neutral-900 dark:text-white rounded-xs focus:ring-blue-500 focus:border-blue-500"
+                                        class="block w-full p-2.5 text-xs sm:text-sm font-mono bg-card border border-border text-foreground rounded-md focus:ring-blue-500 focus:border-blue-500"
                                         placeholder={t('ad.externalSystemSyncUUID')}
                                         value={formData().feeder_id}
                                         onInput={(e) => updateField('feeder_id', (e.target as HTMLInputElement).value)}
@@ -442,10 +442,10 @@ export default function InstitutionMasterInstitutionEditPage() {
                         </div>
 
                         {/* Submit Action Bar */}
-                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-neutral-200 dark:border-neutral-800">
+                        <div class="flex items-center justify-end gap-3 pt-4 border-t border-border">
                             <a
                                 href={`/administrator/institution/master/institution/${institutionId}`}
-                                class="px-5 py-2.5 text-xs sm:text-sm font-medium text-neutral-700 dark:text-neutral-300 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
+                                class="px-5 py-2.5 text-xs sm:text-sm font-medium text-foreground/80 bg-card border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors"
                             >
                                 {t('ad.cancel')}
                             </a>

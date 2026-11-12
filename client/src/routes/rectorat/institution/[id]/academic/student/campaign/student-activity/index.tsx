@@ -181,7 +181,7 @@ export default function RectoratStudentActivityIndex() {
         Boolean(selectedStatusId());
 
     const getGradeColor = (val?: number | null) => {
-        if (val == null || val === 0) return 'text-neutral-500 dark:text-neutral-400';
+        if (val == null || val === 0) return 'text-muted-foreground';
         if (val >= 3.5) return 'text-blue-600 dark:text-blue-400 font-bold';
         if (val >= 3.0) return 'text-emerald-600 dark:text-emerald-400 font-bold';
         if (val >= 2.5) return 'text-amber-600 dark:text-amber-400 font-semibold';
@@ -189,15 +189,15 @@ export default function RectoratStudentActivityIndex() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Header */}
-                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-neutral-200 dark:border-neutral-800 pb-6">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-border pb-6">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-blue-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-blue-600 transition-colors">{t('rt.institusi')}</A>
@@ -206,7 +206,7 @@ export default function RectoratStudentActivityIndex() {
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}/academic/student/master/student`} class="hover:text-blue-600 transition-colors">{t('rt.mahasiswa')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.aktivitasSemester')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.aktivitasSemester')}</span>
                         </nav>
                         <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-semibold uppercase tracking-wider mb-2 border border-blue-200 dark:border-blue-800/50">
                             <span class="relative flex size-2">
@@ -215,7 +215,7 @@ export default function RectoratStudentActivityIndex() {
                             </span>
                             {t('rt.akademikAktivitasSemester')}
                         </div>
-                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-neutral-900 dark:text-white flex items-center gap-3">
+                        <h1 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
                             <span class="text-blue-600 dark:text-blue-400">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-9 h-9">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
@@ -223,7 +223,7 @@ export default function RectoratStudentActivityIndex() {
                             </span>
                             {t('rt.aktivitasSemesterMahasiswa')}
                         </h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('rt.daftarAktivitasPerkuliahanSemesterMahasiswaKRS')}
                         </p>
                     </div>
@@ -240,7 +240,7 @@ export default function RectoratStudentActivityIndex() {
                 </div>
 
                 {/* Search & Filter Toolbar */}
-                <div class="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm space-y-3">
+                <div class="bg-card rounded-2xl border border-border p-4 shadow-sm space-y-3">
                     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-12 gap-3 items-center">
 
                         {/* Search Input */}
@@ -336,7 +336,7 @@ export default function RectoratStudentActivityIndex() {
                     </div>
 
                     {/* Active Filters Badges & Rows Per Page */}
-                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-neutral-100 dark:border-neutral-800/80 text-xs">
+                    <div class="flex flex-wrap items-center justify-between gap-3 pt-2 border-t border-border/80 text-xs">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-neutral-400 text-[11px] font-medium">{t('rt.filterAktif')}</span>
 
@@ -422,7 +422,7 @@ export default function RectoratStudentActivityIndex() {
                         </div>
 
                         <div class="flex items-center gap-2 shrink-0 ml-auto">
-                            <label class="text-xs text-neutral-500 dark:text-neutral-400 font-medium whitespace-nowrap">{t('rt.perHalaman')}</label>
+                            <label class="text-xs text-muted-foreground font-medium whitespace-nowrap">{t('rt.perHalaman')}</label>
                             <select
                                 id="activity-rows-per-page"
                                 class="p-1.5 text-xs border border-neutral-200 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white shadow-xs"
@@ -442,10 +442,10 @@ export default function RectoratStudentActivityIndex() {
                 </div>
 
                 {/* Table */}
-                <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
+                <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
-                            <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-neutral-500 dark:text-neutral-400 border-b border-neutral-200 dark:border-neutral-800 font-semibold tracking-wider select-none">
+                            <thead class="text-xs uppercase bg-neutral-50/80 dark:bg-neutral-800/50 text-muted-foreground border-b border-border font-semibold tracking-wider select-none">
                                 <tr>
                                     <th class="px-6 py-4">{t('rt.mahasiswa')}</th>
                                     <th class="px-6 py-4">{t('rt.programStudi')}</th>
@@ -504,13 +504,13 @@ export default function RectoratStudentActivityIndex() {
                                         fallback={
                                             <tr>
                                                 <td colspan="7" class="px-6 py-16 text-center">
-                                                    <div class="flex flex-col items-center gap-3 text-neutral-500 dark:text-neutral-400">
+                                                    <div class="flex flex-col items-center gap-3 text-muted-foreground">
                                                         <div class="p-4 rounded-full bg-blue-50 dark:bg-blue-900/20 text-blue-400">
                                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                                 <path d="M12 6.042A8.967 8.967 0 0 0 6 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 0 1 6 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 0 1 6-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0 0 18 18a8.967 8.967 0 0 0-6 2.292m0-14.25v14.25" />
                                                             </svg>
                                                         </div>
-                                                        <span class="font-semibold text-base text-neutral-700 dark:text-neutral-300">{t('rt.tidakAdaAktivitasSemesterMahasiswa')}</span>
+                                                        <span class="font-semibold text-base text-foreground/80">{t('rt.tidakAdaAktivitasSemesterMahasiswa')}</span>
                                                         <span class="text-sm">{t('rt.cobaSesuaikanKataKunciPencarianAtau2')}</span>
                                                         <Show when={hasActiveFilters()}>
                                                             <button
@@ -536,11 +536,11 @@ export default function RectoratStudentActivityIndex() {
                                                                 {initials(item.student_name)}
                                                             </div>
                                                             <div class="min-w-0">
-                                                                <p class="font-semibold text-neutral-900 dark:text-white truncate">
+                                                                <p class="font-semibold text-foreground truncate">
                                                                     {item.student_name || 'Mahasiswa'}
                                                                 </p>
                                                                 <Show when={item.student_code}>
-                                                                    <p class="text-[11px] text-neutral-500 dark:text-neutral-400 font-mono">
+                                                                    <p class="text-[11px] text-muted-foreground font-mono">
                                                                         {t('rt.nim2')} {item.student_code}
                                                                     </p>
                                                                 </Show>
@@ -554,11 +554,11 @@ export default function RectoratStudentActivityIndex() {
                                                             when={item.unit_name}
                                                             fallback={<span class="text-neutral-400 dark:text-neutral-600">-</span>}
                                                         >
-                                                            <p class="text-sm font-medium text-neutral-800 dark:text-neutral-200 truncate max-w-50">
+                                                            <p class="text-sm font-medium text-foreground truncate max-w-50">
                                                                 {item.unit_name}
                                                             </p>
                                                             <Show when={item.unit_code}>
-                                                                <p class="text-xs font-mono text-neutral-500 dark:text-neutral-400">
+                                                                <p class="text-xs font-mono text-muted-foreground">
                                                                     {item.unit_code}
                                                                 </p>
                                                             </Show>
@@ -567,11 +567,11 @@ export default function RectoratStudentActivityIndex() {
 
                                                     {/* Semester / Academic Year */}
                                                     <td class="px-6 py-4">
-                                                        <p class="font-medium text-neutral-900 dark:text-white text-sm">
+                                                        <p class="font-medium text-foreground text-sm">
                                                             {item.name || item.semester_name || 'Semester'}
                                                         </p>
                                                         <Show when={item.academic_year_name}>
-                                                            <span class="inline-flex items-center px-2 py-0.5 mt-0.5 rounded text-[11px] font-medium bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300">
+                                                            <span class="inline-flex items-center px-2 py-0.5 mt-0.5 rounded text-[11px] font-medium bg-secondary text-muted-foreground">
                                                                 {item.academic_year_name}
                                                             </span>
                                                         </Show>
@@ -579,12 +579,12 @@ export default function RectoratStudentActivityIndex() {
 
                                                     {/* SKS (Semester / Kumulatif) */}
                                                     <td class="px-6 py-4 text-center">
-                                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-neutral-100 dark:bg-neutral-800/80 font-mono text-xs">
-                                                            <span class="font-bold text-neutral-900 dark:text-white" title={t('rt.sksSemester')}>
+                                                        <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-secondary/80 font-mono text-xs">
+                                                            <span class="font-bold text-foreground" title={t('rt.sksSemester')}>
                                                                 {item.total_credit ?? 0}
                                                             </span>
                                                             <span class="text-neutral-400">/</span>
-                                                            <span class="font-medium text-neutral-600 dark:text-neutral-400" title={t('rt.sksKumulatif')}>
+                                                            <span class="font-medium text-muted-foreground" title={t('rt.sksKumulatif')}>
                                                                 {item.grand_total_credit ?? item.total_credit ?? 0} SKS
                                                             </span>
                                                         </div>
@@ -647,11 +647,11 @@ export default function RectoratStudentActivityIndex() {
                     </div>
 
                     {/* Pagination Footer */}
-                    <div class="p-4 border-t border-neutral-200 dark:border-neutral-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div class="p-4 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-muted-foreground">
                         <div>
-                            {t('rt.menampilkan')} <span class="font-bold text-neutral-900 dark:text-white">{totalData() > 0 ? startIndex() : 0}</span> sampai{' '}
-                            <span class="font-bold text-neutral-900 dark:text-white">{endIndex()}</span> dari{' '}
-                            <span class="font-bold text-neutral-900 dark:text-white">{totalData().toLocaleString()}</span> aktivitas
+                            {t('rt.menampilkan')} <span class="font-bold text-foreground">{totalData() > 0 ? startIndex() : 0}</span> sampai{' '}
+                            <span class="font-bold text-foreground">{endIndex()}</span> dari{' '}
+                            <span class="font-bold text-foreground">{totalData().toLocaleString()}</span> aktivitas
                         </div>
 
                         <div class="flex items-center gap-1">
@@ -660,14 +660,14 @@ export default function RectoratStudentActivityIndex() {
                                 id="activity-pagination-prev"
                                 onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
                                 disabled={currentPage() === 1 || isLoading()}
-                                class="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
+                                class="px-3 py-1.5 rounded-lg border border-border hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
                             >
                                 {t('rt.sebelumnya2')}
                             </button>
 
                             <div class="px-2 font-medium">
-                                {t('rt.halaman')} <span class="font-bold text-neutral-900 dark:text-white">{currentPage()}</span> dari{' '}
-                                <span class="font-bold text-neutral-900 dark:text-white">{totalPages()}</span>
+                                {t('rt.halaman')} <span class="font-bold text-foreground">{currentPage()}</span> dari{' '}
+                                <span class="font-bold text-foreground">{totalPages()}</span>
                             </div>
 
                             <button
@@ -675,7 +675,7 @@ export default function RectoratStudentActivityIndex() {
                                 id="activity-pagination-next"
                                 onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages()))}
                                 disabled={currentPage() >= totalPages() || isLoading()}
-                                class="px-3 py-1.5 rounded-lg border border-neutral-200 dark:border-neutral-700 hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
+                                class="px-3 py-1.5 rounded-lg border border-border hover:bg-neutral-100 dark:hover:bg-neutral-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors font-medium cursor-pointer"
                             >
                                 {t('rt.selanjutnya')}
                             </button>

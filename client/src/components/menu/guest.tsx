@@ -30,7 +30,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/login_with_session"
                     activeClass="bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-semibold"
-                    class="flex items-center justify-between py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-emerald-50 dark:hover:bg-neutral-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    class="flex items-center justify-between py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-emerald-50 dark:hover:bg-neutral-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                     <div class="flex items-center gap-x-3">
                         <svg class="size-4 shrink-0 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -39,7 +39,7 @@ export default function MenuGuest() {
                         </svg>
                         <span>{t('menu.guest.sessionSignIn')}</span>
                     </div>
-                    <span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded-xs bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                    <span class="text-[10px] font-bold font-mono px-1.5 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
                         {t('menu.guest.defaultBadge')}
                     </span>
                 </A>
@@ -49,7 +49,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/account-acquisition-request"
                     activeClass="bg-teal-600/15 text-teal-600 dark:text-teal-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-teal-50 dark:hover:bg-neutral-800 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-teal-50 dark:hover:bg-neutral-800 hover:text-teal-600 dark:hover:text-teal-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-teal-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
@@ -65,7 +65,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/forgot-password"
                     activeClass="bg-amber-600/15 text-amber-600 dark:text-amber-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-amber-50 dark:hover:bg-neutral-800 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-amber-50 dark:hover:bg-neutral-800 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
@@ -80,7 +80,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/verify"
                     activeClass="bg-cyan-600/15 text-cyan-600 dark:text-cyan-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-cyan-50 dark:hover:bg-neutral-800 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-cyan-50 dark:hover:bg-neutral-800 hover:text-cyan-600 dark:hover:text-cyan-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-cyan-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <circle cx="12" cy="12" r="10" />
@@ -95,7 +95,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/password-reset"
                     activeClass="bg-purple-600/15 text-purple-600 dark:text-purple-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-purple-50 dark:hover:bg-neutral-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-purple-50 dark:hover:bg-neutral-800 hover:text-purple-600 dark:hover:text-purple-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-purple-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M21 2v6h-6" />
@@ -111,7 +111,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/login"
                     activeClass="bg-blue-600/15 text-blue-600 dark:text-blue-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-blue-50 dark:hover:bg-neutral-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-blue-50 dark:hover:bg-neutral-800 hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-blue-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
@@ -133,7 +133,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/candidate-addmission-procedure"
                     activeClass="bg-amber-600/15 text-amber-600 dark:text-amber-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-amber-50 dark:hover:bg-neutral-800 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-amber-50 dark:hover:bg-neutral-800 hover:text-amber-600 dark:hover:text-amber-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
@@ -146,7 +146,7 @@ export default function MenuGuest() {
                 <A
                     href="/authentification/candidate-addmission-form"
                     activeClass="bg-emerald-600/15 text-emerald-600 dark:text-emerald-400 font-semibold"
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-emerald-50 dark:hover:bg-neutral-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-emerald-50 dark:hover:bg-neutral-800 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-emerald-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
@@ -168,7 +168,7 @@ export default function MenuGuest() {
             <li>
                 <A 
                     href="/institution/master/institution" 
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-indigo-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <rect width="16" height="20" x="4" y="2" rx="2" ry="2"/>
@@ -180,7 +180,7 @@ export default function MenuGuest() {
             <li>
                 <A 
                     href="/academic/candidate/reference/phase" 
-                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
+                    class="flex items-center gap-x-3 py-2 px-2.5 text-sm text-foreground/80 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
                 >
                     <svg class="size-4 shrink-0 text-amber-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>

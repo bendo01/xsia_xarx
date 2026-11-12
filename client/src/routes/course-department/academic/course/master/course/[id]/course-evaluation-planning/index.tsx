@@ -212,13 +212,13 @@ export default function MasterIndexPage() {
     const endIndex = () => Math.min(startIndex() + items().length, totalData());
 
     return (
-        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-100 dark:bg-neutral-900 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
-                <div class="sm:flex sm:items-center sm:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div class="sm:flex sm:items-center sm:justify-between border-b border-border pb-4">
                     <div>
-                        <nav class="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400 mb-1">
+                        <nav class="flex items-center gap-1.5 text-xs text-muted-foreground mb-1">
                             <a href="/" class="hover:text-blue-600 transition-colors">{t('cd.home')}</a>
                             <span>/</span>
                             <span>{t('cd.academic')}</span>
@@ -229,15 +229,15 @@ export default function MasterIndexPage() {
                                 {course()?.code ? `${course()?.code}` : (courseId() || 'Course')}
                             </a>
                             <span>/</span>
-                            <span class="font-medium text-neutral-900 dark:text-white">{t('cd.evaluationPlanning')}</span>
+                            <span class="font-medium text-foreground">{t('cd.evaluationPlanning')}</span>
                         </nav>
-                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-neutral-900 dark:text-white font-mono">
+                        <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
                             {t('cd.courseEvaluationPlannings')}
                             <Show when={course()?.code || course()?.name}>
                                 : <span class="text-blue-600 dark:text-blue-400">{course()?.code} {course()?.name ? `- ${course()?.name}` : ''}</span>
                             </Show>
                         </h1>
-                        <p class="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
+                        <p class="text-sm text-muted-foreground mt-0.5">
                             {t('cd.configureAssessmentWeightingEvaluationMatricesAnd')}
                         </p>
                     </div>
@@ -245,7 +245,7 @@ export default function MasterIndexPage() {
                     <div class="mt-4 sm:mt-0 flex items-center gap-2">
                         <a
                             href={courseDetailUrl()}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-white dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-xs shadow-2xs transition-colors"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-neutral-700 bg-card dark:text-neutral-200 border border-border hover:bg-neutral-50 dark:hover:bg-neutral-700/60 rounded-md shadow-2xs transition-colors"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="m15 18-6-6 6-6"/>
@@ -254,7 +254,7 @@ export default function MasterIndexPage() {
                         </a>
                         <a
                             href={`${currentBasePath()}/create`}
-                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xs shadow-xs transition-colors cursor-pointer"
+                            class="inline-flex items-center gap-2 px-3.5 py-2 text-xs sm:text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md shadow-xs transition-colors cursor-pointer"
                         >
                             <svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M5 12h14" />
@@ -276,7 +276,7 @@ export default function MasterIndexPage() {
                             </div>
                             <input
                                 type="text"
-                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                                class="block w-full p-2.5 pl-10 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                                 placeholder={t('cd.searchByNameCodeOrKeyword')}
                                 onInput={handleSearch}
                             />
@@ -285,7 +285,7 @@ export default function MasterIndexPage() {
 
                     <div class="w-full md:w-1/3 flex gap-2">
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={sortParam()}
                             onChange={(e) => {
                                 setSortParam((e.target as HTMLSelectElement).value);
@@ -299,7 +299,7 @@ export default function MasterIndexPage() {
                         </select>
 
                         <select
-                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-xs bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
+                            class="w-1/2 p-2.5 text-xs sm:text-sm text-neutral-900 border border-neutral-300 rounded-md bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-neutral-800 dark:border-neutral-700 dark:text-white transition-colors"
                             value={itemsPerPage()}
                             onChange={(e) => {
                                 setItemsPerPage(Number((e.target as HTMLSelectElement).value));
@@ -313,7 +313,7 @@ export default function MasterIndexPage() {
                     </div>
                 </div>
 
-                <div class="border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-800 shadow-2xs overflow-hidden">
+                <div class="border border-border bg-card shadow-2xs overflow-hidden">
                     <div class="block md:hidden divide-y divide-neutral-200 dark:divide-neutral-700">
                         <Show
                             when={!isLoading()}
@@ -336,14 +336,14 @@ export default function MasterIndexPage() {
                             <Show
                                 when={items().length > 0}
                                 fallback={
-                                    <div class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                    <div class="px-4 py-12 text-center text-muted-foreground">
                                         <div class="flex flex-col items-center justify-center gap-2">
                                             <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                 <circle cx="12" cy="12" r="10" />
                                                 <line x1="12" y1="8" x2="12" y2="12" />
                                                 <line x1="12" y1="16" x2="12.01" y2="16" />
                                             </svg>
-                                            <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('cd.noRecordsFound')}</span>
+                                            <span class="font-semibold text-sm text-foreground/80">{t('cd.noRecordsFound')}</span>
                                             <span class="text-xs text-neutral-500">{t('cd.noDataMatchesYourQueryOn')}</span>
                                         </div>
                                     </div>
@@ -361,7 +361,7 @@ export default function MasterIndexPage() {
                                                         {getItemTitle(item)}
                                                     </a>
                                                     <div class="flex items-center gap-1.5 mt-1">
-                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-neutral-100 dark:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-neutral-200 dark:border-neutral-600">
+                                                        <span class="px-1.5 py-0.5 text-xs font-mono font-medium bg-secondary text-foreground border border-border">
                                                             {getItemCode(item)}
                                                         </span>
                                                     </div>
@@ -371,7 +371,7 @@ export default function MasterIndexPage() {
                                             <div class="flex items-center justify-end gap-1.5 pt-2 border-t border-neutral-100 dark:border-neutral-700/60">
                                                 <a
                                                     href={itemShowUrl(item)}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                     title={t('cd.viewDetails')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -380,7 +380,7 @@ export default function MasterIndexPage() {
                                                 </a>
                                                 <a
                                                     href={itemEditUrl(item)}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                     title={t('cd.editRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -391,7 +391,7 @@ export default function MasterIndexPage() {
                                                 <button
                                                     type="button"
                                                     onClick={() => openDeleteModal(item)}
-                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                    class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-border transition-colors cursor-pointer"
                                                     title={t('cd.deleteRecord')}
                                                 >
                                                     <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -410,7 +410,7 @@ export default function MasterIndexPage() {
 
                     <div class="hidden md:block overflow-x-auto">
                         <table class="w-full text-xs sm:text-sm text-left">
-                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-neutral-200 dark:border-neutral-700">
+                            <thead class="text-xs text-neutral-600 uppercase bg-neutral-100 dark:bg-neutral-900 dark:text-neutral-300 border-b border-border">
                                 <tr>
                                     <th class="px-4 py-3.5 w-36">{t('cd.codeID')}</th>
                                     <th class="px-4 py-3.5">{t('cd.nameTitle')}</th>
@@ -438,14 +438,14 @@ export default function MasterIndexPage() {
                                         when={items().length > 0}
                                         fallback={
                                             <tr>
-                                                <td colspan="4" class="px-4 py-12 text-center text-neutral-500 dark:text-neutral-400">
+                                                <td colspan="4" class="px-4 py-12 text-center text-muted-foreground">
                                                     <div class="flex flex-col items-center justify-center gap-2">
                                                         <svg xmlns="http://www.w3.org/2000/svg" class="size-8 text-neutral-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
                                                             <circle cx="12" cy="12" r="10" />
                                                             <line x1="12" y1="8" x2="12" y2="12" />
                                                             <line x1="12" y1="16" x2="12.01" y2="16" />
                                                         </svg>
-                                                        <span class="font-semibold text-sm text-neutral-700 dark:text-neutral-300">{t('cd.noRecordsFound')}</span>
+                                                        <span class="font-semibold text-sm text-foreground/80">{t('cd.noRecordsFound')}</span>
                                                         <span class="text-xs text-neutral-500">{t('cd.noDataMatchesYourQueryOn')}</span>
                                                     </div>
                                                 </td>
@@ -455,8 +455,8 @@ export default function MasterIndexPage() {
                                         <For each={items()}>
                                             {(item) => (
                                                 <tr class="hover:bg-neutral-50 dark:hover:bg-neutral-700/50 transition-colors">
-                                                    <td class="px-4 py-3 font-mono font-medium text-neutral-900 dark:text-white">
-                                                        <span class="px-2 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-700 border border-neutral-200 dark:border-neutral-600">
+                                                    <td class="px-4 py-3 font-mono font-medium text-foreground">
+                                                        <span class="px-2 py-0.5 text-xs bg-secondary border border-border">
                                                             {getItemCode(item)}
                                                         </span>
                                                     </td>
@@ -467,11 +467,11 @@ export default function MasterIndexPage() {
                                                         >
                                                             {getItemTitle(item)}
                                                         </a>
-                                                        <span class="text-xs text-neutral-500 dark:text-neutral-400 font-mono block truncate max-w-xs">
+                                                        <span class="text-xs text-muted-foreground font-mono block truncate max-w-xs">
                                                             {item.id || item.uuid}
                                                         </span>
                                                     </td>
-                                                    <td class="px-4 py-3 text-neutral-600 dark:text-neutral-300">
+                                                    <td class="px-4 py-3 text-muted-foreground">
                                                         <span class="text-xs">
                                                             {item.description || item.keterangan || item.email || item.phone || item.url || '-'}
                                                         </span>
@@ -480,7 +480,7 @@ export default function MasterIndexPage() {
                                                         <div class="flex items-center justify-end gap-1.5">
                                                             <a
                                                                 href={itemShowUrl(item)}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-green-600 hover:border-green-500 hover:bg-green-50 dark:text-neutral-300 dark:hover:text-green-400 dark:hover:border-green-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                                 title={t('cd.viewDetails')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-3.5">
@@ -489,7 +489,7 @@ export default function MasterIndexPage() {
                                                             </a>
                                                             <a
                                                                 href={itemEditUrl(item)}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-yellow-600 hover:border-yellow-500 hover:bg-yellow-50 dark:text-neutral-300 dark:hover:text-yellow-400 dark:hover:border-yellow-500 dark:hover:bg-neutral-800 border border-border transition-colors"
                                                                 title={t('cd.editRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -500,7 +500,7 @@ export default function MasterIndexPage() {
                                                             <button
                                                                 type="button"
                                                                 onClick={() => openDeleteModal(item)}
-                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-700 transition-colors cursor-pointer"
+                                                                class="size-7 inline-flex items-center justify-center text-neutral-600 hover:text-red-600 hover:border-red-500 hover:bg-red-50 dark:text-neutral-300 dark:hover:text-red-400 dark:hover:border-red-500 dark:hover:bg-neutral-800 border border-border transition-colors cursor-pointer"
                                                                 title={t('cd.deleteRecord')}
                                                             >
                                                                 <svg xmlns="http://www.w3.org/2000/svg" class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -520,15 +520,15 @@ export default function MasterIndexPage() {
                         </table>
                     </div>
 
-                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-800/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
-                        <div class="text-xs sm:text-sm text-neutral-700 dark:text-neutral-300">
+                    <div class="flex flex-col sm:flex-row items-center justify-between border-t border-border bg-muted/80 px-4 py-3 sm:px-6 gap-3 sm:gap-0">
+                        <div class="text-xs sm:text-sm text-foreground/80">
                             {t('cd.showing')} <span class="font-medium">{totalData() > 0 ? startIndex() + 1 : 0}</span> {t('cd.to')} <span class="font-medium">{endIndex()}</span> {t('cd.of')} <span class="font-medium">{totalData()}</span> {t('cd.results')}
                         </div>
                         <div class="flex justify-center">
                             <nav class="inline-flex -space-x-px shadow-2xs" aria-label={t('cd.pagination')}>
                                 <button
                                     type="button"
-                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                     disabled={currentPage() <= 1 || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
                                 >
@@ -539,7 +539,7 @@ export default function MasterIndexPage() {
                                 </span>
                                 <button
                                     type="button"
-                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-600 hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
+                                    class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-200 bg-card border border-border hover:bg-neutral-100 dark:hover:bg-neutral-700 disabled:opacity-40 cursor-pointer"
                                     disabled={currentPage() >= totalPages() || isLoading()}
                                     onClick={() => setCurrentPage((p) => Math.min(totalPages(), p + 1))}
                                 >
@@ -553,7 +553,7 @@ export default function MasterIndexPage() {
 
             <dialog
                 ref={deleteDialogRef}
-                class="fixed inset-0 m-auto p-0 rounded-xs bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 shadow-2xl text-neutral-900 dark:text-neutral-100 max-w-md w-full"
+                class="fixed inset-0 m-auto p-0 rounded-md bg-card border border-border shadow-2xl text-foreground max-w-md w-full"
                 onClick={(e) => {
                     if (e.target === e.currentTarget) closeDeleteModal();
                 }}
@@ -563,18 +563,18 @@ export default function MasterIndexPage() {
                         <svg class="size-6 shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                         </svg>
-                        <h3 class="text-base font-bold text-neutral-900 dark:text-white">{t('cd.deleteCourseEvaluationPlanningRecord')}</h3>
+                        <h3 class="text-base font-bold text-foreground">{t('cd.deleteCourseEvaluationPlanningRecord')}</h3>
                     </div>
 
-                    <p class="text-xs sm:text-sm text-neutral-600 dark:text-neutral-300">
-                        {t('cd.areYouSureYouWantTo')} <span class="font-bold text-neutral-900 dark:text-white">{getItemTitle(selectedItem())}</span>?
+                    <p class="text-xs sm:text-sm text-muted-foreground">
+                        {t('cd.areYouSureYouWantTo')} <span class="font-bold text-foreground">{getItemTitle(selectedItem())}</span>?
                     </p>
 
                     <div class="flex items-center justify-end gap-2 pt-6">
                         <button
                             type="button"
                             onClick={closeDeleteModal}
-                            class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:bg-neutral-800 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-600 rounded-xs transition-colors cursor-pointer"
+                            class="px-4 py-2 text-xs font-medium text-neutral-700 bg-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 dark:bg-neutral-800 dark:text-neutral-200 border border-border rounded-md transition-colors cursor-pointer"
                         >
                             {t('cd.cancel')}
                         </button>
@@ -582,7 +582,7 @@ export default function MasterIndexPage() {
                             type="button"
                             onClick={handleDeleteSubmit}
                             disabled={isSubmitting()}
-                            class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-xs shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
+                            class="px-4 py-2 text-xs font-medium text-white bg-red-600 hover:bg-red-700 rounded-md shadow-xs transition-colors disabled:opacity-50 cursor-pointer"
                         >
                             {isSubmitting() ? t('cd.deleting') : t('cd.confirmDelete')}
                         </button>

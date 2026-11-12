@@ -36,7 +36,7 @@ const inputClass = 'block w-full p-2.5 text-sm text-neutral-900 border border-ne
 function Field(props: { label: string; required?: boolean; class?: string; children: JSX.Element }) {
     return (
         <div class={props.class}>
-            <label class="block text-[11px] font-semibold uppercase tracking-wider text-neutral-500 dark:text-neutral-400 mb-1.5">
+            <label class="block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground mb-1.5">
                 {props.label} <Show when={props.required}><span class="text-red-500">*</span></Show>
             </label>
             {props.children}
@@ -46,11 +46,11 @@ function Field(props: { label: string; required?: boolean; class?: string; child
 
 function Section(props: { title: string; description?: string; children: JSX.Element }) {
     return (
-        <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-            <div class="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-                <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{props.title}</h3>
+        <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+            <div class="px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
+                <h3 class="font-bold text-sm text-foreground">{props.title}</h3>
                 <Show when={props.description}>
-                    <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{props.description}</p>
+                    <p class="text-xs text-muted-foreground mt-0.5">{props.description}</p>
                 </Show>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 p-6">{props.children}</div>
@@ -184,31 +184,31 @@ export default function RectoratStaffCreate() {
     };
 
     return (
-        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
+        <div class="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-foreground">
             <TopBar />
 
             <div class="mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
 
                 {/* Page Header */}
-                <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-neutral-200 dark:border-neutral-800 pb-6 gap-4">
+                <div class="flex flex-col md:flex-row md:items-end md:justify-between border-b border-border pb-6 gap-4">
                     <div>
-                        <nav class="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400 mb-2 font-medium">
+                        <nav class="flex items-center gap-2 text-xs text-muted-foreground mb-2 font-medium">
                             <A href="/rectorat" class="hover:text-teal-600 transition-colors">{t('rt.rektorat')}</A>
                             <span>/</span>
                             <A href={`/rectorat/institution/${institutionId()}`} class="hover:text-teal-600 transition-colors">{t('rt.institusi')}</A>
                             <span>/</span>
                             <A href={listPath()} class="hover:text-teal-600 transition-colors">{t('rt.staf')}</A>
                             <span>/</span>
-                            <span class="text-neutral-700 dark:text-neutral-300 font-semibold">{t('rt.tambah')}</span>
+                            <span class="text-foreground/80 font-semibold">{t('rt.tambah')}</span>
                         </nav>
-                        <h1 class="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">{t('rt.tambahStaf')}</h1>
-                        <p class="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                        <h1 class="text-3xl font-bold tracking-tight text-foreground">{t('rt.tambahStaf')}</h1>
+                        <p class="text-sm text-muted-foreground mt-1">
                             {t('rt.tetapkanPegawaiPadaSebuahUnitDan')}
                         </p>
                     </div>
                     <A
                         href={listPath()}
-                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all shadow-sm w-fit"
                     >
                         {t('rt.batal')}
                     </A>
@@ -217,10 +217,10 @@ export default function RectoratStaffCreate() {
                 <form onSubmit={handleSubmit} class="space-y-6">
 
                     {/* Employee */}
-                    <div class="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-neutral-100 dark:border-neutral-800 bg-neutral-50/50 dark:bg-neutral-800/30">
-                            <h3 class="font-bold text-sm text-neutral-900 dark:text-white">{t('rt.pilihPegawai')}</h3>
-                            <p class="text-xs text-neutral-500 dark:text-neutral-400 mt-0.5">{t('rt.cariPegawaiInstitusiIniBerdasarkanNama')}</p>
+                    <div class="bg-card border border-border rounded-xl shadow-sm overflow-hidden">
+                        <div class="px-6 py-4 border-b border-border bg-neutral-50/50 dark:bg-neutral-800/30">
+                            <h3 class="font-bold text-sm text-foreground">{t('rt.pilihPegawai')}</h3>
+                            <p class="text-xs text-muted-foreground mt-0.5">{t('rt.cariPegawaiInstitusiIniBerdasarkanNama')}</p>
                         </div>
                         <div class="p-6 space-y-4">
                             <Show
@@ -243,12 +243,12 @@ export default function RectoratStaffCreate() {
                                                 {t('rt.pegawaiTidakDitemukan')} <A href={`/rectorat/institution/${institutionId()}/employee/create`} class="text-teal-600 font-semibold underline">{t('rt.tambahPegawai2')}</A> {t('rt.terlebihDahulu')}
                                             </p>
                                         </Show>
-                                        <div class="divide-y divide-neutral-100 dark:divide-neutral-800 border border-neutral-100 dark:border-neutral-800 rounded-lg overflow-hidden empty:hidden">
+                                        <div class="divide-y divide-neutral-100 dark:divide-neutral-800 border border-border rounded-lg overflow-hidden empty:hidden">
                                             <For each={lookupResults()}>
                                                 {(item) => (
                                                     <button
                                                         type="button"
-                                                        class="w-full px-4 py-3 text-left text-sm font-semibold text-neutral-900 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
+                                                        class="w-full px-4 py-3 text-left text-sm font-semibold text-foreground hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors cursor-pointer"
                                                         onClick={() => setSelected(item)}
                                                     >
                                                         {item.name}
@@ -261,10 +261,10 @@ export default function RectoratStaffCreate() {
                             >
                                 {(emp) => (
                                     <div class="flex items-center justify-between gap-4 p-4 rounded-lg border border-teal-200 dark:border-teal-800/60 bg-teal-50/50 dark:bg-teal-900/20">
-                                        <p class="font-semibold text-neutral-900 dark:text-white truncate">{emp().name}</p>
+                                        <p class="font-semibold text-foreground truncate">{emp().name}</p>
                                         <button
                                             type="button"
-                                            class="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md border border-neutral-300 dark:border-neutral-700 hover:bg-white dark:hover:bg-neutral-800 cursor-pointer"
+                                            class="shrink-0 px-3 py-1.5 text-xs font-medium rounded-md border border-border hover:bg-white dark:hover:bg-neutral-800 cursor-pointer"
                                             onClick={() => setSelected(null)}
                                         >
                                             {t('rt.ganti')}
@@ -308,7 +308,7 @@ export default function RectoratStaffCreate() {
                     <div class="flex items-center justify-end gap-3">
                         <A
                             href={listPath()}
-                            class="px-4 py-2 text-sm font-medium rounded-lg border border-neutral-200 dark:border-neutral-700 bg-white dark:bg-neutral-900 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
+                            class="px-4 py-2 text-sm font-medium rounded-lg border border-border bg-card text-foreground/80 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-all"
                         >
                             {t('rt.batal')}
                         </A>
