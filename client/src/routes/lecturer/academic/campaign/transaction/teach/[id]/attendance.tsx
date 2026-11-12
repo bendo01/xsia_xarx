@@ -4,6 +4,7 @@ import TopBar from '~/components/navigation/TopBar';
 import { Spinner } from '~/components/loader';
 import { toast } from '~/components/toast/Toaster';
 import QrDisplay from '~/components/attendance/QrDisplay';
+import { Dialog, DialogContent, DialogTitle, DialogClose } from '~/components/ui/dialog';
 import { createRealtime, RealtimeConnection } from '~/lib/realtime';
 import {
     listMeetings,
@@ -31,6 +32,8 @@ export default function LecturerTeachAttendancePage() {
     const [isLoading, setIsLoading] = createSignal(true);
     const [isSaving, setIsSaving] = createSignal(false);
     const [connected, setConnected] = createSignal(false);
+    const [qrFullscreen, setQrFullscreen] = createSignal(false);
+    const [qrSize, setQrSize] = createSignal(256);
     const [qr, setQr] = createSignal<QrToken | null>(null);
     const [secondsLeft, setSecondsLeft] = createSignal(0);
 
@@ -140,6 +143,11 @@ export default function LecturerTeachAttendancePage() {
         }
         setMeetings((l) => l.map((m) => (m.id === id ? { ...m, is_qr_open: true } : m)));
         scheduleQrRotation(res.data);
+    };
+
+    const openQrFullscreen = () => {
+        setQrSize(Math.max(200, Math.floor(Math.min(window.innerWidth - 64, window.innerHeight - 220))));
+        setQrFullscreen(true);
     };
 
     const stopQr = async () => {
@@ -356,6 +364,13 @@ export default function LecturerTeachAttendancePage() {
                             <div class="space-y-3 text-center">
                                 <div class="flex justify-center max-w-full overflow-hidden [&_canvas]:max-w-full [&_canvas]:h-auto [&_img]:max-w-full [&_img]:h-auto [&_svg]:max-w-full [&_svg]:h-auto"><QrDisplay value={qr()!.token} size={256} /></div>
                                 <p class="text-xs text-neutral-500">Berganti dalam {secondsLeft()} dtk</p>
+                                <button
+                                    onClick={openQrFullscreen}
+                                    class="w-full px-3 py-2.5 sm:py-2 rounded-md border border-border text-xs font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700 inline-flex items-center justify-center gap-1.5"
+                                >
+                                    <svg class="size-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4h4M20 8V4h-4M4 16v4h4M20 16v4h-4" /></svg>
+                                    Layar penuh
+                                </button>
                                 <button onClick={stopQr} class="w-full px-3 py-2.5 sm:py-2 rounded-md border border-red-300 text-red-600 text-xs font-semibold hover:bg-red-50 dark:hover:bg-red-950/40">
                                     Tutup presensi QR
                                 </button>
@@ -364,6 +379,21 @@ export default function LecturerTeachAttendancePage() {
                     </aside>
                 </div>
             </main>
+
+            <Dialog open={qrFullscreen() && !!qr()} onOpenChange={setQrFullscreen}>
+                <DialogContent class="max-w-none h-[calc(100dvh-2rem)] flex flex-col items-center justify-center gap-4 text-center">
+                    <DialogTitle>{activeMeeting() ? meetingLabel() : 'Presensi QR-Code'}</DialogTitle>
+                    <Show when={qr()}>
+                        <div class="rounded-xl bg-white p-4 shadow-md">
+                            <QrDisplay value={qr()!.token} size={qrSize()} />
+                        </div>
+                        <p class="text-sm text-muted-foreground" aria-live="off">Berganti dalam {secondsLeft()} dtk · Hadir {presentCount()} / {roster().length}</p>
+                    </Show>
+                    <DialogClose class="px-5 py-2.5 rounded-md border border-border text-sm font-semibold hover:bg-neutral-50 dark:hover:bg-neutral-700">
+                        Tutup layar penuh
+                    </DialogClose>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
