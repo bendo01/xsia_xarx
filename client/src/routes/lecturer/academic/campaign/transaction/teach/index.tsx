@@ -667,7 +667,7 @@ export default function LecturerTeachIndexPage() {
                                         <tbody class="divide-y divide-neutral-200/60 dark:divide-neutral-700/60">
                                             <For each={filteredTeaches()}>
                                                 {(item) => (
-                                                    <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-750/50 transition-colors">
+                                                    <tr class="hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 transition-colors">
                                                         <td class="px-6 py-4">
                                                             <div class="space-y-0.5">
                                                                 <div class="flex items-center gap-2">

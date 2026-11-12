@@ -34,6 +34,10 @@ pub fn router() -> Router {
                 ),
         )
         .push(
+            Router::with_path("teach-attendance-print/{id}")
+                .get_named("academic.campaign.transaction.teach_meetings.print_attendance", teach_attendances::print_attendance),
+        )
+        .push(
             Router::with_path("attendance-scan")
                 .post_named("academic.campaign.transaction.attendance_scan.scan", teach_attendances::scan),
         )

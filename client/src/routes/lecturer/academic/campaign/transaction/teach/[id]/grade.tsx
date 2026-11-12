@@ -6,6 +6,7 @@ import {
     getTeachById,
     getCourseById,
     getActivityById,
+    getClassCodeById,
     getAcademicYearById
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachController';
 import {
@@ -19,11 +20,10 @@ import {
     listDetailActivities,
     updateDetailActivity } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityController';
 import {
-    
+
     createDetailActivityEvaluationComponent,
     updateDetailActivityEvaluationComponent } from '~/controllers/academic/student/campaign/AcademicStudentCampaignDetailActivityEvaluationComponentController';
 import {
-    listGrades,
     getGradesByUnit,
     GradeItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
@@ -63,6 +63,7 @@ export default function LecturerTeachGradePage() {
     const [teachData, setTeachData] = createSignal<any>(null);
     const [courseData, setCourseData] = createSignal<any>(null);
     const [academicYearName, setAcademicYearName] = createSignal<string>('');
+    const [gradeUnitId, setGradeUnitId] = createSignal<string>('');
 
     // Reference data
     const [evaluations, setEvaluations] = createSignal<TeachEvaluationItem[]>([]);
@@ -111,8 +112,9 @@ export default function LecturerTeachGradePage() {
                 setCourseData(course);
             }
 
+            let activity: any = null;
             if (teach?.activity_id) {
-                const activity = await getActivityById(teach.activity_id);
+                activity = await getActivityById(teach.activity_id);
                 if (activity?.academic_year_id) {
                     const year = await getAcademicYearById(activity.academic_year_id);
                     if (year) {
@@ -122,18 +124,21 @@ export default function LecturerTeachGradePage() {
             }
 
             // 2. Fetch Grading Scale Reference (academic_campaign_transaction.grades)
-            // Filter by academic_campaign_transaction.grades.unit_id where academic_course_master.courses.unit_id
-            const courseUnitId = course?.unit_id;
+            // Use the unit_id from the teach response itself (activity, then class code); a shared course
+            // may belong to another unit, so course.unit_id is only the last fallback.
+            let gradeUnit: string | null | undefined =
+                teach?.activity?.unit_id || teach?.class_code?.unit_id || activity?.unit_id;
+            if (!gradeUnit && teach?.class_code_id) {
+                const classCode = await getClassCodeById(teach.class_code_id);
+                gradeUnit = classCode?.unit_id;
+            }
+            gradeUnit = gradeUnit || course?.unit_id;
+            setGradeUnitId(gradeUnit || '');
             let sortedGrades: GradeItem[] = [];
 
-            if (courseUnitId) {
-                sortedGrades = await getGradesByUnit(courseUnitId);
-            }
+            if (gradeUnit) {
+                sortedGrades = await getGradesByUnit(gradeUnit);
 
-            // Fallback to all grades if unit-specific scale not found
-            if (sortedGrades.length === 0) {
-                const fallbackRes = await listGrades({ page_size: 100 });
-                sortedGrades = (fallbackRes.data || []).sort((a, b) => b.minimum - a.minimum);
             }
 
             setGradingScale(sortedGrades);
@@ -906,11 +911,11 @@ export default function LecturerTeachGradePage() {
                                     <thead class="bg-muted/60 border-b border-border text-neutral-500 font-mono uppercase tracking-wider text-[11px]">
                                         <tr>
                                             <th class="px-4 py-4 font-bold text-center w-12">{t('lc.no')}</th>
-                                            <th class="px-6 py-4 font-bold min-w-[220px]">{t('lc.mahasiswa')}</th>
+                                            <th class="px-6 py-4 font-bold min-w-55">{t('lc.mahasiswa')}</th>
                                             {/* Dynamic Component Headers */}
                                             <For each={evaluations()}>
                                                 {(ev) => (
-                                                    <th class="px-4 py-4 font-bold text-center min-w-[110px]">
+                                                    <th class="px-4 py-4 font-bold text-center min-w-27.5">
                                                         <div>{ev.name}</div>
                                                         <div class="text-[9px] font-normal text-blue-600 dark:text-blue-400 lowercase">
                                                             ({ev.evaluation_weight}%)
@@ -918,14 +923,14 @@ export default function LecturerTeachGradePage() {
                                                     </th>
                                                 )}
                                             </For>
-                                            <th class="px-4 py-4 font-bold text-center min-w-[90px] bg-blue-50/50 dark:bg-blue-950/20">
+                                            <th class="px-4 py-4 font-bold text-center min-w-22.5 bg-blue-50/50 dark:bg-blue-950/20">
                                                 {t('lc.nilaiAkhir')}
                                             </th>
-                                            <th class="px-4 py-4 font-bold text-center min-w-[80px] bg-purple-50/50 dark:bg-purple-950/20">
+                                            <th class="px-4 py-4 font-bold text-center min-w-20 bg-purple-50/50 dark:bg-purple-950/20">
                                                 {t('lc.grade')}
                                             </th>
-                                            <th class="px-4 py-4 font-bold text-center min-w-[80px]">{t('lc.status')}</th>
-                                            <th class="px-4 py-4 font-bold text-right min-w-[90px]">{t('lc.aksi')}</th>
+                                            <th class="px-4 py-4 font-bold text-center min-w-20">{t('lc.status')}</th>
+                                            <th class="px-4 py-4 font-bold text-right min-w-22.5">{t('lc.aksi')}</th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-neutral-200/60 dark:divide-neutral-700/60">
@@ -934,7 +939,7 @@ export default function LecturerTeachGradePage() {
                                                 const rawIndex = () => studentRows().findIndex(r => r.detail_activity_id === student.detail_activity_id);
 
                                                 return (
-                                                    <tr class={`hover:bg-neutral-50/80 dark:hover:bg-neutral-750/50 transition-colors ${student.is_dirty ? 'bg-amber-50/40 dark:bg-amber-950/20' : ''
+                                                    <tr class={`hover:bg-neutral-50/80 dark:hover:bg-neutral-700/50 transition-colors ${student.is_dirty ? 'bg-amber-50/40 dark:bg-amber-950/20' : ''
                                                         }`}>
                                                         {/* Number */}
                                                         <td class="px-4 py-3.5 text-center font-mono text-neutral-400 font-medium">
@@ -1172,9 +1177,9 @@ export default function LecturerTeachGradePage() {
                                 {t('lc.berdasarkanSkalaProgramStudiUnitPerkuliahan')}<span class="font-mono font-semibold text-muted-foreground">academic_campaign_transaction.grades.unit_id</span>).
                             </p>
                         </div>
-                        <Show when={courseData()?.unit_id}>
+                        <Show when={gradeUnitId()}>
                             <span class="px-2.5 py-1 rounded-md text-[10px] font-mono font-bold bg-secondary text-foreground/80">
-                                {t('lc.unitID')} {courseData()?.unit_id}
+                                {t('lc.unitID')} {gradeUnitId()}
                             </span>
                         </Show>
                     </div>

@@ -10,6 +10,7 @@ import {
     listMeetings,
     getRoster,
     saveAttendances,
+    printAttendance,
     openQr,
     getQrToken,
     closeQr,
@@ -18,6 +19,7 @@ import {
     QrToken,
     AttendTypeOption
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachAttendanceController';
+import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { t } from '../../../../../../../i18n';
 
 export default function LecturerTeachAttendancePage() {
@@ -36,6 +38,23 @@ export default function LecturerTeachAttendancePage() {
     const [qrSize, setQrSize] = createSignal(256);
     const [qr, setQr] = createSignal<QrToken | null>(null);
     const [secondsLeft, setSecondsLeft] = createSignal(0);
+    const [isPrinting, setIsPrinting] = createSignal(false);
+
+    const handlePrint = async (filled: boolean) => {
+        setIsPrinting(true);
+        try {
+            const label = filled ? 'Presensi (Terisi)' : 'Presensi (Kosong)';
+            toast.info(`Membuat PDF ${label}…`);
+            const blob = await printAttendance(teachId(), filled);
+            if (blob) {
+                openOrDownloadPdf(blob, `Presensi_${filled ? 'Terisi' : 'Kosong'}_${teachId()}.pdf`, label);
+            } else {
+                toast.danger('Gagal membuat PDF presensi.');
+            }
+        } finally {
+            setIsPrinting(false);
+        }
+    };
 
     let realtime: RealtimeConnection | null = null;
     let qrTimer: ReturnType<typeof setTimeout> | undefined;
@@ -238,6 +257,20 @@ export default function LecturerTeachAttendancePage() {
                         >
                             {t('lc.nilaiMahasiswa2')}
                         </A>
+                        <button
+                            onClick={() => handlePrint(false)}
+                            disabled={isPrinting()}
+                            class="px-3 py-2 sm:py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                        >
+                            Cetak Kosong
+                        </button>
+                        <button
+                            onClick={() => handlePrint(true)}
+                            disabled={isPrinting()}
+                            class="px-3 py-2 sm:py-1.5 rounded-md border border-border bg-card text-xs font-semibold text-foreground/80 hover:bg-neutral-50 dark:hover:bg-neutral-700 transition-colors disabled:opacity-50"
+                        >
+                            Cetak Presensi
+                        </button>
                     </div>
                 </div>
 

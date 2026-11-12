@@ -108,3 +108,16 @@ export const closeQr = (meetingId: string) =>
 
 export const scanAttendanceQr = (token: string) =>
     request<ScanResult>('/attendance-scan', { method: 'POST', body: JSON.stringify({ token }) });
+
+export async function printAttendance(teachId: string, filled: boolean): Promise<Blob | null> {
+    try {
+        const headers: Record<string, string> = { Accept: 'application/pdf' };
+        const token = getStorageItem('token');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`${getBaseUrl()}${ROOT}/teach-attendance-print/${teachId}?filled=${filled}`, { headers });
+        if (!res.ok) return null;
+        return await res.blob();
+    } catch {
+        return null;
+    }
+}

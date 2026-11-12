@@ -45,7 +45,7 @@ fn get_templates() -> &'static Tera {
     })
 }
 
-fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
+pub(crate) fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
     if let Ok(code) = QrCode::with_error_correction_level(text, EcLevel::L) {
         let image = code.render::<image::Luma<u8>>().build();
 
@@ -75,7 +75,7 @@ fn generate_qr_signature(text: &str, relative_path: Option<&str>) -> String {
     String::new()
 }
 
-async fn get_signature_image(
+pub(crate) async fn get_signature_image(
     db: &DatabaseConnection,
     archiveable_type: &str,
     archiveable_id: Uuid,
@@ -489,7 +489,7 @@ pub fn prepare_templates() -> (String, String) {
     (header_template, footer_template)
 }
 
-fn find_chrome_executable() -> Option<std::path::PathBuf> {
+pub(crate) fn find_chrome_executable() -> Option<std::path::PathBuf> {
     if let Ok(path) = std::env::var("CHROME_BIN").or_else(|_| std::env::var("CHROMIUM_BIN")) {
         let p = std::path::PathBuf::from(path);
         if p.exists() {
