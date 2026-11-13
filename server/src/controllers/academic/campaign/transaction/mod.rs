@@ -38,6 +38,14 @@ pub fn router() -> Router {
                 .get_named("academic.campaign.transaction.teach_meetings.print_attendance", teach_attendances::print_attendance),
         )
         .push(
+            Router::with_path("teach-grade-print/{id}")
+                .get_named("academic.campaign.transaction.teach_meetings.print_grade", teach_attendances::print_grade),
+        )
+        .push(
+            Router::with_path("teach-grade-xlsx/{id}")
+                .get_named("academic.campaign.transaction.teach_meetings.print_grade_xlsx", teach_attendances::print_grade_xlsx),
+        )
+        .push(
             Router::with_path("attendance-scan")
                 .post_named("academic.campaign.transaction.attendance_scan.scan", teach_attendances::scan),
         )

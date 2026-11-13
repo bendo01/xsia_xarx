@@ -27,6 +27,9 @@ import {
     getGradesByUnit,
     GradeItem
 } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionGradeController';
+import { toast } from '~/components/toast/Toaster';
+import { printGrade, downloadGradeXlsx } from '~/controllers/academic/campaign/transaction/AcademicCampaignTransactionTeachAttendanceController';
+import { openOrDownloadPdf } from '~/lib/pdfHelper';
 import { t } from '../../../../../../../i18n';
 
 interface StudentGradeRow {
@@ -79,6 +82,45 @@ export default function LecturerTeachGradePage() {
     const [newCompName, setNewCompName] = createSignal('');
     const [newCompWeight, setNewCompWeight] = createSignal<number>(20);
     const [isSubmittingComp, setIsSubmittingComp] = createSignal(false);
+
+    const [isPrinting, setIsPrinting] = createSignal(false);
+
+    const handlePrint = async (filled: boolean) => {
+        setIsPrinting(true);
+        try {
+            const label = filled ? 'Nilai (Terisi)' : 'Nilai (Kosong)';
+            toast.info(`Membuat PDF ${label}…`);
+            const blob = await printGrade(teachId(), filled);
+            if (blob) {
+                openOrDownloadPdf(blob, `Nilai_${filled ? 'Terisi' : 'Kosong'}_${teachId()}.pdf`, label);
+            } else {
+                toast.danger('Gagal membuat PDF nilai.');
+            }
+        } finally {
+            setIsPrinting(false);
+        }
+    };
+
+    const handleXlsx = async (filled: boolean) => {
+        setIsPrinting(true);
+        try {
+            const blob = await downloadGradeXlsx(teachId(), filled);
+            if (!blob) {
+                toast.danger('Gagal membuat file Excel nilai.');
+                return;
+            }
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Nilai_${filled ? 'Terisi' : 'Kosong'}_${teachId()}.xlsx`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            URL.revokeObjectURL(url);
+        } finally {
+            setIsPrinting(false);
+        }
+    };
 
     // Lock Confirmation Modal state
     const [isLockModalOpen, setIsLockModalOpen] = createSignal(false);
@@ -333,6 +375,44 @@ export default function LecturerTeachGradePage() {
             targetRow.grade_letter = gradeInfo.alphabet_code || gradeInfo.name;
             targetRow.grade_point = gradeInfo.grade;
         }
+        targetRow.is_dirty = true;
+
+        currentRows[rowIndex] = targetRow;
+        setStudentRows(currentRows);
+    };
+
+    // When only the grade index (Indeks Angka) is chosen, back-fill every component mark
+    // so that the weighted total lands inside that grade's score range.
+    const handleGradeIndexChange = (rowIndex: number, gradeId: string) => {
+        const grade = gradingScale().find(g => g.id === gradeId);
+        if (!grade) return;
+
+        const evalList = evaluations();
+        const totalWeight = evalList.reduce((sum, ev) => sum + (Number(ev.evaluation_weight) || 0), 0);
+
+        // Target total mark: middle of the grade's range, clamped to 0-100.
+        const targetMark = Math.min(100, Math.max(0, (Number(grade.minimum) + Number(grade.maximum)) / 2));
+        // Every component gets the same mark; weighted sum = mark * totalWeight / 100 = targetMark.
+        const componentMark = totalWeight > 0
+            ? Math.min(100, Math.round(((targetMark * 100) / totalWeight) * 100) / 100)
+            : 0;
+
+        const currentRows = [...studentRows()];
+        const targetRow = { ...currentRows[rowIndex] };
+        const targetScores = { ...targetRow.component_scores };
+        for (const ev of evalList) {
+            targetScores[ev.id] = {
+                ...targetScores[ev.id],
+                mark: componentMark,
+                percentage: Number(ev.evaluation_weight) || 0,
+            };
+        }
+
+        targetRow.component_scores = targetScores;
+        targetRow.calculated_mark = calculateStudentFinalMark(targetScores, evalList);
+        targetRow.grade_id = grade.id;
+        targetRow.grade_letter = grade.alphabet_code || grade.name;
+        targetRow.grade_point = grade.grade;
         targetRow.is_dirty = true;
 
         currentRows[rowIndex] = targetRow;
@@ -705,6 +785,52 @@ export default function LecturerTeachGradePage() {
                         </div>
 
                         {/* Top Action Buttons */}
+                        <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
+                            <button
+                                type="button"
+                                onClick={() => handlePrint(false)}
+                                disabled={isPrinting()}
+                                class="px-4 py-2.5 rounded-md border border-border bg-muted hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                            >
+                                <svg class="size-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                </svg>
+                                Unduh Form Nilai (Kosong)
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handlePrint(true)}
+                                disabled={isPrinting()}
+                                class="px-4 py-2.5 rounded-md border border-border bg-muted hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                            >
+                                <svg class="size-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                </svg>
+                                Unduh Rekap Nilai
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleXlsx(false)}
+                                disabled={isPrinting()}
+                                class="px-4 py-2.5 rounded-md border border-border bg-muted hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                            >
+                                <svg class="size-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                </svg>
+                                Excel Form Kosong
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleXlsx(true)}
+                                disabled={isPrinting()}
+                                class="px-4 py-2.5 rounded-md border border-border bg-muted hover:bg-neutral-100 dark:hover:bg-neutral-800 text-xs font-bold text-neutral-700 dark:text-neutral-200 transition-colors inline-flex items-center gap-2 disabled:opacity-50"
+                            >
+                                <svg class="size-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V4" />
+                                </svg>
+                                Excel Rekap Nilai
+                            </button>
+                        </div>
                         <Show when={!isClassLocked()}>
                             <div class="flex items-center gap-2.5 shrink-0 flex-wrap">
                                 <button
@@ -926,6 +1052,9 @@ export default function LecturerTeachGradePage() {
                                             <th class="px-4 py-4 font-bold text-center min-w-22.5 bg-blue-50/50 dark:bg-blue-950/20">
                                                 {t('lc.nilaiAkhir')}
                                             </th>
+                                            <th class="px-4 py-4 font-bold text-center min-w-28 bg-purple-50/50 dark:bg-purple-950/20">
+                                                Indeks Angka
+                                            </th>
                                             <th class="px-4 py-4 font-bold text-center min-w-20 bg-purple-50/50 dark:bg-purple-950/20">
                                                 {t('lc.grade')}
                                             </th>
@@ -990,6 +1119,25 @@ export default function LecturerTeachGradePage() {
                                                         {/* Calculated Final Mark */}
                                                         <td class="px-4 py-3.5 text-center font-mono font-bold text-xs text-blue-700 dark:text-blue-300 bg-blue-50/30 dark:bg-blue-950/10">
                                                             {student.calculated_mark}
+                                                        </td>
+
+                                                        {/* Grade Index (numeric) - choosing it back-fills component marks */}
+                                                        <td class="px-3 py-2 text-center bg-purple-50/30 dark:bg-purple-950/10">
+                                                            <select
+                                                            value={student.grade_id ?? ''}
+                                                            disabled={student.is_lock || evaluations().length === 0}
+                                                            onChange={(e) => handleGradeIndexChange(rawIndex(), e.currentTarget.value)}
+                                                            class="w-28 px-2 py-1.5 text-center font-mono font-bold text-xs rounded-md border bg-muted text-foreground border-border focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                        >
+                                                            <option value="" disabled selected={!student.grade_id}>-</option>
+                                                            <For each={gradingScale()}>
+                                                                {(g) => (
+                                                                    <option value={g.id} selected={g.id === student.grade_id}>
+                                                                        {g.grade} ({g.alphabet_code || g.name})
+                                                                    </option>
+                                                                )}
+                                                            </For>
+                                                        </select>
                                                         </td>
 
                                                         {/* Letter Grade */}
@@ -1106,6 +1254,26 @@ export default function LecturerTeachGradePage() {
                                                             </span>
                                                         </div>
                                                     </div>
+                                                </div>
+
+                                                {/* Grade Index (numeric) - choosing it back-fills component marks */}
+                                                <div class="flex items-center justify-between gap-2">
+                                                    <span class="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Indeks Angka</span>
+                                                    <select
+                                                            value={student.grade_id ?? ''}
+                                                            disabled={student.is_lock || evaluations().length === 0}
+                                                            onChange={(e) => handleGradeIndexChange(rawIndex(), e.currentTarget.value)}
+                                                            class="w-36 px-2 py-1.5 text-center font-mono font-bold text-xs rounded-md border bg-muted text-foreground border-border focus:outline-none focus:ring-2 focus:ring-blue-500/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                        >
+                                                            <option value="" disabled selected={!student.grade_id}>-</option>
+                                                            <For each={gradingScale()}>
+                                                                {(g) => (
+                                                                    <option value={g.id} selected={g.id === student.grade_id}>
+                                                                        {g.grade} ({g.alphabet_code || g.name})
+                                                                    </option>
+                                                                )}
+                                                            </For>
+                                                        </select>
                                                 </div>
 
                                                 {/* Dynamic Evaluation Component Inputs */}

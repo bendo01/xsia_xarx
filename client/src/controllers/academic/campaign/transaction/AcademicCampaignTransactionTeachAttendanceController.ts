@@ -121,3 +121,29 @@ export async function printAttendance(teachId: string, filled: boolean): Promise
         return null;
     }
 }
+
+export async function printGrade(teachId: string, filled: boolean): Promise<Blob | null> {
+    try {
+        const headers: Record<string, string> = { Accept: 'application/pdf' };
+        const token = getStorageItem('token');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`${getBaseUrl()}${ROOT}/teach-grade-print/${teachId}?filled=${filled}`, { headers });
+        if (!res.ok) return null;
+        return await res.blob();
+    } catch {
+        return null;
+    }
+}
+
+export async function downloadGradeXlsx(teachId: string, filled: boolean): Promise<Blob | null> {
+    try {
+        const headers: Record<string, string> = {};
+        const token = getStorageItem('token');
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`${getBaseUrl()}${ROOT}/teach-grade-xlsx/${teachId}?filled=${filled}`, { headers });
+        if (!res.ok) return null;
+        return await res.blob();
+    } catch {
+        return null;
+    }
+}

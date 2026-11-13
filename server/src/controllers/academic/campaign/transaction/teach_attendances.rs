@@ -347,6 +347,56 @@ pub async fn print_attendance(req: &mut Request, depot: &mut Depot, res: &mut Re
     Ok(())
 }
 
+/// Prints the grade sheet of a class as PDF (`?filled=true` includes recorded marks).
+#[endpoint(tags("Academic - Campaign - Transaction - TeachAttendance"), status_codes(200, 400, 403, 500))]
+pub async fn print_grade(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<(), StatusError> {
+    let db = db_of(depot)?;
+    let scope = DataScope::resolve(&db, depot).await?;
+    let teach_id = parse_id(req, "id")?;
+    ensure_can_manage(&db, &scope, teach_id).await?;
+    let filled = req.query::<bool>("filled").unwrap_or(false);
+
+    let pdf = crate::services::pdf::institution_092010::academic::campaign::transaction::teach_grade::teach_grade::generate_pdf(&db, teach_id, filled)
+        .await
+        .map_err(internal)?;
+
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_TYPE,
+        salvo::http::HeaderValue::from_static("application/pdf"),
+    );
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_DISPOSITION,
+        salvo::http::HeaderValue::from_static("attachment; filename=grade.pdf"),
+    );
+    res.write_body(pdf).map_err(internal)?;
+    Ok(())
+}
+
+/// Downloads the grade sheet of a class as Excel (`?filled=true` includes recorded marks).
+#[endpoint(tags("Academic - Campaign - Transaction - TeachAttendance"), status_codes(200, 400, 403, 500))]
+pub async fn print_grade_xlsx(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Result<(), StatusError> {
+    let db = db_of(depot)?;
+    let scope = DataScope::resolve(&db, depot).await?;
+    let teach_id = parse_id(req, "id")?;
+    ensure_can_manage(&db, &scope, teach_id).await?;
+    let filled = req.query::<bool>("filled").unwrap_or(false);
+
+    let xlsx = crate::services::pdf::institution_092010::academic::campaign::transaction::teach_grade::teach_grade::generate_xlsx(&db, teach_id, filled)
+        .await
+        .map_err(internal)?;
+
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_TYPE,
+        salvo::http::HeaderValue::from_static("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
+    );
+    res.headers_mut().insert(
+        salvo::http::header::CONTENT_DISPOSITION,
+        salvo::http::HeaderValue::from_static("attachment; filename=grade.xlsx"),
+    );
+    res.write_body(xlsx).map_err(internal)?;
+    Ok(())
+}
+
 // ── Meetings ─────────────────────────────────────────────────────────────────
 
 /// Lists the 16 meetings of a class, creating them on first access.
