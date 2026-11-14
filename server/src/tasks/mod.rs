@@ -3,6 +3,7 @@ use sea_orm::DatabaseConnection;
 
 pub mod example;
 pub mod feeder_dikti;
+pub mod nutritional_intake;
 pub mod rag;
 pub mod utilities;
 
@@ -40,6 +41,7 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(utilities::utility_08_cleanup_student_detail_activity::CleanupStudentDetailActivityTask),
         Box::new(utilities::utility_06_sync_student_class_codes::SyncStudentClassCodesTask),
         Box::new(feeder_dikti::synchronize::downstream::reports::mismatch_report::SksMismatchReportTask),
+        Box::new(nutritional_intake::seed_tkpi::SeedTkpiTask),
         Box::new(rag::rag_02_ingest_regulations::IngestRegulationsTask),
         Box::new(rag::rag_01_retrieve_regulations::RetrieveRegulationsTask),
         Box::new(rag::rag_03_eval_retrieval::EvalRetrievalTask),

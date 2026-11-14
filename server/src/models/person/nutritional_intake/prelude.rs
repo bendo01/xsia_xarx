@@ -1,0 +1,11 @@
+pub use super::food_group::Entity as PersonNutritionalIntakeFoodGroup;
+pub use super::source::Entity as PersonNutritionalIntakeSource;
+pub use super::nutrient::Entity as PersonNutritionalIntakeNutrient;
+pub use super::food::Entity as PersonNutritionalIntakeFood;
+pub use super::analysis_method::Entity as PersonNutritionalIntakeAnalysisMethod;
+pub use super::food_nutrient::Entity as PersonNutritionalIntakeFoodNutrient;
+pub use super::local_dish::Entity as PersonNutritionalIntakeLocalDish;
+pub use super::code_history::Entity as PersonNutritionalIntakeCodeHistory;
+pub use super::correction::Entity as PersonNutritionalIntakeCorrection;
+pub use super::intake_log::Entity as PersonNutritionalIntakeIntakeLog;
+pub use super::intake_log_item::Entity as PersonNutritionalIntakeIntakeLogItem;

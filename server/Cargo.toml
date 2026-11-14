@@ -18,7 +18,7 @@ openssl = { version = "0.10" }
 openssl-sys = "0.9"
 tracing = { version = "0.1" }
 tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
-opentelemetry = "0.32"
+# opentelemetry = "0.32"
 regex = { version = "1.11" }
 sea-query = "1.0.1"
 chrono = "0.4"
@@ -48,7 +48,7 @@ lettre = { version = "0.11", default-features = false, features = [
 ] }
 # view engine i18n
 tera = "2.0.0"
-unic-langid = { version = "0.9" }
+# unic-langid = { version = "0.9" }
 image = "0.25"
 qrcode = { version = "0.14.1", default-features = false, features = [
     "svg",

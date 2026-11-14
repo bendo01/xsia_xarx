@@ -488,6 +488,18 @@ asxsia 'cd /var/www/ferron/xsia_xarx/src/server && cargo build --release --locke
 # several backends: --features cuda,vulkan
 ```
 
+For a **development run** on a workstation (`cargo run` instead of a release build):
+
+```bash
+# Vulkan, pinned to the AMD card (useful when the machine also has an Intel/NVIDIA GPU)
+WGPU_ADAPTER_NAME="RX 580" cargo run --features vulkan
+
+# Vulkan + CUDA in one binary
+cargo run --features vulkan --features cuda
+```
+
+> `WGPU_ADAPTER_NAME` selects the Vulkan adapter by (part of) its name; list the names with `vulkaninfo --summary`. Set it in the shell as above (or in the `xsia-api` unit with `Environment=`) rather than relying on `.env`, since wgpu may read the environment before `.env` is loaded.
+
 > ⏳ The CUDA kernels are compiled the first time (several minutes). `deploy/build-release.sh` ([14](#14-alternative-build-on-a-workstation-ship-to-the-server)) builds **without** features; adding `--features vulkan` to its `cargo build` line is enough for Vulkan, while `cuda` also needs the CUDA toolkit in the build image.
 
 **3. Runtime requirements on the server**
