@@ -1,6 +1,5 @@
 use chrono::NaiveDateTime;
 use salvo::oapi::ToSchema;
-use sea_orm::entity::prelude::Decimal;
 use serde::{Deserialize, Serialize};
 use uuid::Uuid;
 use validator::Validate;
