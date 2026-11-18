@@ -169,6 +169,8 @@ Before starting, ensure you have the following installed on your machine:
   export PATH=/opt/cuda/bin:$PATH CUDA_PATH=/opt/cuda
   ```
 
+  > **Build error `failed to run custom build command for cudarc` / ``nvcc --version failed``:** you built with `--features cuda` but the CUDA *toolkit* is missing. `nvidia-smi` (the driver) is not enough; `nvcc` must be on `PATH`. Install `cuda` (and `cudnn`), export `CUDA_HOME=/opt/cuda` and `PATH=/opt/cuda/bin:$PATH`, then rebuild. If `nvcc` then rejects your `gcc` as too new, point `NVCC_CCBIN` at an older compiler (e.g. `gcc13`). Without the toolkit, build without the feature (CPU) or with `--features vulkan`.
+
   Features can be combined (`--features cuda,vulkan`). For servers (Rocky Linux) see [DEPLOYMENT.md, step 6.E](DEPLOYMENT.md#e-choose-where-the-llm-runs-cpu-nvidia-amdintel).
 
 - **uv** + **autocrop** + **docling**: Python CLI tools for face-cropping photos and converting documents (see [Python Tools](#-python-tools-autocrop--docling))
