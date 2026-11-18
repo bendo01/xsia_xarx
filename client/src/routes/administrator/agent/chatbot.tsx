@@ -1,5 +1,6 @@
 import { createEffect, createSignal, For, onMount, Show } from 'solid-js';
 import { createStore, produce } from 'solid-js/store';
+import Markdown from '~/components/ui/Markdown';
 import TopBar from '~/components/navigation/TopBar';
 import { toast } from '~/components/toast/Toaster';
 import {
@@ -574,23 +575,8 @@ export default function AgentChatbotPage() {
                                                     </p>
                                                 </Show>
                                                 <Show when={!turn.retrievalOnly && (turn.answer || turn.status === 'generating')}>
-                                                    <div class="bg-neutral-100 dark:bg-neutral-900 text-sm px-3.5 py-2.5 whitespace-pre-wrap leading-relaxed">
-                                                        <For each={segments(turn.answer)}>
-                                                            {(part) => {
-                                                                const match = /^\[(\d+)\]$/.exec(part);
-                                                                return match ? (
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => focusSource(turn.id, Number(match[1]))}
-                                                                        class="mx-0.5 px-1 text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950 hover:bg-blue-200 dark:hover:bg-blue-900 rounded-md cursor-pointer"
-                                                                    >
-                                                                        {part}
-                                                                    </button>
-                                                                ) : (
-                                                                    <span>{part}</span>
-                                                                );
-                                                            }}
-                                                        </For>
+                                                    <div class="bg-neutral-100 dark:bg-neutral-900 text-sm px-3.5 py-2.5 leading-relaxed">
+                                                        <Markdown text={turn.answer} onCite={(n) => focusSource(turn.id, n)} />
                                                         <Show when={turn.status === 'generating'}>
                                                             <span class="inline-block w-1.5 h-4 align-middle bg-neutral-500 animate-pulse ml-0.5"></span>
                                                         </Show>

@@ -250,7 +250,17 @@ impl LlmService {
                     tracing::warn!("The {} model has no Vulkan implementation yet (or the build lacks it); it runs on the CPU", kind.id());
                 }
                 let (device, backend) = candle_device(backend);
-                Ok(Self { engine: Engine::Candle(CandleEngine::load(kind, device)?), backend })
+                match CandleEngine::load(kind, device) {
+                    Ok(engine) => Ok(Self { engine: Engine::Candle(engine), backend }),
+                    // Gemma 3 4B needs more VRAM than it looks (its 262k-token embedding table is dequantized to
+                    // f32 on the GPU, about 2.7 GB), so on a small card, or one shared with another model, the
+                    // load runs out of memory. The CPU always works, just slower.
+                    Err(e) if backend == LlmBackend::Cuda => {
+                        tracing::warn!("The {} model did not fit on the GPU ({e:#}); it runs on the CPU", kind.id());
+                        Ok(Self { engine: Engine::Candle(CandleEngine::load(kind, Device::Cpu)?), backend: LlmBackend::Cpu })
+                    }
+                    Err(e) => Err(e),
+                }
             }
         }
     }
