@@ -8,7 +8,7 @@
 //! Stored format: `v1:<base64(nonce || ciphertext || tag)>`
 
 use aes_gcm::aead::{Aead, AeadCore, KeyInit, OsRng};
-use aes_gcm::{Aes256Gcm, Key, Nonce};
+use aes_gcm::{Aes256Gcm, Nonce};
 use base64::{Engine as _, engine::general_purpose::STANDARD};
 use std::env;
 
@@ -27,7 +27,7 @@ fn cipher() -> CryptoResult<Aes256Gcm> {
     if bytes.len() != 32 {
         return Err(format!("{KEY_ENV} must decode to 32 bytes, got {}", bytes.len()).into());
     }
-    Ok(Aes256Gcm::new(Key::<Aes256Gcm>::from_slice(&bytes)))
+    Aes256Gcm::new_from_slice(&bytes).map_err(|e| format!("Invalid {KEY_ENV}: {e}").into())
 }
 
 /// Encrypts `plaintext` into the versioned storage format.
@@ -56,8 +56,9 @@ pub fn decrypt(stored: &str) -> CryptoResult<String> {
     }
 
     let (nonce, ciphertext) = payload.split_at(NONCE_LEN);
+    let nonce: [u8; NONCE_LEN] = nonce.try_into().map_err(|_| "Invalid nonce length")?;
     let plaintext = cipher()?
-        .decrypt(Nonce::from_slice(nonce), ciphertext)
+        .decrypt(&Nonce::from(nonce), ciphertext)
         .map_err(|_| "Decryption failed (wrong key or tampered value)")?;
     Ok(String::from_utf8(plaintext)?)
 }
