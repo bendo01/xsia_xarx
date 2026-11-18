@@ -279,6 +279,10 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Ins
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it tokenizer.json --local-dir ./models/gemma-3-4b-it'
 
+# Optional: Qwen3-1.7B (≈ 1.1 GB), fits an 8 GB GPU. Not gated. Note: the server cannot load Qwen3 until LlmKind in server/src/services/ai/generation.rs gets a Qwen3 variant (it only knows Qwen2.5 and Gemma 3 today).
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download unsloth/Qwen3-1.7B-GGUF Qwen3-1.7B-Q4_K_M.gguf --local-dir ./models'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen3-1.7B tokenizer.json --local-dir ./models/qwen3-1.7b'
+
 # Optional: Llama 3.2 3B Instruct (≈ 2 GB). `LlmKind` in generation.rs only knows Qwen and Gemma,
 # so this file is unused until a Llama loader is added.
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download bartowski/Llama-3.2-3B-Instruct-GGUF Llama-3.2-3B-Instruct-Q4_K_M.gguf --local-dir ./models'

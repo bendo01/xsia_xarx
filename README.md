@@ -286,7 +286,19 @@ CURRENT_INSTITUTION_CODE="092010"
    sea-orm-cli migrate up
    ```
 
-4. **Start the server with background email worker**:
+4. **(Optional) Download Qwen3-1.7B** for the chatbot, into `server/models/` (gitignored). `hf` comes from `huggingface_hub`:
+
+   ```bash
+   # Q4_K_M quantized weights (about 1.1 GB)
+   hf download unsloth/Qwen3-1.7B-GGUF Qwen3-1.7B-Q4_K_M.gguf --local-dir ./models
+
+   # tokenizer
+   hf download Qwen/Qwen3-1.7B tokenizer.json --local-dir ./models/qwen3-1.7b
+   ```
+
+   Note: the server cannot load Qwen3 until `LlmKind` in `server/src/services/ai/generation.rs` gets a Qwen3 variant (it only knows Qwen2.5 and Gemma 3 today).
+
+5. **Start the server with background email worker**:
 
    ```bash
    cargo run
