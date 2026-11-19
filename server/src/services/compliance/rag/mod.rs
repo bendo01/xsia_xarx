@@ -11,7 +11,12 @@ pub mod retrieve;
 
 use uuid::Uuid;
 
+/// `Hit::regulation` of a detected anomaly (an `ai.chunks` row with `chunkable_type = Anomaly`)
+pub const ANOMALY_SOURCE: &str = "Temuan anomali";
+
 /// A regulation chunk returned by retrieval.
+///
+/// Also used for an indexed anomaly, which is not a regulation: see [`Hit::is_anomaly`].
 #[derive(Clone, Debug)]
 pub struct Hit {
     pub chunk_id: Uuid,
@@ -28,6 +33,11 @@ pub struct Hit {
 }
 
 impl Hit {
+    /// Whether this is a detected anomaly rather than a regulation or guide chunk
+    pub fn is_anomaly(&self) -> bool {
+        self.regulation == ANOMALY_SOURCE
+    }
+
     /// Short citation such as `PP No 37 2009, Pasal 10`.
     pub fn citation(&self) -> String {
         match self.heading.as_deref().map(str::trim).filter(|h| !h.is_empty() && *h != "-") {

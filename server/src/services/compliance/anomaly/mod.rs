@@ -12,6 +12,7 @@ pub mod loaders;
 pub mod lof;
 pub mod metrics;
 pub mod rules;
+pub mod store;
 
 use iforest::IsolationForest;
 use rules::RuleConfig;

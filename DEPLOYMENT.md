@@ -279,9 +279,14 @@ asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen2.5-1.5B-Ins
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-4b-it tokenizer.json --local-dir ./models/gemma-3-4b-it'
 
-# Optional: Qwen3-1.7B (≈ 1.1 GB), fits an 8 GB GPU. Not gated. Note: the server cannot load Qwen3 until LlmKind in server/src/services/ai/generation.rs gets a Qwen3 variant (it only knows Qwen2.5 and Gemma 3 today).
+# Optional: Qwen3-1.7B (≈ 1.1 GB), fits an 8 GB GPU. Not gated. Select it in the chatbot as model `qwen3`. Paths default to `models/Qwen3-1.7B-Q4_K_M.gguf` and `models/qwen3-1.7b`; override with `QWEN3_MODEL_PATH` / `QWEN3_TOKENIZER_DIR`.
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download unsloth/Qwen3-1.7B-GGUF Qwen3-1.7B-Q4_K_M.gguf --local-dir ./models'
 asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download Qwen/Qwen3-1.7B tokenizer.json --local-dir ./models/qwen3-1.7b'
+
+# Optional: Gemma 3 1B (≈ 0.8 GB), for small GPUs; selectable as model `gemma1b`. Gated like the 4B (licence + `hf auth login`).
+# Paths default to models/gemma-3-1b-it-Q4_K_M.gguf and models/gemma-3-1b-it (GEMMA1B_MODEL_PATH / GEMMA1B_TOKENIZER_DIR).
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download ggml-org/gemma-3-1b-it-GGUF gemma-3-1b-it-Q4_K_M.gguf --local-dir ./models'
+asxsia 'cd /var/www/ferron/xsia_xarx/server && hf download google/gemma-3-1b-it tokenizer.json --local-dir ./models/gemma-3-1b-it'
 
 # Optional: Llama 3.2 3B Instruct (≈ 2 GB). `LlmKind` in generation.rs only knows Qwen and Gemma,
 # so this file is unused until a Llama loader is added.
@@ -448,6 +453,14 @@ cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task
 - `cd` is a shell builtin, so wrap it in `bash -c '…'` as above.
 - If `bendo01` can't use `sudo -u xsia`, add `bendo01 ALL=(xsia) NOPASSWD: ALL` with `sudo visudo -f /etc/sudoers.d/bendo01` (or restrict it to specific commands).
 - For tasks that must run on a schedule, use a systemd timer with `User=xsia` or `sudo crontab -u xsia -e` rather than your own crontab.
+
+**Compliance anomaly list.** After the Feeder data is synced and the regulations are ingested, detect the anomalies, store them in `compliance.anomaly_events` and index them for the chatbot. Re-run it after each sync; every run is kept as an `experiment_runs` row, and only the latest run is searchable in the chatbot:
+
+```bash
+asxsia 'cd /var/www/ferron/xsia_xarx/server && ./xsia_xarx task compliance:detect-anomalies --save'
+```
+
+Without `--save` the task only prints a report. `--no-embed` stores the rows without indexing them for the chatbot.
 
 ### E. Choose where the LLM runs (CPU, NVIDIA, AMD/Intel)
 

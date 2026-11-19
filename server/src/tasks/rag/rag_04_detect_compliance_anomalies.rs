@@ -16,7 +16,7 @@ impl Task for DetectComplianceAnomaliesTask {
     }
 
     fn description(&self) -> &str {
-        "Runs rule + per-semester soft-voting (Isolation Forest, LOF, autoencoder) anomaly detection over feeder_master and prints a report (read-only; --top=0.02 sets the ML flag fraction per semester, --weights=1,1,1 the iforest,lof,autoencoder vote weights, --epochs=100 the autoencoder epochs, --samples=5 the rows shown per group, --cite adds the governing regulation text per rule)"
+        "Runs rule + per-semester soft-voting (Isolation Forest, LOF, autoencoder) anomaly detection over feeder_master and prints a report (read-only unless --save, which stores the detections in compliance.anomaly_events under a new experiment run and indexes them in ai.chunks for the chatbot (--no-embed skips the indexing); --top=0.02 sets the ML flag fraction per semester, --weights=1,1,1 the iforest,lof,autoencoder vote weights, --epochs=100 the autoencoder epochs, --samples=5 the rows shown per group, --cite adds the governing regulation text per rule)"
     }
 
     async fn run(&self, db: &DatabaseConnection, args: &[String]) -> Result<(), Box<dyn std::error::Error>> {
@@ -60,6 +60,10 @@ impl Task for DetectComplianceAnomaliesTask {
             for d in items.iter().take(samples) {
                 println!("  {} score={:.3} {} {}", d.entity_id, d.score, d.severity.as_str(), d.evidence);
             }
+        }
+        if args.iter().any(|a| a == "--save") {
+            let (run_id, saved) = anomaly::store::save(db, &detections, &cfg, top, 42, !args.iter().any(|a| a == "--no-embed")).await?;
+            println!("\n==> Saved {saved} anomalies to compliance.anomaly_events (run {run_id})");
         }
         if args.iter().any(|a| a == "--cite") {
             println!("\n==> Governing regulations");

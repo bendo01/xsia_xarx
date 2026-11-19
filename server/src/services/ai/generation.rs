@@ -18,7 +18,7 @@ use anyhow::{Context, Result, bail};
 use candle_core::quantized::gguf_file;
 use candle_core::{Device, Tensor};
 use candle_transformers::generation::{LogitsProcessor, Sampling};
-use candle_transformers::models::{quantized_gemma3, quantized_qwen2};
+use candle_transformers::models::{quantized_gemma3, quantized_qwen2, quantized_qwen3};
 use candle_transformers::utils::apply_repeat_penalty;
 use once_cell::sync::OnceCell;
 use tokenizers::Tokenizer;
@@ -29,16 +29,22 @@ pub enum LlmKind {
     #[default]
     Qwen,
     Gemma,
+    /// Qwen3-1.7B; its thinking mode is switched off in the prompt
+    Qwen3,
+    /// Gemma 3 1B: the same architecture as `Gemma`, a smaller file
+    Gemma1b,
 }
 
 impl LlmKind {
-    pub const ALL: [LlmKind; 2] = [LlmKind::Qwen, LlmKind::Gemma];
+    pub const ALL: [LlmKind; 4] = [LlmKind::Qwen, LlmKind::Gemma, LlmKind::Qwen3, LlmKind::Gemma1b];
 
     /// Identifier used in requests and responses
     pub fn id(self) -> &'static str {
         match self {
             Self::Qwen => "qwen",
             Self::Gemma => "gemma",
+            Self::Qwen3 => "qwen3",
+            Self::Gemma1b => "gemma1b",
         }
     }
 
@@ -51,6 +57,8 @@ impl LlmKind {
         match self {
             Self::Qwen => "Qwen/Qwen2.5-1.5B-Instruct-GGUF qwen2.5-1.5b-instruct-q4_k_m.gguf",
             Self::Gemma => "ggml-org/gemma-3-4b-it-GGUF gemma-3-4b-it-Q4_K_M.gguf",
+            Self::Qwen3 => "unsloth/Qwen3-1.7B-GGUF Qwen3-1.7B-Q4_K_M.gguf",
+            Self::Gemma1b => "ggml-org/gemma-3-1b-it-GGUF gemma-3-1b-it-Q4_K_M.gguf",
         }
     }
 
@@ -62,6 +70,8 @@ impl LlmKind {
         let (var, default) = match self {
             Self::Qwen => ("LLM_MODEL_PATH", "models/qwen2.5-1.5b-instruct-q4_k_m.gguf"),
             Self::Gemma => ("GEMMA_MODEL_PATH", "models/gemma-3-4b-it-Q4_K_M.gguf"),
+            Self::Qwen3 => ("QWEN3_MODEL_PATH", "models/Qwen3-1.7B-Q4_K_M.gguf"),
+            Self::Gemma1b => ("GEMMA1B_MODEL_PATH", "models/gemma-3-1b-it-Q4_K_M.gguf"),
         };
         PathBuf::from(std::env::var(var).unwrap_or_else(|_| default.to_owned()))
     }
@@ -73,6 +83,8 @@ impl LlmKind {
         let (var, default) = match self {
             Self::Qwen => ("LLM_TOKENIZER_DIR", "models/qwen2.5-1.5b-instruct"),
             Self::Gemma => ("GEMMA_TOKENIZER_DIR", "models/gemma-3-4b-it"),
+            Self::Qwen3 => ("QWEN3_TOKENIZER_DIR", "models/qwen3-1.7b"),
+            Self::Gemma1b => ("GEMMA1B_TOKENIZER_DIR", "models/gemma-3-1b-it"),
         };
         PathBuf::from(std::env::var(var).unwrap_or_else(|_| default.to_owned())).join("tokenizer.json")
     }
@@ -82,25 +94,29 @@ impl LlmKind {
     /// only slows a CPU model down.
     pub fn max_prompt_tokens(self) -> usize {
         match self {
-            Self::Qwen => 2000,
-            Self::Gemma => 1000,
+            Self::Qwen | Self::Qwen3 => 2000,
+            Self::Gemma | Self::Gemma1b => 1000,
         }
     }
 
     /// Tokens that end an answer
     pub(super) fn stop_tokens(self) -> &'static [&'static str] {
         match self {
-            Self::Qwen => &["<|im_end|>", "<|endoftext|>"],
-            Self::Gemma => &["<end_of_turn>", "<eos>"],
+            Self::Qwen | Self::Qwen3 => &["<|im_end|>", "<|endoftext|>"],
+            Self::Gemma | Self::Gemma1b => &["<end_of_turn>", "<eos>"],
         }
     }
 
     fn slot(self) -> &'static OnceCell<LlmService> {
         static QWEN: OnceCell<LlmService> = OnceCell::new();
         static GEMMA: OnceCell<LlmService> = OnceCell::new();
+        static QWEN3: OnceCell<LlmService> = OnceCell::new();
+        static GEMMA1B: OnceCell<LlmService> = OnceCell::new();
         match self {
             Self::Qwen => &QWEN,
             Self::Gemma => &GEMMA,
+            Self::Qwen3 => &QWEN3,
+            Self::Gemma1b => &GEMMA1B,
         }
     }
 }
@@ -137,6 +153,7 @@ pub struct GenStats {
 enum Weights {
     Qwen(quantized_qwen2::ModelWeights),
     Gemma(quantized_gemma3::ModelWeights),
+    Qwen3(quantized_qwen3::ModelWeights),
 }
 
 impl Weights {
@@ -144,6 +161,7 @@ impl Weights {
         match self {
             Self::Qwen(m) => m.forward(x, index_pos),
             Self::Gemma(m) => m.forward(x, index_pos),
+            Self::Qwen3(m) => m.forward(x, index_pos),
         }
     }
 }
@@ -314,7 +332,8 @@ impl CandleEngine {
         let content = gguf_file::Content::read(&mut file).map_err(|e| e.with_path(&path))?;
         let model = match kind {
             LlmKind::Qwen => Weights::Qwen(quantized_qwen2::ModelWeights::from_gguf(content, &mut file, &device)?),
-            LlmKind::Gemma => Weights::Gemma(quantized_gemma3::ModelWeights::from_gguf(content, &mut file, &device)?),
+            LlmKind::Gemma | LlmKind::Gemma1b => Weights::Gemma(quantized_gemma3::ModelWeights::from_gguf(content, &mut file, &device)?),
+            LlmKind::Qwen3 => Weights::Qwen3(quantized_qwen3::ModelWeights::from_gguf(content, &mut file, &device)?),
         };
         let tokenizer = Tokenizer::from_file(kind.tokenizer_path()).map_err(anyhow::Error::msg)?;
         let stop_tokens: Vec<u32> = kind.stop_tokens().iter().filter_map(|t| tokenizer.token_to_id(t)).collect();

@@ -103,12 +103,13 @@ impl Row {
 
 /// Regulation chunks, plus chunks of knowledge-base archives (which have no regulation row: always in force)
 fn select() -> String {
-    "SELECT c.id AS chunk_id, c.chunkable_id AS regulation_id, coalesce(d.title, a.name) AS regulation, d.number, d.year, \
+    "SELECT c.id AS chunk_id, c.chunkable_id AS regulation_id, coalesce(d.title, a.name, CASE WHEN c.chunkable_type = 'Anomaly' THEN '$ANOMALY' END, '') AS regulation, d.number, d.year, \
      coalesce(d.status, 'active') AS status, c.title_hierarchy AS heading, c.content \
      FROM ai.chunks c \
      LEFT JOIN compliance.regulation_documents d ON c.chunkable_type = 'Regulation' AND d.id = c.chunkable_id \
      LEFT JOIN document_transaction.archives a ON c.chunkable_type = $ARCHIVE AND a.id = c.chunkable_id"
         .replace("$ARCHIVE", &format!("'{ARCHIVE_TYPE}'"))
+        .replace("$ANOMALY", super::ANOMALY_SOURCE)
 }
 
 /// Shared filter: `$1` = include revoked, `$2` = minimum body length.
@@ -280,6 +281,34 @@ pub async fn search(db: &DatabaseConnection, query: &str, opts: Options) -> Resu
     Ok(hits)
 }
 
+/// `ai.chunks.chunkable_type` of indexed anomalies (`chunkable_id` = the `anomaly_events` id)
+pub const ANOMALY_TYPE: &str = "Anomaly";
+
+/// Words that show a question is about detected anomalies rather than about the regulations themselves
+const ANOMALY_CUES: &[&str] = &["anomali", "anomalinya", "janggal", "kejanggalan", "outlier", "temuan", "penyimpangan", "pelanggaran", "melanggar", "overload", "sulan"];
+
+/// Whether `question` asks about detected anomalies (so the saved anomaly list is searched as well)
+pub fn mentions_anomalies(question: &str) -> bool {
+    let lower = question.to_lowercase();
+    lower.split(|c: char| !c.is_alphanumeric()).any(|w| ANOMALY_CUES.contains(&w))
+}
+
+/// The `top_k` saved anomalies closest to `query` (dense search over chunks of the latest anomaly run).
+/// Empty when none have been saved and indexed (`compliance:detect-anomalies --save`).
+pub async fn anomalies(db: &DatabaseConnection, query: &str, top_k: usize) -> Result<Vec<Hit>> {
+    let vector = embed_query(query).await?;
+    let sql = format!(
+        "{} WHERE c.chunkable_type = '{ANOMALY_TYPE}' AND c.deleted_at IS NULL AND c.embedding IS NOT NULL \
+         AND EXISTS (SELECT 1 FROM compliance.anomaly_events e WHERE e.id = c.chunkable_id AND e.deleted_at IS NULL) \
+         ORDER BY c.embedding <=> $1::vector LIMIT {top_k}",
+        select()
+    );
+    let rows = Row::find_by_statement(Statement::from_sql_and_values(db.get_database_backend(), sql, [vector.into()]))
+        .all(db)
+        .await?;
+    Ok(rows.into_iter().map(Row::into_hit).collect())
+}
+
 /// Dense-only search: the `top_k` chunks closest to the question by cosine distance, with no lexical
 /// retrieval, citation scoping, definition lookup or reranking.
 async fn search_dense(db: &DatabaseConnection, query: &str, opts: Options) -> Result<Vec<Hit>> {
@@ -354,4 +383,16 @@ async fn fuse(db: &DatabaseConnection, query: &str, opts: Options, limit: usize,
         }
     }
     Ok(out)
+}
+
+#[cfg(test)]
+mod anomaly_cue_tests {
+    use super::mentions_anomalies;
+
+    #[test]
+    fn detects_anomaly_questions() {
+        assert!(mentions_anomalies("Dosen mana yang anomali semester ini?"));
+        assert!(mentions_anomalies("Ada pelanggaran SKS?"));
+        assert!(!mentions_anomalies("Berapa SKS maksimal dosen per semester?"));
+    }
 }

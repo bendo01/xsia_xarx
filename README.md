@@ -296,9 +296,21 @@ CURRENT_INSTITUTION_CODE="092010"
    hf download Qwen/Qwen3-1.7B tokenizer.json --local-dir ./models/qwen3-1.7b
    ```
 
-   Note: the server cannot load Qwen3 until `LlmKind` in `server/src/services/ai/generation.rs` gets a Qwen3 variant (it only knows Qwen2.5 and Gemma 3 today).
+   Select it in the chatbot as model `qwen3`. Paths default to `models/Qwen3-1.7B-Q4_K_M.gguf` and `models/qwen3-1.7b`; override with `QWEN3_MODEL_PATH` / `QWEN3_TOKENIZER_DIR`.
 
-5. **Start the server with background email worker**:
+5. **(Optional) Download Gemma 3 1B** (about 0.8 GB, fits small GPUs). The `google/*` repo is gated: accept the licence at https://huggingface.co/google/gemma-3-1b-it and run `hf auth login` first:
+
+   ```bash
+   # Q4_K_M quantized weights
+   hf download ggml-org/gemma-3-1b-it-GGUF gemma-3-1b-it-Q4_K_M.gguf --local-dir ./models
+
+   # tokenizer (gated)
+   hf download google/gemma-3-1b-it tokenizer.json --local-dir ./models/gemma-3-1b-it
+   ```
+
+   It shows up in the chatbot as model `gemma1b`, next to the 4B. Paths default to `models/gemma-3-1b-it-Q4_K_M.gguf` and `models/gemma-3-1b-it`; override with `GEMMA1B_MODEL_PATH` / `GEMMA1B_TOKENIZER_DIR`.
+
+6. **Start the server with background email worker**:
 
    ```bash
    cargo run
@@ -890,6 +902,30 @@ The data scope is based on the **active** role:
 Re-running `utility:generate-permission-from-client` doesn't fix a 404 like this, because the endpoint is allowed and only the record is out of scope. Check which unit or institution the record belongs to and compare it with the active role's scope.
 
 One exception: `GET academic/student/master/students/{id}` also returns a student who is the `roleable` of one of the signed-in user's **own** roles, whatever role is active (`is_own_student()` in `data_scope.rs`). The role switcher needs this: `enrichUserRolesWithStudentCodes()` in `client/src/lib/authStore.ts` looks up each student role's code and unit. Without the exception, a user with a Rektorat role in one institution and Mahasiswa roles in another got 404s on every page. Other students outside the scope are still hidden, and list, update and delete still use the active role's scope only.
+
+##### 🚨 Compliance Anomaly Detection (`compliance:detect-anomalies`)
+
+Runs the SULAN detectors over `feeder_master` data: regulation rules (SKS limit, class capacity, study period) plus a per-semester soft vote of Isolation Forest, LOF and an autoencoder.
+
+```bash
+# Report only (read-only)
+cargo run -- task compliance:detect-anomalies
+
+# Save the anomaly list (compliance.anomaly_events) and index it for the chatbot
+cargo run -- task compliance:detect-anomalies --save
+```
+
+| Flag | Effect |
+|---|---|
+| `--save` | Store the detections in `compliance.anomaly_events` under a new `experiment_runs` row, link rule detections to their regulation chunk, and embed each anomaly into `ai.chunks` (`chunkable_type = Anomaly`) so the chatbot can answer questions about them. Embedding replaces the previous run's anomaly chunks. |
+| `--no-embed` | With `--save`: store the rows but skip the embedding |
+| `--top=0.02` | Fraction of each semester the ML detectors flag |
+| `--weights=1,1,1` | Vote weights for Isolation Forest, LOF, autoencoder |
+| `--epochs=100` | Autoencoder epochs |
+| `--samples=5` | Rows printed per group |
+| `--cite` | Print the governing regulation text per rule |
+
+The embedding needs the same embedding model as the knowledge base. In the chatbot, a question that mentions anomalies (for example "anomali dosen semester ini" or "siapa yang melebihi 16 SKS") also gets the closest saved anomalies as numbered sources, labelled *Temuan anomali*.
 
 ##### 🧹 Clean Up Student Detail Activities (`utility:cleanup-student-detail-activity`)
 

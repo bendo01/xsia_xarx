@@ -17,6 +17,9 @@ Jangan menambahkan pengetahuan di luar KONTEKS.";
 /// Added only when a source is revoked: with a small model, a rule that never applies still leaks into the answer
 const REVOKED_RULE: &str = " Sumber yang berstatus DICABUT sudah tidak berlaku; jika kamu merujuknya, katakan bahwa peraturan itu sudah dicabut.";
 
+/// Added only when a source is a detected anomaly: it is a finding in the data, not a regulation
+const ANOMALY_RULE: &str = " Sumber bertanda temuan anomali adalah hasil deteksi pada data, bukan peraturan; sebutkan sebagai temuan, jelaskan nilainya, dan kaitkan dengan sumber peraturan jika ada.";
+
 /// First `max` characters of `text`, cut on a word boundary where possible
 fn clip(text: &str, max: usize) -> String {
     if text.chars().count() <= max {
@@ -32,7 +35,13 @@ fn clip(text: &str, max: usize) -> String {
 pub fn build_prompt(kind: LlmKind, question: &str, hits: &[Hit], max_body_chars: usize) -> String {
     let mut context = String::new();
     for (i, hit) in hits.iter().enumerate() {
-        let status = if hit.status == "active" { "berlaku" } else { "DICABUT" };
+        let status = if hit.is_anomaly() {
+            "hasil deteksi data"
+        } else if hit.status == "active" {
+            "berlaku"
+        } else {
+            "DICABUT"
+        };
         context.push_str(&format!(
             "[{}] {} (status: {status})\n{}\n\n",
             i + 1,
@@ -44,13 +53,23 @@ pub fn build_prompt(kind: LlmKind, question: &str, hits: &[Hit], max_body_chars:
         context.push_str("(tidak ada konteks yang ditemukan)\n\n");
     }
     let question = question.trim();
-    let system = if hits.iter().any(|h| h.status != "active") { format!("{SYSTEM}{REVOKED_RULE}") } else { SYSTEM.to_owned() };
+    let mut system = SYSTEM.to_owned();
+    if hits.iter().any(|h| h.status != "active") {
+        system.push_str(REVOKED_RULE);
+    }
+    if hits.iter().any(Hit::is_anomaly) {
+        system.push_str(ANOMALY_RULE);
+    }
     match kind {
         LlmKind::Qwen => format!(
             "<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {question}<|im_end|>\n<|im_start|>assistant\n"
         ),
+        // Qwen3 thinks by default; an empty think block after the assistant tag turns that off
+        LlmKind::Qwen3 => format!(
+            "<|im_start|>system\n{system}<|im_end|>\n<|im_start|>user\nKONTEKS:\n{context}PERTANYAAN: {question}<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n"
+        ),
         // Gemma has no system role, so the instructions open the user turn
-        LlmKind::Gemma => format!(
+        LlmKind::Gemma | LlmKind::Gemma1b => format!(
             "<bos><start_of_turn>user\n{system}\n\nKONTEKS:\n{context}PERTANYAAN: {question}<end_of_turn>\n<start_of_turn>model\n"
         ),
     }
@@ -74,6 +93,12 @@ mod tests {
             content: content.into(),
             score: 1.0,
         }
+    }
+
+    #[test]
+    fn qwen3_prompt_disables_thinking() {
+        let prompt = build_prompt(LlmKind::Qwen3, "Apa kewajiban dosen?", &[], DEFAULT_BODY_CHARS);
+        assert!(prompt.ends_with("<|im_start|>assistant\n<think>\n\n</think>\n\n"));
     }
 
     #[test]

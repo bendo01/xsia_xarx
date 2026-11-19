@@ -155,7 +155,7 @@ pub async fn retrieve(req: &mut Request, depot: &mut Depot) -> Result<Json<Retri
     let s = settings(&payload)?;
 
     let started = Instant::now();
-    let hits = search::search(db, &s.question, s.retrieval)
+    let hits = find_sources(db, &s)
         .await
         .map_err(|e| StatusError::internal_server_error().brief(format!("{e:#}")))?;
     let retrieval_ms = started.elapsed().as_millis();
@@ -237,7 +237,7 @@ async fn run_ask(
     tx: &mpsc::UnboundedSender<Event>,
 ) -> anyhow::Result<()> {
     let started = Instant::now();
-    let hits = search::search(db, &s.question, s.retrieval).await?;
+    let hits = find_sources(db, &s).await?;
     let retrieval_ms = started.elapsed().as_millis();
     // Only the sources that fit the model's prompt budget are shown, stored and cited
     let kind = s.kind;
@@ -288,6 +288,24 @@ async fn run_ask(
         }),
     ));
     Ok(())
+}
+
+/// Number of saved anomalies added to the sources of a question that is about anomalies
+const ANOMALY_SOURCES: usize = 3;
+
+/// Regulation chunks for the question, and, when it asks about anomalies, the closest saved anomalies in front of them
+async fn find_sources(db: &DatabaseConnection, s: &Settings) -> anyhow::Result<Vec<Hit>> {
+    let regulations = search::search(db, &s.question, s.retrieval).await?;
+    if !search::mentions_anomalies(&s.question) {
+        return Ok(regulations);
+    }
+    // Without a saved, indexed anomaly list the answer simply rests on the regulations
+    let mut hits = search::anomalies(db, &s.question, ANOMALY_SOURCES).await.unwrap_or_else(|e| {
+        tracing::warn!("Could not search the anomaly list: {e:#}");
+        Vec::new()
+    });
+    hits.extend(regulations);
+    Ok(hits)
 }
 
 /// Builds the prompt, dropping the lowest-ranked sources until it fits `kind`'s token budget (the best source is

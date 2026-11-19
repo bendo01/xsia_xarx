@@ -42,7 +42,8 @@ const TOP_K_RANGE = { min: 1, max: 10, step: 1, default: 3 };
 const TEMPERATURE_RANGE = { min: 0, max: 1, step: 0.05, default: 0.2 };
 const MAX_TOKEN_RANGE = { min: 16, max: 1024, step: 16, default: 400 };
 // Gemma's prompt budget is about half of Qwen's (generation.rs `max_prompt_tokens`), so it gets fewer chunks
-const TOP_K_MAX_BY_MODEL: Record<string, number> = { qwen: 10, gemma: 4 };
+const TOP_K_MAX_BY_MODEL: Record<string, number> = { qwen: 10, gemma: 4, qwen3: 10, gemma1b: 4 };
+const MODEL_LABELS: Record<string, string> = { qwen: 'Qwen 2.5 1.5B', gemma: 'Gemma 3 4B', qwen3: 'Qwen 3 1.7B', gemma1b: 'Gemma 3 1B' };
 const QUESTION_MIN_CHARS = 3;
 const QUESTION_MAX_CHARS = 1000;
 const clamp = (value: number, min: number, max: number) => Math.min(max, Math.max(min, value));
@@ -431,7 +432,7 @@ export default function AgentChatbotPage() {
                                         <For each={status()!.models}>
                                             {(m) => (
                                                 <option value={m.id}>
-                                                    {m.id === 'gemma' ? 'Gemma 3 4B' : 'Qwen 2.5 1.5B'}
+                                                    {MODEL_LABELS[m.id] ?? m.id}
                                                     {m.model_present && m.tokenizer_present ? '' : ' (n/a)'}
                                                 </option>
                                             )}

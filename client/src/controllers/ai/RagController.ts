@@ -16,7 +16,7 @@ const getHeaders = (): Record<string, string> => {
 };
 
 export interface RagLlmModel {
-    /** `qwen` or `gemma`, sent as `model` when asking */
+    /** `qwen`, `gemma`, `qwen3` or `gemma1b`, sent as `model` when asking */
     id: string;
     label: string;
     model_present: boolean;

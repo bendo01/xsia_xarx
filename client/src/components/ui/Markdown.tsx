@@ -219,7 +219,7 @@ export default function Markdown(props: { text: string; onCite?: (n: number) => 
         );
     };
     return (
-        <div class="space-y-2 break-words">
+        <div class="space-y-2 wrap-break-words">
             <For each={blocks()}>
                 {(b) => (
                     <Switch>
