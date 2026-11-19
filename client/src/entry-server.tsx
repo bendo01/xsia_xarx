@@ -12,7 +12,7 @@ export default createHandler(() => {
           <head>
             <meta charset="utf-8" />
             <meta name="viewport" content="width=device-width, initial-scale=1" />
-            <title>SIAKA</title>
+            <title>{import.meta.env.VITE_APP_NAME ?? 'XSIA XARX'}</title>
             <link rel="icon" href={iconHref} />
           <script>
             {`
