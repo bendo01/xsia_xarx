@@ -429,9 +429,10 @@ export default function AgentChatbotPage() {
                                         onChange={(e) => setModelId(e.currentTarget.value)}
                                         id="select-rag-model"
                                     >
+                                        {/* `selected` is needed: a status reload rebuilds the options, and the browser would fall back to the first one */}
                                         <For each={status()!.models}>
                                             {(m) => (
-                                                <option value={m.id}>
+                                                <option value={m.id} selected={m.id === modelId()}>
                                                     {MODEL_LABELS[m.id] ?? m.id}
                                                     {m.model_present && m.tokenizer_present ? '' : ' (n/a)'}
                                                 </option>

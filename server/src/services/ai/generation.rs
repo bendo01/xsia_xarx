@@ -161,7 +161,14 @@ impl Weights {
         match self {
             Self::Qwen(m) => m.forward(x, index_pos),
             Self::Gemma(m) => m.forward(x, index_pos),
-            Self::Qwen3(m) => m.forward(x, index_pos),
+            Self::Qwen3(m) => {
+                // Unlike Qwen2 and Gemma 3, this model appends to its KV cache whatever `index_pos` is, so a new
+                // prompt (index_pos 0) must start from an empty one, else keys of the old prompt are still there
+                if index_pos == 0 {
+                    m.clear_kv_cache();
+                }
+                m.forward(x, index_pos)
+            }
         }
     }
 }

@@ -1475,6 +1475,20 @@ See **[DEPLOYMENT.md](DEPLOYMENT.md)** for a step-by-step guide to launching on 
 
 ---
 
+## Clear the Chatbot History
+
+`ai.message_citations` has a foreign key to `ai.messages`, so `TRUNCATE ai.messages` alone fails with `cannot truncate a table referenced in a foreign key constraint`. Truncate the tables together:
+
+```sql
+-- Messages and their citations (conversations stay, but are left empty)
+TRUNCATE ai.message_citations, ai.messages;
+
+-- Or the whole chat history
+TRUNCATE ai.message_citations, ai.messages, ai.conversations;
+```
+
+Name the tables instead of using `TRUNCATE ai.messages CASCADE`: `CASCADE` also empties any table that references `messages`, including ones added later. The knowledge-base chunks (`ai.chunks`) are not affected.
+
 ## Fix Role
 
 ```sh
