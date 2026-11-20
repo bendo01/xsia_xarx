@@ -1,3 +1,4 @@
+import { X } from '@lucide/solid';
 import { useLocation } from '@solidjs/router';
 import { For } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
@@ -40,7 +41,7 @@ export default function NavDrawer(props: { items: MenuItem[]; roleLabel: string 
             aria-controls={DRAWER_ID}
             aria-label={t('nav.closeSidebar')}
           >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            <X class="size-4" />
           </button>
         </header>
 

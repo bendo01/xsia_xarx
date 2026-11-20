@@ -11,7 +11,7 @@ export default function PageHeader(props: { title: string; description?: string;
         </Show>
       </div>
       <Show when={props.actions}>
-        <div class="flex items-center gap-2">{props.actions}</div>
+        <div class="flex w-full flex-wrap items-center gap-2 sm:w-auto">{props.actions}</div>
       </Show>
     </div>
   );

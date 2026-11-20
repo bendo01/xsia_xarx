@@ -39,6 +39,18 @@ describe('niceScale / ticks', () => {
 
 describe('labelIndexes', () => {
   it('labels everything when there is room', () => expect(labelIndexes(5, 8)).toEqual([0, 1, 2, 3, 4]));
+  it('never puts two labels closer together than the step (they would overlap)', () => {
+    expect(labelIndexes(4, 2)).toEqual([0, 3]); // k=2: the last label replaces index 2, not sits beside it
+    for (let n = 2; n <= 40; n++) {
+      for (const max of [2, 3, 5, 8]) {
+        const idx = labelIndexes(n, max);
+        if (n <= max) continue;
+        const k = Math.ceil(n / max);
+        for (let i = 1; i < idx.length; i++) expect(idx[i] - idx[i - 1], `n=${n} max=${max}`).toBeGreaterThanOrEqual(k);
+        expect(idx.at(-1)).toBe(n - 1);
+      }
+    }
+  });
   it('thins out long series but keeps the newest label', () => {
     const idx = labelIndexes(20, 8);
     expect(idx[0]).toBe(0);

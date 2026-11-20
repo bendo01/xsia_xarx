@@ -3,7 +3,7 @@
 // palette and the active-item logic on a single source of truth.
 import { getDashboardPathForRole, type DashboardContext } from './roles';
 
-export type IconName = 'user' | 'users' | 'book' | 'graduation' | 'lock' | 'home' | 'chalkboard';
+export type IconName = 'user' | 'users' | 'book' | 'graduation' | 'lock' | 'unlock' | 'printer' | 'home' | 'chalkboard';
 
 export interface MenuItem {
   id: string;

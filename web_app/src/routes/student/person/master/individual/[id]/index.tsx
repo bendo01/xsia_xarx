@@ -6,6 +6,7 @@ import { env } from 'virtual:solid-env/client';
 
 import StudentSwitcher from '../../../../../../components/student/StudentSwitcher';
 import LineChart from '../../../../../../components/chart/LineChart';
+import LockStatus from '../../../../../../components/student/LockStatus';
 import { Badge } from '../../../../../../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../../../../components/ui/tabs';
@@ -79,12 +80,12 @@ export default function StudentHome() {
         {/* Identity header */}
         <section class={`${cardClass} p-5`}>
           <div class="flex flex-wrap items-start justify-between gap-4">
-            <div class="flex items-center gap-4">
+            <div class="flex min-w-0 max-w-full items-center gap-4">
               <div class="flex size-14 shrink-0 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground" aria-hidden="true">
                 {profile().individual.name.slice(0, 1).toUpperCase()}
               </div>
               <div class="min-w-0">
-                <h1 class="truncate text-xl font-semibold text-foreground">{fullName(profile().individual)}</h1>
+                <h1 class="break-words text-xl font-semibold text-foreground sm:truncate">{fullName(profile().individual)}</h1>
                 <Show when={profile().selected}>
                   {(s) => (
                     <p class="mt-0.5 text-sm text-muted-foreground-1">
@@ -154,6 +155,7 @@ export default function StudentHome() {
                     ariaLabel={t('st.progresBebanKreditSKS')}
                     categories={semesters()}
                     format={(n) => `${n} ${t('st.sks')}`}
+                    tickFormat={String}
                     series={[
                       { name: t('st.cumulativeSKS'), color: '#0d9488', values: profile().trend.map((p) => p.totalSks), area: true },
                       { name: t('st.semesterSKS'), color: '#f59e0b', values: profile().trend.map((p) => p.sks) },
@@ -187,15 +189,15 @@ export default function StudentHome() {
                     <For each={newestFirst()}>
                       {(a) => (
                         <TableRow>
-                          <TableCell class="font-medium">
+                          <TableCell class="font-medium" label={t('st.academicSemester')}>
                             {a.academic_year?.name ?? a.academic_year_name ?? a.semester_name ?? a.name ?? '-'}
                           </TableCell>
-                          <TableCell>{a.total_credit}</TableCell>
-                          <TableCell>{dec(a.cumulative_index)}</TableCell>
-                          <TableCell>{a.grand_total_credit}</TableCell>
-                          <TableCell>{dec(a.grand_cumulative_index)}</TableCell>
-                          <TableCell>
-                            <Badge variant={a.is_lock ? 'secondary' : 'success'}>{a.is_lock ? t('st.locked') : t('st.unlocked')}</Badge>
+                          <TableCell label={t('st.sksSemester')}>{a.total_credit}</TableCell>
+                          <TableCell label={t('st.semesterIPS')}>{dec(a.cumulative_index)}</TableCell>
+                          <TableCell label={t('st.cumSKS')}>{a.grand_total_credit}</TableCell>
+                          <TableCell label={t('st.ipk')}>{dec(a.grand_cumulative_index)}</TableCell>
+                          <TableCell label={t('st.lockStatus')}>
+                            <LockStatus locked={a.is_lock} />
                           </TableCell>
                         </TableRow>
                       )}

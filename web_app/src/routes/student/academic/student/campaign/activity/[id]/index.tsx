@@ -6,7 +6,8 @@ import { env } from 'virtual:solid-env/client';
 
 import ActivityError from '../../../../../../../components/student/ActivityError';
 import PageHeader from '../../../../../../../components/student/PageHeader';
-import { Badge } from '../../../../../../../components/ui/badge';
+import LockStatus from '../../../../../../../components/student/LockStatus';
+import PrintLink from '../../../../../../../components/student/PrintLink';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../../components/ui/table';
 import { formatNumber, t } from '../../../../../../../i18n';
 import { getActivityDetail } from '../../../../../../../lib/enrollment';
@@ -61,12 +62,8 @@ export default function ActivityDetailPage() {
             <a href="/student/academic/student/campaign/activity" class="rounded-xs border border-layer-line bg-layer px-3 py-2 text-sm text-layer-foreground hover:bg-layer-hover focus:outline-hidden">
               {t('st.backToActivities')}
             </a>
-            <a href={printHref('krs')} target="_blank" rel="noopener" title={t('st.printStudyPlanCardKRS')} class="rounded-xs border border-layer-line bg-layer px-3 py-2 text-sm text-layer-foreground hover:bg-layer-hover focus:outline-hidden">
-              {t('st.printKRS')}
-            </a>
-            <a href={printHref('khs')} target="_blank" rel="noopener" title={t('st.printStudyResultCardKHS')} class="rounded-xs border border-layer-line bg-layer px-3 py-2 text-sm text-layer-foreground hover:bg-layer-hover focus:outline-hidden">
-              {t('st.printKHS')}
-            </a>
+            <PrintLink variant="button" href={printHref('krs')} label={t('st.printKRS')} title={t('st.printStudyPlanCardKRS')} />
+            <PrintLink variant="button" href={printHref('khs')} label={t('st.printKHS')} title={t('st.printStudyResultCardKHS')} />
             <Show
               when={!data().activity.is_lock}
               fallback={
@@ -117,24 +114,24 @@ export default function ActivityDetailPage() {
               <For each={data().courses}>
                 {(c, i) => (
                   <TableRow>
-                    <TableCell>{i() + 1}</TableCell>
-                    <TableCell class="font-mono font-semibold text-primary">{c.course_code}</TableCell>
-                    <TableCell class="font-medium">{c.course_name}</TableCell>
-                    <TableCell>{c.credit}</TableCell>
-                    <TableCell>
+                    <TableCell label={t('academic.no')}>{i() + 1}</TableCell>
+                    <TableCell class="font-mono font-semibold text-primary" label={t('academic.courseCode')}>{c.course_code}</TableCell>
+                    <TableCell class="font-medium" label={t('academic.courseTitle')}>{c.course_name}</TableCell>
+                    <TableCell label={t('academic.sks')}>{c.credit}</TableCell>
+                    <TableCell label={t('academic.lecturer')}>
                       <Show when={c.lecturers.length > 0} fallback="-">
                         <ul class="space-y-0.5">
                           <For each={c.lecturers}>{(l) => <li>{lecturerLabel(l)}</li>}</For>
                         </ul>
                       </Show>
                     </TableCell>
-                    <TableCell>{c.mark != null ? c.mark.toFixed(1) : '-'}</TableCell>
-                    <TableCell>
+                    <TableCell label={t('academic.mark')}>{c.mark != null ? c.mark.toFixed(1) : '-'}</TableCell>
+                    <TableCell label={t('academic.grade')}>
                       <span class={['inline-block rounded-xs px-2 py-0.5 text-xs font-bold', TONE[gradeTone(c.grade_letter)]]}>{c.grade_letter}</span>
                     </TableCell>
-                    <TableCell class="font-mono font-semibold">{c.grade_point != null ? c.grade_point.toFixed(2) : '-'}</TableCell>
-                    <TableCell>
-                      <Badge variant={c.is_lock ? 'secondary' : 'success'}>{c.is_lock ? t('st.locked') : t('st.unlocked')}</Badge>
+                    <TableCell class="font-mono font-semibold" label={t('academic.point')}>{c.grade_point != null ? c.grade_point.toFixed(2) : '-'}</TableCell>
+                    <TableCell label={t('academic.status')}>
+                      <LockStatus locked={c.is_lock} />
                     </TableCell>
                   </TableRow>
                 )}

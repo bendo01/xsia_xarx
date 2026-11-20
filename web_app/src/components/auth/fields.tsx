@@ -1,4 +1,5 @@
 import type { JSX } from '@solidjs/web';
+import { Eye, EyeOff, KeyRound, Lock, Mail, Phone } from '@lucide/solid';
 import { Show, createSignal } from 'solid-js';
 
 import { t } from '../../i18n';
@@ -8,21 +9,13 @@ import { Spinner } from '../loader/Spinner';
 const inputClass =
   'w-full rounded-xs border border-neutral-300 bg-white py-3 pl-11 pr-4 text-sm text-foreground shadow-inner transition-all placeholder:text-neutral-400 focus:border-emerald-400/50 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 dark:border-emerald-500/20 dark:bg-[#111827]/70 dark:placeholder:text-white/30';
 
-// Functions, not JSX constants: JSX evaluated at module load runs outside any
-// component owner (breaks SSR hydration keys) and would share one DOM node.
-const icons = {
-  mail: () => (<><rect width="20" height="16" x="2" y="4" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></>),
-  lock: () => (<><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></>),
-  phone: () => (<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />),
-  key: () => (<><circle cx="7.5" cy="15.5" r="5.5" /><path d="m21 2-9.6 9.6" /><path d="m15.5 7.5 3 3L22 7l-3-3" /></>),
-};
-
-export function FieldIcon(props: { name: keyof typeof icons }) {
+export function FieldIcon(props: { name: 'mail' | 'lock' | 'phone' | 'key' }) {
   return (
     <span class="pointer-events-none absolute left-4 text-neutral-400 dark:text-white/40">
-      <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        {icons[props.name]()}
-      </svg>
+      <Show when={props.name === 'mail'}><Mail class="size-4" /></Show>
+      <Show when={props.name === 'lock'}><Lock class="size-4" /></Show>
+      <Show when={props.name === 'phone'}><Phone class="size-4" /></Show>
+      <Show when={props.name === 'key'}><KeyRound class="size-4" /></Show>
     </span>
   );
 }
@@ -64,14 +57,9 @@ export function AuthField(props: {
             class="absolute right-3.5 p-1 text-neutral-400 transition-colors hover:text-neutral-900 dark:text-white/40 dark:hover:text-white/90"
             aria-label={shown() ? t('au.sembunyikanKataSandi') : t('au.tampilkanKataSandi')}
           >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <Show
-                when={shown()}
-                fallback={<><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" /></>}
-              >
-                <path d="m9.88 9.88 4.24 4.24" /><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" x2="22" y1="2" y2="22" />
-              </Show>
-            </svg>
+            <Show when={shown()} fallback={<Eye class="size-4" />}>
+              <EyeOff class="size-4" />
+            </Show>
           </button>
         </Show>
       </span>

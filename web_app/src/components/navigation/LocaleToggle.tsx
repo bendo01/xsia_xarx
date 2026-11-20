@@ -6,12 +6,12 @@ export default function LocaleToggle() {
     <button
       onClick={toggleLocale}
       type="button"
-      class="flex items-center gap-1.5 rounded-xs border border-neutral-200 bg-neutral-900/5 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg backdrop-blur-md transition-all hover:bg-neutral-900/10 dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/20"
+      class="flex items-center gap-1.5 rounded-xs border border-neutral-200 bg-neutral-900/5 px-2 py-1.5 sm:px-3 text-xs font-semibold text-foreground shadow-lg backdrop-blur-md transition-all hover:bg-neutral-900/10 dark:border-white/15 dark:bg-white/10 dark:hover:bg-white/20"
       aria-label={t('nav.selectLanguage')}
       title={t('nav.selectLanguage')}
     >
       <Flag locale={getLocale()} />
-      <span class="font-mono text-xs font-bold uppercase">{getLocale()}</span>
+      <span class="hidden font-mono text-xs font-bold uppercase sm:inline">{getLocale()}</span>
     </button>
   );
 }

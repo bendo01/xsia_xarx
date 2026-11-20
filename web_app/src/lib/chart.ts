@@ -55,8 +55,9 @@ export function labelIndexes(n: number, maxLabels = 8): number[] {
   const k = Math.ceil(n / maxLabels);
   const idx = Array.from({ length: n }, (_, i) => i).filter((i) => i % k === 0);
   if (idx[idx.length - 1] !== n - 1) {
-    // keep the newest semester labelled, dropping a neighbour that would overlap it
-    if (n - 1 - idx[idx.length - 1] < k / 2) idx.pop();
+    // Keep the newest label, and keep every label at least k apart: a neighbour that would
+    // sit closer than that is dropped in its favour (otherwise the two overlap).
+    if (n - 1 - idx[idx.length - 1] < k) idx.pop();
     idx.push(n - 1);
   }
   return idx;

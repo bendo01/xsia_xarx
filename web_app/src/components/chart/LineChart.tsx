@@ -1,4 +1,4 @@
-import { For, Show, createMemo, createSignal } from 'solid-js';
+import { For, Show, createMemo, createSignal, onSettled } from 'solid-js';
 
 import { areaPath, labelIndexes, linePath, niceScale, ticks, xAt, yAt } from '../../lib/chart';
 
@@ -10,8 +10,12 @@ export interface ChartSeries {
   area?: boolean;
 }
 
-const W = 640;
-const PAD = { top: 16, right: 20, bottom: 28, left: 40 };
+/** Width used for the server render; the browser then measures the real container. */
+const DEFAULT_W = 640;
+const MIN_W = 260;
+const PAD = { top: 16, right: 20, bottom: 28, left: 44 };
+/** Room one x label needs ("2023/2024 Ganjil" at 11px). */
+const LABEL_W = 96;
 
 /**
  * A small responsive line chart in plain SVG: rendered on the server, themed by
@@ -24,10 +28,27 @@ export default function LineChart(props: {
   /** Axis maximum; omit to fit the data. Minimum is always 0. */
   yMax?: number;
   yStep?: number;
+  /** Values in the tooltip (and on the axis unless `tickFormat` is given). */
   format?: (n: number) => string;
+  /** Axis tick labels; keep them short (no units), the margin is narrow. */
+  tickFormat?: (n: number) => string;
   ariaLabel: string;
   height?: number;
 }) {
+  // Draw 1:1 at the container's real width, so text stays 11px on a phone instead of being
+  // scaled down with the whole drawing (640 units squeezed into ~330px made it ~6px).
+  const [vw, setVw] = createSignal(DEFAULT_W);
+  let box: HTMLDivElement | undefined;
+  onSettled(() => {
+    if (!box || typeof ResizeObserver === 'undefined') return;
+    const measure = () => setVw(Math.max(MIN_W, Math.round(box!.clientWidth) || DEFAULT_W));
+    measure();
+    const ro = new ResizeObserver(measure);
+    ro.observe(box);
+    return () => ro.disconnect();
+  });
+  const maxLabels = () => Math.max(2, Math.floor((vw() - PAD.left - PAD.right) / LABEL_W));
+
   const H = () => props.height ?? 220;
   const bottom = () => H() - PAD.bottom;
   const n = () => props.categories.length;
@@ -42,12 +63,12 @@ export default function LineChart(props: {
   const lines = createMemo(() =>
     props.series.map((s) => ({
       ...s,
-      points: s.values.map((v, i) => ({ x: xAt(i, n(), PAD.left, W - PAD.right), y: yAt(v, 0, scale().max, PAD.top, bottom()) })),
+      points: s.values.map((v, i) => ({ x: xAt(i, n(), PAD.left, vw() - PAD.right), y: yAt(v, 0, scale().max, PAD.top, bottom()) })),
     })),
   );
 
   const [hover, setHover] = createSignal<number | null>(null);
-  const colW = () => (n() <= 1 ? W - PAD.left - PAD.right : (W - PAD.left - PAD.right) / (n() - 1));
+  const colW = () => (n() <= 1 ? vw() - PAD.left - PAD.right : (vw() - PAD.left - PAD.right) / (n() - 1));
 
   // Tooltip box, clamped inside the plot.
   const tip = createMemo(() => {
@@ -56,32 +77,32 @@ export default function LineChart(props: {
     const rows = props.series.map((s) => ({ color: s.color, text: `${s.name}: ${fmt(s.values[i] ?? 0)}` }));
     const title = props.categories[i] ?? '';
     const chars = Math.max(title.length, ...rows.map((r) => r.text.length));
-    const w = Math.min(W - 8, chars * 6.4 + 34);
+    const w = Math.min(vw() - 8, chars * 6.4 + 34);
     const h = 22 + rows.length * 16;
-    const cx = xAt(i, n(), PAD.left, W - PAD.right);
-    const x = Math.min(Math.max(cx - w / 2, 4), W - w - 4);
+    const cx = xAt(i, n(), PAD.left, vw() - PAD.right);
+    const x = Math.min(Math.max(cx - w / 2, 4), vw() - w - 4);
     return { i, title, rows, w, h, x, y: PAD.top, cx };
   });
 
   return (
-    <div class="w-full min-w-0">
-      <svg viewBox={`0 0 ${W} ${H()}`} class="h-auto w-full" role="img" aria-label={props.ariaLabel} onPointerLeave={() => setHover(null)}>
+    <div class="w-full min-w-0" ref={box}>
+      <svg viewBox={`0 0 ${vw()} ${H()}`} class="h-auto w-full" role="img" aria-label={props.ariaLabel} onPointerLeave={() => setHover(null)}>
         <title>{props.ariaLabel}</title>
 
         {/* y grid + labels */}
         <For each={ticks(0, scale().max, scale().step)}>
           {(v) => (
             <g>
-              <line x1={PAD.left} x2={W - PAD.right} y1={yAt(v, 0, scale().max, PAD.top, bottom())} y2={yAt(v, 0, scale().max, PAD.top, bottom())} class="stroke-border" stroke-dasharray="3 3" />
-              <text x={PAD.left - 8} y={yAt(v, 0, scale().max, PAD.top, bottom()) + 4} text-anchor="end" class="fill-muted-foreground-1 text-[11px]">{fmt(v)}</text>
+              <line x1={PAD.left} x2={vw() - PAD.right} y1={yAt(v, 0, scale().max, PAD.top, bottom())} y2={yAt(v, 0, scale().max, PAD.top, bottom())} class="stroke-border" stroke-dasharray="3 3" />
+              <text x={PAD.left - 8} y={yAt(v, 0, scale().max, PAD.top, bottom()) + 4} text-anchor="end" class="fill-muted-foreground-1 text-[11px]">{(props.tickFormat ?? fmt)(v)}</text>
             </g>
           )}
         </For>
 
         {/* x labels */}
-        <For each={labelIndexes(n())}>
+        <For each={labelIndexes(n(), maxLabels())}>
           {(i) => (
-            <text x={xAt(i, n(), PAD.left, W - PAD.right)} y={H() - 8} text-anchor="middle" class="fill-muted-foreground-1 text-[11px]">{props.categories[i]}</text>
+            <text x={xAt(i, n(), PAD.left, vw() - PAD.right)} y={H() - 8} text-anchor={i === 0 ? 'start' : i === n() - 1 ? 'end' : 'middle'} class="fill-muted-foreground-1 text-[11px]">{props.categories[i]}</text>
           )}
         </For>
 
@@ -101,7 +122,7 @@ export default function LineChart(props: {
         <For each={props.categories}>
           {(_, i) => (
             <rect
-              x={xAt(i(), n(), PAD.left, W - PAD.right) - colW() / 2}
+              x={xAt(i(), n(), PAD.left, vw() - PAD.right) - colW() / 2}
               y={PAD.top}
               width={colW()}
               height={bottom() - PAD.top}
@@ -142,7 +163,9 @@ export default function LineChart(props: {
       </ul>
 
       {/* The same numbers as text, for screen readers. */}
-      <table class="sr-only">
+      {/* sr-only on a wrapper: overflow does not clip a <table>, which would widen the page on phones. */}
+      <div class="sr-only">
+      <table>
         <caption>{props.ariaLabel}</caption>
         <thead>
           <tr><th scope="col" />
@@ -160,6 +183,7 @@ export default function LineChart(props: {
           </For>
         </tbody>
       </table>
+      </div>
     </div>
   );
 }

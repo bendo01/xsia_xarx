@@ -87,12 +87,12 @@ export default function StudentDirectory() {
             <For each={data().data}>
               {(s) => (
                 <TableRow>
-                  <TableCell class="font-mono font-semibold text-primary">{s.code}</TableCell>
-                  <TableCell class="font-medium">{s.name || '-'}</TableCell>
-                  <TableCell>{s.unit?.name ?? s.unit_name ?? '-'}</TableCell>
-                  <TableCell>{s.selection_type?.name ?? '-'}</TableCell>
-                  <TableCell>{s.registered ? formatDate(s.registered) : '-'}</TableCell>
-                  <TableCell>
+                  <TableCell class="font-mono font-semibold text-primary" label={t('st.studentNIM')}>{s.code}</TableCell>
+                  <TableCell class="font-medium" label={t('st.fullName')}>{s.name || '-'}</TableCell>
+                  <TableCell label={t('st.studyProgram')}>{s.unit?.name ?? s.unit_name ?? '-'}</TableCell>
+                  <TableCell label={t('st.admissionPath')}>{s.selection_type?.name ?? '-'}</TableCell>
+                  <TableCell label={t('st.registrationDate')}>{s.registered ? formatDate(s.registered) : '-'}</TableCell>
+                  <TableCell label={t('st.status')}>
                     <Badge variant="success">{s.status?.name ?? s.status_name ?? t('st.active')}</Badge>
                   </TableCell>
                   <TableCell class="text-end">

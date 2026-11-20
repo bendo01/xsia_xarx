@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { openEnrollmentFeed, parseFeedMessage, type FeedEvent } from './realtime-client';
+import { openEnrollmentFeed, parseMeetingMessage, parseFeedMessage, type FeedEvent } from './realtime-client';
 
 const T = '123e4567-e89b-42d3-a456-426614174011';
 
@@ -72,5 +72,18 @@ describe('openEnrollmentFeed', () => {
   it('is a harmless no-op where EventSource does not exist', () => {
     const feed = openEnrollmentFeed('a', { onEvent() {}, onStatus() {} }, undefined);
     expect(() => feed.close()).not.toThrow();
+  });
+});
+
+describe('parseMeetingMessage', () => {
+  const M = '11111111-1111-4111-8111-111111111111';
+  it('reads an attendance change', () => {
+    const raw = JSON.stringify({ channel: `meeting:${M}`, data: { type: 'attendance_changed', student_id: 's1', attend_type_id: 'a1', method: 'qr' } });
+    expect(parseMeetingMessage(raw)).toEqual({ kind: 'attendance', studentId: 's1', attendTypeId: 'a1', method: 'qr' });
+  });
+  it('ignores other channels, types and junk', () => {
+    expect(parseMeetingMessage(JSON.stringify({ channel: `teach:${M}`, data: { type: 'attendance_changed', student_id: 's' } }))).toBeNull();
+    expect(parseMeetingMessage(JSON.stringify({ channel: `meeting:${M}`, data: { type: 'x' } }))).toBeNull();
+    expect(parseMeetingMessage('nope')).toBeNull();
   });
 });

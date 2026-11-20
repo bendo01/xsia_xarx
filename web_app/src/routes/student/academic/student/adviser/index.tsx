@@ -68,9 +68,9 @@ export default function StudentAdvisers() {
             class="h-9 w-full rounded-xs border border-input bg-card px-3 text-sm focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           />
         </label>
-        <label class="flex items-center gap-2 text-sm text-muted-foreground-1">
+        <label class="flex w-full items-center gap-2 text-sm text-muted-foreground-1 sm:w-auto">
           {t('st.roleFilter')}
-          <select name="role" class="h-9 rounded-xs border border-input bg-card px-2 text-sm text-foreground">
+          <select name="role" class="h-9 min-w-0 flex-1 rounded-xs border border-input bg-card px-2 text-sm text-foreground">
             <For each={[...ROLE_FILTERS]}>
               {(o) => (
                 <option value={o.value} selected={(one(search.role) || 'all') === o.value}>
@@ -93,11 +93,11 @@ export default function StudentAdvisers() {
           </p>
         }
       >
-        <ul class="grid gap-4 md:grid-cols-2">
+        <ul class="grid grid-cols-1 gap-4 md:grid-cols-2">
           <For each={visible()}>
             {(a) => (
-              <li class="rounded-xs border border-card-line bg-card p-5 shadow-2xs">
-                <div class="flex items-start gap-3">
+              <li class="min-w-0 rounded-xs border border-card-line bg-card p-5 shadow-2xs">
+                <div class="flex flex-wrap items-start gap-3">
                   <div class="flex size-10 shrink-0 items-center justify-center rounded-full bg-primary-100 font-semibold text-primary-800 dark:bg-primary-500/20 dark:text-primary-400" aria-hidden="true">
                     {(a.lecturer_name || 'A').charAt(0).toUpperCase()}
                   </div>
@@ -118,7 +118,7 @@ export default function StudentAdvisers() {
                   </div>
                   <div class="flex justify-between gap-3">
                     <dt class="text-muted-foreground-1">{t('st.email')}</dt>
-                    <dd class="truncate font-medium text-primary">{a.lecturer_email || '-'}</dd>
+                    <dd class="min-w-0 truncate font-medium text-primary">{a.lecturer_email || '-'}</dd>
                   </div>
                 </dl>
                 <Show when={a.notes}>

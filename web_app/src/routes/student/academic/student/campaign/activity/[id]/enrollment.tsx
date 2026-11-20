@@ -5,6 +5,7 @@ import { Errored, For, Show, createEffect, createMemo, createSignal } from 'soli
 import { toast } from 'solid-sonner';
 import { env } from 'virtual:solid-env/client';
 
+import { Icon } from '../../../../../../../components/shell/icons';
 import ActivityError from '../../../../../../../components/student/ActivityError';
 import PageHeader from '../../../../../../../components/student/PageHeader';
 import { Badge } from '../../../../../../../components/ui/badge';
@@ -147,7 +148,8 @@ export default function EnrollmentPage() {
       />
 
       <Show when={locked()}>
-        <p role="status" class="mb-4 rounded-xs border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-foreground">
+        <p role="status" class="mb-4 flex items-center gap-2 rounded-xs border border-warning/40 bg-warning/10 px-4 py-3 text-sm text-foreground">
+          <Icon name="lock" class="size-4 shrink-0" />
           {t('st.aktivitasPerkuliahanTelahDikunciDifinalisasi')}
         </p>
       </Show>
@@ -245,21 +247,24 @@ export default function EnrollmentPage() {
                   const block = () => blockerFor(o);
                   return (
                     <TableRow>
-                      <TableCell class="font-mono font-semibold text-primary">{o.course_code}</TableCell>
-                      <TableCell class="font-medium">{o.course_name}</TableCell>
-                      <TableCell>{o.class_name}</TableCell>
-                      <TableCell>{o.credits}</TableCell>
-                      <TableCell>{o.lecturer_name}</TableCell>
-                      <TableCell>
+                      <TableCell class="font-mono font-semibold text-primary" label={t('st.code')}>{o.course_code}</TableCell>
+                      <TableCell class="font-medium" label={t('st.courseTitle')}>{o.course_name}</TableCell>
+                      <TableCell label={t('st.class')}>{o.class_name}</TableCell>
+                      <TableCell label={t('st.sks')}>{o.credits}</TableCell>
+                      <TableCell label={t('st.lecturer')}>{o.lecturer_name}</TableCell>
+                      <TableCell label={t('st.scheduleRoom')}>
                         <span class="block">{o.schedule_time}</span>
                         <span class="block text-xs text-muted-foreground-1">{o.room_name}</span>
                       </TableCell>
-                      <TableCell>{o.enrolled_count} / {o.max_member}</TableCell>
+                      <TableCell label={t('st.quota')}>{o.enrolled_count} / {o.max_member}</TableCell>
                       <TableCell class="text-end">
                         <Show
                           when={block() === null || block() === 'CREDIT_LIMIT'}
                           fallback={
-                            <Badge variant={block() === 'ALREADY_ENROLLED' ? 'success' : 'secondary'}>
+                            <Badge variant={block() === 'ALREADY_ENROLLED' ? 'success' : 'secondary'} class="gap-1">
+                              <Show when={block() === 'LOCKED'}>
+                                <Icon name="lock" class="size-3 shrink-0" />
+                              </Show>
                               {block() === 'ALREADY_ENROLLED' ? t('st.enrolledCourses')
                                 : block() === 'DUPLICATE_COURSE' ? t('st.otherClassEnrolled')
                                 : block() === 'FULL' ? t('st.classFull')

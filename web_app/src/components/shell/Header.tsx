@@ -1,3 +1,4 @@
+import { ChevronDown, Menu, Search } from '@lucide/solid';
 import { For, Show } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
@@ -7,6 +8,7 @@ import { normalizeRoleName, type SessionUser, type UserRoleItem } from '../../li
 import LocaleToggle from '../navigation/LocaleToggle';
 import ThemeToggle from '../navigation/ThemeToggle';
 import { getInstitutionLogo } from '../../lib/institution';
+import { Icon } from './icons';
 import { DRAWER_ID } from './NavDrawer';
 
 export const roleLabel = (role: UserRoleItem | null | undefined, fallbackKey = 'guest') => {
@@ -29,7 +31,7 @@ export default function Header(props: {
 
   return (
     <header class="sticky top-0 z-50 flex w-full flex-wrap border-b border-navbar-line bg-navbar py-2.5">
-      <nav class="mx-auto flex w-full items-center justify-between gap-x-3 px-4 sm:px-6" aria-label="Top">
+      <nav class="mx-auto flex w-full items-center justify-between gap-x-2 px-3 sm:gap-x-3 sm:px-6" aria-label="Top">
         <div class="flex items-center gap-x-3">
           <a href="/" class="flex items-center gap-x-2 font-semibold text-foreground focus:outline-hidden" aria-label={env.VITE_APP_NAME}>
             <img src={getInstitutionLogo() ?? '/favicon.ico'} alt="" class="size-8 rounded-xs object-contain" />
@@ -41,13 +43,13 @@ export default function Header(props: {
             onClick={() => props.onOpenSearch()}
             class="hidden h-9 items-center gap-x-2 rounded-xs border border-layer-line bg-layer px-3 text-sm text-muted-foreground-1 hover:bg-layer-hover focus:outline-hidden sm:flex sm:w-64"
           >
-            <svg class="size-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+            <Search class="size-4 shrink-0" />
             <span class="flex-1 text-start">{t('common.search')}</span>
             <kbd class="rounded-xs border border-layer-line px-1.5 text-xs">Ctrl K</kbd>
           </button>
         </div>
 
-        <div class="flex items-center gap-x-2">
+        <div class="flex items-center gap-x-1.5 sm:gap-x-2">
           <ThemeToggle />
           <LocaleToggle />
 
@@ -56,15 +58,16 @@ export default function Header(props: {
             <div class="hs-dropdown [--auto-close:inside] [--placement:bottom-right] relative inline-flex">
               <button
                 type="button"
-                class="hs-dropdown-toggle inline-flex h-9 items-center gap-x-2 rounded-xs border border-layer-line bg-layer px-3 text-sm font-medium text-layer-foreground hover:bg-layer-hover focus:outline-hidden"
+                class="hs-dropdown-toggle inline-flex h-9 items-center gap-x-2 rounded-xs border border-layer-line bg-layer px-2.5 text-sm font-medium text-layer-foreground hover:bg-layer-hover focus:outline-hidden sm:px-3"
                 aria-haspopup="menu"
                 aria-expanded="false"
                 aria-label={t('nav.switchRole')}
               >
-                <span class="max-w-40 truncate">{roleLabel(active())}</span>
-                <svg class="size-4 hs-dropdown-open:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6" /></svg>
+                <Icon name="users" class="size-4 shrink-0 sm:hidden" />
+                <span class="hidden max-w-40 truncate sm:inline">{roleLabel(active())}</span>
+                <ChevronDown class="hidden size-4 hs-dropdown-open:rotate-180 sm:block" />
               </button>
-              <div class="hs-dropdown-menu z-70 mt-2 hidden min-w-60 rounded-xs border border-dropdown-line bg-dropdown opacity-0 shadow-md transition-[opacity,margin] duration hs-dropdown-open:opacity-100" role="menu" aria-orientation="vertical">
+              <div class="hs-dropdown-menu z-70 mt-2 hidden min-w-60 max-w-[calc(100vw-1.5rem)] rounded-xs border border-dropdown-line bg-dropdown opacity-0 shadow-md transition-[opacity,margin] duration hs-dropdown-open:opacity-100" role="menu" aria-orientation="vertical">
                 <div class="space-y-0.5 p-1">
                   <p class="block px-3 pb-1 pt-2 text-xs font-medium uppercase text-muted-foreground-1">{t('nav.rolesAvailable', { count: props.roles.length })}</p>
                   <For each={props.roles}>
@@ -100,7 +103,7 @@ export default function Header(props: {
             >
               {initials(props.user?.name ?? '')}
             </button>
-            <div class="hs-dropdown-menu z-70 mt-2 hidden min-w-60 divide-y divide-dropdown-divider rounded-xs border border-dropdown-line bg-dropdown opacity-0 shadow-md transition-[opacity,margin] duration hs-dropdown-open:opacity-100" role="menu" aria-orientation="vertical">
+            <div class="hs-dropdown-menu z-70 mt-2 hidden min-w-60 max-w-[calc(100vw-1.5rem)] divide-y divide-dropdown-divider rounded-xs border border-dropdown-line bg-dropdown opacity-0 shadow-md transition-[opacity,margin] duration hs-dropdown-open:opacity-100" role="menu" aria-orientation="vertical">
               <div class="px-4 py-3">
                 <p class="truncate text-sm font-medium text-foreground">{props.user?.name}</p>
                 <p class="truncate text-xs text-muted-foreground-1">{props.user?.email}</p>
@@ -132,7 +135,7 @@ export default function Header(props: {
             aria-expanded="false"
             aria-label={t('nav.toggleMenu')}
           >
-            <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18" /></svg>
+            <Menu class="size-4" />
           </button>
         </div>
       </nav>

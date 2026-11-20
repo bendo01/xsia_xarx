@@ -7,7 +7,8 @@ import { env } from 'virtual:solid-env/client';
 import Pager from '../../../../../../components/Pager';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import StudentSwitcher from '../../../../../../components/student/StudentSwitcher';
-import { Badge } from '../../../../../../components/ui/badge';
+import LockStatus from '../../../../../../components/student/LockStatus';
+import PrintLink from '../../../../../../components/student/PrintLink';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { formatNumber, t } from '../../../../../../i18n';
 import { getStudentActivities } from '../../../../../../lib/student';
@@ -97,23 +98,23 @@ export default function StudentActivities() {
               <For each={data().activities?.data}>
                 {(a) => (
                   <TableRow>
-                    <TableCell class="font-medium">
+                    <TableCell class="font-medium" label={t('st.semesterCampaign')}>
                       <a href={`/student/academic/student/campaign/activity/${encodeURIComponent(a.id)}`} class="text-primary hover:underline">{semesterLabel(a)}</a>
                     </TableCell>
-                    <TableCell>{a.total_credit}</TableCell>
-                    <TableCell>{dec(a.cumulative_index)}</TableCell>
-                    <TableCell>{a.grand_total_credit}</TableCell>
-                    <TableCell>{dec(a.grand_cumulative_index)}</TableCell>
-                    <TableCell>
-                      <Badge variant={a.is_lock ? 'secondary' : 'success'}>{a.is_lock ? t('st.locked') : t('st.unlocked')}</Badge>
+                    <TableCell label={t('st.sksSemester')}>{a.total_credit}</TableCell>
+                    <TableCell label={t('st.semesterIPS')}>{dec(a.cumulative_index)}</TableCell>
+                    <TableCell label={t('st.cumSKS')}>{a.grand_total_credit}</TableCell>
+                    <TableCell label={t('st.ipk')}>{dec(a.grand_cumulative_index)}</TableCell>
+                    <TableCell label={t('st.lockStatus')}>
+                      <LockStatus locked={a.is_lock} />
                     </TableCell>
                     <TableCell class="text-end">
-                      <span class="inline-flex gap-3 text-sm font-medium">
+                      <span class="inline-flex flex-wrap justify-end gap-x-4 gap-y-1 text-sm font-medium">
                         <Show when={!a.is_lock}>
                           <a href={`/student/academic/student/campaign/activity/${encodeURIComponent(a.id)}/enrollment`} class="text-primary hover:underline">{t('st.enrollKRS')}</a>
                         </Show>
-                        <a href={printHref('krs', a)} target="_blank" rel="noopener" class="text-primary hover:underline" title={t('st.printKRS')}>{t('st.krs')}</a>
-                        <a href={printHref('khs', a)} target="_blank" rel="noopener" class="text-primary hover:underline" title={t('st.printKHS')}>{t('st.khs')}</a>
+                        <PrintLink href={printHref('krs', a)} label={t('st.krs')} title={t('st.printKRS')} />
+                        <PrintLink href={printHref('khs', a)} label={t('st.khs')} title={t('st.printKHS')} />
                       </span>
                     </TableCell>
                   </TableRow>
