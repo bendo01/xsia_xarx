@@ -1,0 +1,38 @@
+@import 'tailwindcss';
+
+/* Preline UI: plugin sources, state variants (hs-overlay-open: ...) and theme tokens. */
+@source '../node_modules/preline/dist/*.js';
+@import 'preline/variants.css';
+@import 'preline/theme.css';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  The UI kit (src/components/ui) was written against shadcn-style tokens. Preline's
+  theme defines most of them (background, foreground, card, primary, muted, border,
+  popover, destructive, secondary); these aliases cover the rest so the palette comes
+  from Preline in light and dark mode alike.
+*/
+@theme inline {
+  --color-accent: var(--muted-hover);
+  --color-accent-foreground: var(--foreground);
+  --color-card-foreground: var(--foreground);
+  --color-popover-foreground: var(--foreground);
+  --color-input: var(--border-line-2);
+  --color-ring: var(--primary-focus);
+  --color-success: oklch(0.627 0.194 149.2);
+  --color-warning: oklch(0.769 0.188 70.1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  @apply bg-background-1 text-foreground antialiased;
+}

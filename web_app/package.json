@@ -1,0 +1,47 @@
+{
+  "name": "xsia-web-app",
+  "packageManager": "bun@1.4.5",
+  "version": "0.0.0",
+  "description": "",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "start": "bun --env-file=.env dist/server/node.js",
+    "serve": "vite preview",
+    "test": "vitest",
+    "lint": "oxlint src"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@solidjs/diagnostics": "^2.0.0",
+    "@solidjs/start-devtools": "^1.0.0-next.4",
+    "@solidjs/testing-library": "^1.0.0-rc.2",
+    "@solidjs/vite-plugin": "^3.0.0",
+    "@testing-library/jest-dom": "^7.0.0",
+    "@types/node": "^26.6.6",
+    "eslint-plugin-solid": "~0.20.0",
+    "filesystem-routing": "0.5.0",
+    "jsdom": "^31.0.0",
+    "oxlint": "~1.92.0",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.0"
+  },
+  "dependencies": {
+    "@kobalte/core": "2.0.0-alpha.4",
+    "@remix-run/cookie": "^1.0.2",
+    "@solidjs/meta": "^2.0.0",
+    "@solidjs/router": "^2.0.0",
+    "@solidjs/web": "^2.0.0",
+    "@tailwindcss/vite": "^4.3.5",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "preline": "^5.1.0",
+    "solid-js": "^2.0.0",
+    "solid-sonner": "^1.0.0",
+    "tailwind-merge": "^3.7.1",
+    "tailwindcss": "^4.3.5",
+    "valibot": "^1.4.2"
+  }
+}
