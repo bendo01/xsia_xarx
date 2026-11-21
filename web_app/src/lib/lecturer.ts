@@ -3,7 +3,7 @@ import { query } from '@solidjs/router';
 import { markSafeError } from '@solidjs/web';
 
 import { requireAuth } from '../server/auth';
-import { loadLecturerProfile, loadLecturerRecord } from '../server/lecturer';
+import { assertCanSeeLecturer, loadLecturerProfile, loadLecturerRecord } from '../server/lecturer';
 import { resolveIndividualId } from './student-select';
 
 const preferredLecturer = (auth: Awaited<ReturnType<typeof requireAuth>>) =>
@@ -15,6 +15,8 @@ export const getLecturerProfile = query(async (rawId: string) => {
   const auth = await requireAuth();
   const id = resolveIndividualId(rawId, auth.user?.individual_id);
   if (!id) throw markSafeError(new Error('Individual not found'));
+  // A lecturer opens only their own profile.
+  if (auth.activeRole === 'lecturer' && id !== auth.user?.individual_id) throw markSafeError(new Error('Individual not found'));
   return loadLecturerProfile(id, preferredLecturer(auth));
 }, 'lecturer-profile');
 
@@ -27,9 +29,9 @@ export const getMyLecturer = query(async () => {
   return { name: profile?.individual.name ?? null, lecturer: profile?.lecturer ?? null };
 }, 'lecturer-mine');
 
-/** A lecturer record by id (master detail page). */
+/** A lecturer record by id (master detail page), subject to assertCanSeeLecturer. */
 export const getLecturerById = query(async (lecturerId: string) => {
   'use server';
-  await requireAuth();
+  await assertCanSeeLecturer(await requireAuth(), lecturerId);
   return loadLecturerRecord(lecturerId);
 }, 'lecturer-by-id');

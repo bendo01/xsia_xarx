@@ -61,6 +61,8 @@ export const stId: Record<string, string> = {
     civilRegistry: 'Catatan Sipil',
     class: 'Kelas:',
     class2: 'Kelas',
+    classLocked: 'Kelas ini terkunci dan tidak dapat diambil.',
+    classLockedDrop: 'Kelas ini terkunci sehingga tidak dapat dibatalkan.',
     classFull: 'Kelas Penuh',
     code: 'Kode',
     comprehensiveInstitutionalRegistryOfAdmittedStudents: 'Registri institusi lengkap tentang mahasiswa diterima, kredensial akademik, dan angkatan penerimaan.',

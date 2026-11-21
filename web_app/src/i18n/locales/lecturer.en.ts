@@ -109,6 +109,7 @@ export const lcEn: Record<string, string> = {
     gradeExcelBlank: 'Excel (blank)',
     gradeExcelFilled: 'Excel (filled)',
     gradeFailedRows: '{{count}} row(s) could not be saved (locked or changed).',
+    classLocked: 'This class is locked by the study program. Ask them to unlock it to make changes.',
     failedToSaveTheGradeFor: 'Failed to save the grade for {{name}}.',
     formPenilaianEvaluasiPerkuliahan: 'Course Grading & Evaluation Form',
     formPenilaianMahasiswa: 'Student Grading Form',

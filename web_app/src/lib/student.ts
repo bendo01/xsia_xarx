@@ -23,6 +23,8 @@ export const getStudentProfile = query(
     const auth = await requireAuth();
     const id = resolveIndividualId(rawId, auth.user?.individual_id);
     if (!id) throw markSafeError(new Error('Individual not found'));
+    // A student opens only their own profile (the person endpoint is not data-scoped).
+    if (auth.activeRole === 'student' && id !== auth.user?.individual_id) throw markSafeError(new Error('Individual not found'));
     return loadStudentProfile(id, {
       studentId: studentId || null,
       code: code || null,

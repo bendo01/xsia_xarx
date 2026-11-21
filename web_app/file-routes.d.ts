@@ -129,6 +129,324 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
+      path: "/course-department/academic/campaign/transaction/activity/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/:id/teach-decree/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/:id/teach-decree/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/:id/teach-decree/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/activity/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/class-code/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/class-code/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/class-code/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/class-code/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/grade/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/grade/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/grade/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/grade/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/evaluation/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/evaluation/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/evaluation/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/lecturer/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/lecturer/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/lecturer/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-evaluation-planning/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-evaluation-planning/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-evaluation-planning/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-learn-planning/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-learn-planning/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/course-learn-planning/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/create")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/course/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/:id/curriculum-detail/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/:id/curriculum-detail/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/:id/curriculum-detail/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/create")>>>;
+    },
+    {
+      path: "/course-department/academic/course/master/curriculum/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/index")>>>;
+    },
+    {
+      path: "/course-department/academic/lecturer/master/lecturer/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/lecturer/master/lecturer/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/campaign/activity/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/campaign/activity/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/master/student/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/master/student/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/master/student/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/master/student/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/master/student/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/master/student/index")>>>;
+    },
+    {
+      path: "/course-department/institution/master/staff/:id/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/[id]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/[id]/edit")>>>;
+    },
+    {
+      path: "/course-department/institution/master/staff/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
+    },
+    {
+      path: "/course-department/institution/master/staff/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/index")>>>;
+    },
+    {
+      path: "/course-department/institution/master/unit/:id/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/index")>>>;
+    },
+    {
+      path: "/course-department/institution/master/unit/:id/staff/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index")>>>;
+    },
+    {
       path: "/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/index"), Extract<"default", keyof typeof import("./src/routes/index")>>>;
@@ -434,7 +752,432 @@ declare module "virtual:file-routes" {
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department"), Extract<"default", keyof typeof import("./src/routes/course-department")>>>;
       $$route?: undefined;
-      children?: undefined;
+      children: readonly [
+        {
+          path: "/institution/master/staff/";
+          id: "/institution/master/staff/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/master/unit/:id/";
+          id: "/institution/master/unit/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/";
+          id: "/academic/course/master/course/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/master/staff/create";
+          id: "/institution/master/staff/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/master/student/";
+          id: "/academic/student/master/student/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/master/student/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/master/student/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/master/staff/:id/edit";
+          id: "/institution/master/staff/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/";
+          id: "/academic/course/master/course/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/";
+          id: "/academic/course/master/curriculum/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/lecturer/master/lecturer/";
+          id: "/academic/lecturer/master/lecturer/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/master/unit/:id/staff/";
+          id: "/institution/master/unit/:id/staff/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/unit/[id]/staff/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/campaign/activity/";
+          id: "/academic/student/campaign/activity/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/grade/";
+          id: "/academic/campaign/transaction/grade/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/";
+          id: "/academic/campaign/transaction/teach/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/create";
+          id: "/academic/course/master/course/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/master/student/:id/";
+          id: "/academic/student/master/student/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/master/student/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/master/student/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/master/student/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/edit";
+          id: "/academic/course/master/course/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/:id/";
+          id: "/academic/course/master/curriculum/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/lecturer/master/lecturer/:id/";
+          id: "/academic/lecturer/master/lecturer/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/";
+          id: "/academic/campaign/transaction/activity/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/campaign/activity/:id/";
+          id: "/academic/student/campaign/activity/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/grade/:id/";
+          id: "/academic/campaign/transaction/grade/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/";
+          id: "/academic/campaign/transaction/teach/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/create";
+          id: "/academic/course/master/curriculum/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/class-code/";
+          id: "/academic/campaign/transaction/class-code/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/grade/create";
+          id: "/academic/campaign/transaction/grade/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/create";
+          id: "/academic/campaign/transaction/teach/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/:id/edit";
+          id: "/academic/course/master/curriculum/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/:id/";
+          id: "/academic/campaign/transaction/activity/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/grade/:id/edit";
+          id: "/academic/campaign/transaction/grade/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/grade/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/edit";
+          id: "/academic/campaign/transaction/teach/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/create";
+          id: "/academic/campaign/transaction/activity/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/class-code/:id/";
+          id: "/academic/campaign/transaction/class-code/:id/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/:id/edit";
+          id: "/academic/campaign/transaction/activity/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/class-code/create";
+          id: "/academic/campaign/transaction/class-code/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/class-code/:id/edit";
+          id: "/academic/campaign/transaction/class-code/:id/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/class-code/[id]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/lecturer/";
+          id: "/academic/campaign/transaction/teach/:id/lecturer/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/evaluation/";
+          id: "/academic/campaign/transaction/teach/:id/evaluation/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/lecturer/create";
+          id: "/academic/campaign/transaction/teach/:id/lecturer/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/:id/teach-decree/";
+          id: "/academic/campaign/transaction/activity/:id/teach-decree/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-learn-planning/";
+          id: "/academic/course/master/course/:id/course-learn-planning/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/:id/curriculum-detail/";
+          id: "/academic/course/master/curriculum/:id/curriculum-detail/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/evaluation/create";
+          id: "/academic/campaign/transaction/teach/:id/evaluation/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/lecturer/:itemId/edit";
+          id: "/academic/campaign/transaction/teach/:id/lecturer/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-evaluation-planning/";
+          id: "/academic/course/master/course/:id/course-evaluation-planning/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/:id/teach-decree/create";
+          id: "/academic/campaign/transaction/activity/:id/teach-decree/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-learn-planning/create";
+          id: "/academic/course/master/course/:id/course-learn-planning/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/:id/curriculum-detail/create";
+          id: "/academic/course/master/curriculum/:id/curriculum-detail/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/evaluation/:itemId/edit";
+          id: "/academic/campaign/transaction/teach/:id/evaluation/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/evaluation/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-evaluation-planning/create";
+          id: "/academic/course/master/course/:id/course-evaluation-planning/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/activity/:id/teach-decree/:itemId/edit";
+          id: "/academic/campaign/transaction/activity/:id/teach-decree/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/activity/[id]/teach-decree/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-learn-planning/:itemId/edit";
+          id: "/academic/course/master/course/:id/course-learn-planning/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-learn-planning/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/curriculum/:id/curriculum-detail/:itemId/edit";
+          id: "/academic/course/master/curriculum/:id/curriculum-detail/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/course/master/course/:id/course-evaluation-planning/:itemId/edit";
+          id: "/academic/course/master/course/:id/course-evaluation-planning/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/course/[id]/course-evaluation-planning/[itemId]/edit")>>>;
+          children?: undefined;
+        }
+      ];
     },
     {
       path: "/authentification/login";

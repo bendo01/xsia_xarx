@@ -123,13 +123,15 @@ export async function apiFetchRaw(path: string, opts: { query?: Query; accept?: 
 export async function apiPaginated<T>(
   path: string,
   q: PaginationQuery = {},
+  /** Which query parameter carries the search text (endpoints differ: `name`, `search`). */
+  opts: { searchParam?: string } = {},
 ): Promise<Paginated<T>> {
   const { page, per_page, search, sort_by, sort_dir, ...filters } = q;
   const res = await apiFetch<ApiPage<T> | T[]>(path, {
     query: {
       page,
       page_size: per_page,
-      name: search,
+      [opts.searchParam ?? 'name']: search,
       sort_by,
       sort_dir,
       ...filters,

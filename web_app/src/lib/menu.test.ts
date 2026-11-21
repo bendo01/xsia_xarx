@@ -12,6 +12,12 @@ describe('getMenuForRole', () => {
     expect(m[0].href).toBe('/lecturer/person/master/individual/i/show');
     expect(m[1].href).toBe('/lecturer/academic/campaign/transaction/teach');
   });
+  it('course department (Kepala / Staff Program Studi) menu', () => {
+    const m = getMenuForRole('course_department');
+    expect(m.map((i) => i.id)).toEqual(['dashboard', 'students', 'activities', 'lecturers', 'courses', 'curricula', 'class-codes', 'semesters', 'teaches', 'grades', 'staff', 'change-password']);
+    expect(m[0].href.startsWith('/course-department/institution/master/unit/')).toBe(true);
+    expect(m[1].href).toBe('/course-department/academic/student/master/student');
+  });
   it('other roles get their dashboard and change-password', () => {
     const m = getMenuForRole('administrator');
     expect(m.map((i) => i.href)).toEqual(['/administrator/dashboard', '/account/change-password']);

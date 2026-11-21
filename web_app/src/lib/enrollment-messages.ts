@@ -4,6 +4,7 @@ type T = (key: string, params?: Record<string, string | number>) => string;
 
 const ENROLL_KEYS: Record<string, string> = {
   LOCKED: 'st.cannotEnrollCoursesBecauseThisAcademic',
+  CLASS_LOCKED: 'st.classLocked',
   ALREADY_ENROLLED: 'st.youHaveAlreadyEnrolledInCourse',
   DUPLICATE_COURSE: 'st.youHaveAlreadyEnrolledInCourse',
   FULL: 'st.classFull',
@@ -11,6 +12,7 @@ const ENROLL_KEYS: Record<string, string> = {
 };
 const DROP_KEYS: Record<string, string> = {
   LOCKED: 'st.cannotDropCoursesBecauseThisAcademic',
+  CLASS_LOCKED: 'st.classLockedDrop',
 };
 const CODE = /^[A-Z_]{4,}$/;
 

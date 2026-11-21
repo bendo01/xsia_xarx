@@ -9,6 +9,7 @@ import PageHeader from '../../../../../../../components/student/PageHeader';
 import { Badge } from '../../../../../../../components/ui/badge';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../../../../../../../components/ui/dialog';
 import { t } from '../../../../../../../i18n';
+import { crudErrorText } from '../../../../../../../lib/crud-errors';
 import { classStats, finalMark, gradeForMark, marksForGrade, totalWeight, weightsValid, type Evaluation } from '../../../../../../../lib/grading';
 import { createDefaultComponents, deleteComponent, getGradeSheet, lockGrades, saveComponent, saveGrades } from '../../../../../../../lib/grading-fns';
 import type { GradeSheet } from '../../../../../../../server/grading';
@@ -108,7 +109,8 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
     },
   );
 
-  const locked = () => rows().length > 0 && rows().every((r) => r.locked);
+  const classLocked = () => props.data.classLocked;
+  const locked = () => classLocked() || (rows().length > 0 && rows().every((r) => r.locked));
   const valid = () => weightsValid(evals());
   const stats = createMemo(() => classStats(rows().map((r) => r.mark)));
   const shown = createMemo(() => {
@@ -143,7 +145,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
       if (res.failed.length) toast.error(t('lc.failedToSaveTheGradeFor', { name: r.name }));
       else toast.success(t('lc.gradeForNameWasSavedSuccessfully', { name: r.name }));
     } catch (e) {
-      toast.error(msg(e));
+      toast.error(crudErrorText(e, 'lc.gagalMenyimpanKomponenEvaluasi'));
     } finally {
       patch(r.id, (x) => ({ ...x, saving: false }));
     }
@@ -158,7 +160,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
       if (res.failed.length === 0) toast.success(t('lc.allStudentGradesCountRecordsWere', { count: res.saved.length }));
       else toast.error(t('lc.savedSuccessFailedFailedPleaseReview', { success: res.saved.length, failed: res.failed.length }));
     } catch (e) {
-      toast.error(msg(e));
+      toast.error(crudErrorText(e, 'lc.gagalMenyimpanKomponenEvaluasi'));
     } finally {
       setSavingAll(false);
     }
@@ -218,7 +220,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
       });
       await reload();
     } catch (e) {
-      toast.error(msg(e));
+      toast.error(crudErrorText(e, 'lc.gagalMenyimpanKomponenEvaluasi'));
     }
   };
 
@@ -237,6 +239,10 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
           <Badge variant="success">{t('lc.nilaiPerkuliahanTelahDikunciDifinalisasi')}</Badge>
         </Show>
       </section>
+
+      <Show when={classLocked()}>
+        <p role="status" class="rounded-xs border border-warning/40 bg-warning/10 p-3 text-sm">{t('lc.classLocked')}</p>
+      </Show>
 
       <section class="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <Stat label={t('lc.mahasiswaDinilai')} value={`${stats().graded} / ${rows().length}`} />
@@ -304,7 +310,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
             class="h-9 min-w-0 flex-1 rounded-xs border border-layer-line bg-layer px-3 text-sm sm:max-w-sm"
           />
           <div class="flex gap-2">
-            <button type="button" class={primary} disabled={savingAll() || dirtyCount() === 0} onClick={() => void saveAll()}>
+            <button type="button" class={primary} disabled={classLocked() || savingAll() || dirtyCount() === 0} onClick={() => void saveAll()}>
               {savingAll() ? t('lc.menyimpan') : `${t('lc.simpanSemuaNilai')}${dirtyCount() ? ` (${dirtyCount()})` : ''}`}
             </button>
             <button type="button" class={btn} disabled={locked() || rows().length === 0 || dirtyCount() > 0} onClick={() => setLockOpen(true)}>
@@ -343,7 +349,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
                                 max="100"
                                 step="0.01"
                                 inputmode="decimal"
-                                disabled={r.locked}
+                                disabled={r.locked || classLocked()}
                                 value={r.marks[e.id] ?? 0}
                                 onChange={(ev) => setMark(r.id, e.id, ev.currentTarget.value)}
                                 aria-label={`${r.name}: ${e.name}`}
@@ -355,7 +361,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
                         <td class="px-2 py-2 font-mono">{r.mark}</td>
                         <td class="px-2 py-2">
                           <select
-                            disabled={r.locked || scale().length === 0}
+                            disabled={r.locked || classLocked() || scale().length === 0}
                             value={r.gradeId ?? ''}
                             onChange={(ev) => setGrade(r.id, ev.currentTarget.value)}
                             aria-label={`${r.name}: ${t('lc.grade')}`}
@@ -367,7 +373,7 @@ function Sheet(props: { data: GradeSheet; teachId: string }) {
                         </td>
                         <td class="px-3 py-2 text-end">
                           <Show
-                            when={!r.locked}
+                            when={!r.locked && !classLocked()}
                             fallback={<Badge variant="success">{t('lc.locked')}</Badge>}
                           >
                             <button type="button" class="text-primary hover:underline disabled:opacity-50" disabled={!r.dirty || r.saving} onClick={() => void saveOne(r)}>

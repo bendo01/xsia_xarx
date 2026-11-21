@@ -143,6 +143,18 @@ describe('dropFromPlan', () => {
     await expect(dropFromPlan(auth(), ACT, D1)).rejects.toThrow('LOCKED');
     expect(writes()).toHaveLength(0);
   });
+  it('refuses to drop a course whose class the study program has locked', async () => {
+    backend({ enrolled: mine });
+    routes[`academic/campaign/transaction/teaches/${T1}`] = () => ({ id: T1, is_lock: true });
+    await expect(dropFromPlan(auth(), ACT, D1)).rejects.toThrow('CLASS_LOCKED');
+    expect(writes()).toHaveLength(0);
+  });
+  it('drops when the class is open (or the row has no class)', async () => {
+    backend({ enrolled: mine });
+    routes[`academic/campaign/transaction/teaches/${T1}`] = () => ({ id: T1, is_lock: false });
+    await dropFromPlan(auth(), ACT, D1);
+    expect(writes()).toHaveLength(1);
+  });
   it('refuses a detail id that is not on this activity', async () => {
     backend({ enrolled: [] });
     await expect(dropFromPlan(auth(), ACT, D1)).rejects.toThrow('NOT_FOUND');
@@ -151,6 +163,21 @@ describe('dropFromPlan', () => {
   it("refuses another person's semester", async () => {
     backend({ enrolled: mine, owner: 'someone-else' });
     await expect(dropFromPlan(auth(), ACT, D1)).rejects.toThrow('NOT_FOUND');
+    expect(writes()).toHaveLength(0);
+  });
+});
+
+describe('class lock on the study plan', () => {
+  it('marks enrolled courses whose class is locked', async () => {
+    backend({ enrolled: [{ id: D1, course_id: C1, teach_id: T1, credit: 3 }] });
+    routes[`academic/course/master/courses/${C1}`] = () => ({ id: C1, code: 'IF1', name: 'Algoritma', total_credit: 3 });
+    routes[`academic/campaign/transaction/teaches/${T1}`] = () => ({ id: T1, class_code_id: 'cc', is_lock: true });
+    routes[`academic/campaign/transaction/class-codes/cc`] = () => ({ id: 'cc', alphabet_code: 'A' });
+    expect((await loadActivityDetail(auth(), ACT)).courses[0].class_locked).toBe(true);
+  });
+  it('refuses to enroll into a locked class', async () => {
+    backend({ teaches: [{ id: T1, course_id: C1, class_code_id: 'cc', activity_id: 'ua', max_member: 40, enrolled_count: 0, is_lock: true }] });
+    await expect(enrollInClass(auth(), ACT, T1)).rejects.toThrow('CLASS_LOCKED');
     expect(writes()).toHaveLength(0);
   });
 });

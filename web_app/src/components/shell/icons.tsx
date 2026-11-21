@@ -1,4 +1,4 @@
-import { BookOpen, GraduationCap, House, Lock, LockOpen, Presentation, Printer, User, Users } from '@lucide/solid';
+import { BookOpen, ClipboardList, GraduationCap, House, Library, Lock, LockOpen, Presentation, Printer, Tags, User, Users } from '@lucide/solid';
 
 import type { IconName } from '../../lib/menu';
 
@@ -14,5 +14,8 @@ export function Icon(props: { name: IconName; class?: string }) {
     case 'printer': return <Printer class={cls()} />;
     case 'home': return <House class={cls()} />;
     case 'chalkboard': return <Presentation class={cls()} />;
+    case 'library': return <Library class={cls()} />;
+    case 'clipboard': return <ClipboardList class={cls()} />;
+    case 'tags': return <Tags class={cls()} />;
   }
 }

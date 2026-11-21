@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { MAX_SKS, enrollBlocker, gradeTone, semesterIps, totalCredits } from './enrollment-rules';
 
-const offer = (o: Partial<{ id: string; course_id: string; credits: number; enrolled_count: number; max_member: number }> = {}) => ({
+const offer = (o: Partial<{ id: string; course_id: string; credits: number; enrolled_count: number; max_member: number; is_lock: boolean }> = {}) => ({
   id: 't1', course_id: 'c1', credits: 3, enrolled_count: 0, max_member: 40, ...o,
 });
 const taken = (teach_id: string | null, course_id: string, credit = 3) => ({ teach_id, course_id, credit });
@@ -12,6 +12,11 @@ describe('enrollBlocker', () => {
   });
   it('rejects classes that are not on offer', () => {
     expect(enrollBlocker({ locked: false, enrolled: [], offering: undefined })).toBe('NOT_OFFERED');
+  });
+  it('rejects a class the study program has locked, but a locked semester wins', () => {
+    expect(enrollBlocker({ locked: false, enrolled: [], offering: offer({ is_lock: true }) })).toBe('CLASS_LOCKED');
+    expect(enrollBlocker({ locked: true, enrolled: [], offering: offer({ is_lock: true }) })).toBe('LOCKED');
+    expect(enrollBlocker({ locked: false, enrolled: [], offering: offer({ is_lock: false }) })).toBeNull();
   });
   it('rejects a locked semester', () => {
     expect(enrollBlocker({ locked: true, enrolled: [], offering: offer() })).toBe('LOCKED');

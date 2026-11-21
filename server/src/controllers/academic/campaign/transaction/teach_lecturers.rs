@@ -7,6 +7,8 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
+use crate::services::auth::data_scope::DataScope;
+use crate::services::class_lock::ensure_teach_open;
 use crate::dtos::academic::campaign::transaction::teach_lecturers::{
     CreateTeachLecturerRequest, TeachLecturerQuery, TeachLecturerResponse,
     PaginatedTeachLecturerResponse, UpdateTeachLecturerRequest, TeachLecturerOptionRequest,
@@ -130,6 +132,8 @@ pub async fn store(
         })?;
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        let scope = DataScope::resolve(db, depot).await?;
+        ensure_teach_open(db, &scope, Some(payload.teach_id)).await?;
 
         let now = Utc::now().naive_utc();
         let new_id = Uuid::new_v4();
@@ -199,6 +203,8 @@ pub async fn update(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
+        let scope = DataScope::resolve(db, depot).await?;
+        ensure_teach_open(db, &scope, Some(existing.teach_id)).await?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -270,6 +276,8 @@ pub async fn delete(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("TeachLecturer not found"))?;
+        let scope = DataScope::resolve(db, depot).await?;
+        ensure_teach_open(db, &scope, Some(existing.teach_id)).await?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();

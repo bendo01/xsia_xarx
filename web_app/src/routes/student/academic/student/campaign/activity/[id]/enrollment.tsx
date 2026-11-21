@@ -188,7 +188,7 @@ export default function EnrollmentPage() {
                       {t('st.class')} {c.class_name} · {c.credit} {t('st.sks')}
                     </p>
                   </div>
-                  <Button variant="outline" size="sm" disabled={locked()} onClick={() => setTarget(c)}>
+                  <Button variant="outline" size="sm" disabled={locked() || !!c.class_locked} title={c.class_locked ? t('st.classLockedDrop') : undefined} onClick={() => setTarget(c)}>
                     {t('st.dropClass')}
                   </Button>
                 </li>
@@ -262,7 +262,7 @@ export default function EnrollmentPage() {
                           when={block() === null || block() === 'CREDIT_LIMIT'}
                           fallback={
                             <Badge variant={block() === 'ALREADY_ENROLLED' ? 'success' : 'secondary'} class="gap-1">
-                              <Show when={block() === 'LOCKED'}>
+                              <Show when={block() === 'LOCKED' || block() === 'CLASS_LOCKED'}>
                                 <Icon name="lock" class="size-3 shrink-0" />
                               </Show>
                               {block() === 'ALREADY_ENROLLED' ? t('st.enrolledCourses')

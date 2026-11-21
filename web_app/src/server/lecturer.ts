@@ -1,8 +1,12 @@
 // Aggregates what the lecturer pages need. The lecturer "show" endpoint eagerly loads
 // homebases, ranks, groups and assigned classes, so one call replaces the old client's
 // five sequential browser requests; the token never leaves the server.
+import { markSafeError } from '@solidjs/web';
+
 import { apiFetch } from './api';
-import { asList, shapeIndividual } from '../lib/student-select';
+import type { AuthState } from './auth';
+import { isUnitLecturer, resolveMyUnit } from './unit';
+import { asList, resolveIndividualId, shapeIndividual } from '../lib/student-select';
 import type { AssignedTeach, LecturerRecord } from '../lib/lecturer-types';
 
 const enc = encodeURIComponent;
@@ -66,4 +70,26 @@ export async function loadLecturerProfile(individualId: string, preferredLecture
     (preferredLecturerId && preferredLecturerId !== ZERO ? preferredLecturerId : undefined);
   const lecturer = lecturerId ? await loadLecturerRecord(lecturerId).catch(() => null) : null;
   return { ...base, lecturer };
+}
+
+/**
+ * Who may open a lecturer's record by id: the lecturer themselves, the study program the lecturer
+ * is homebased in, and administrators / rectorate. Anyone else gets "not found" (the lecturer
+ * endpoints themselves are not data-scoped for these roles).
+ */
+export async function assertCanSeeLecturer(auth: AuthState, lecturerId: string): Promise<void> {
+  const notFound = () => markSafeError(new Error('Lecturer not found'));
+  if (auth.activeRole === 'administrator' || auth.activeRole === 'rectorat') return;
+  if (auth.activeRole === 'course_department') {
+    if (!(await isUnitLecturer(await resolveMyUnit(auth), lecturerId))) throw notFound();
+    return;
+  }
+  if (auth.activeRole === 'lecturer') {
+    const mine = auth.activeRoleItem?.roleable_id;
+    if (mine && mine === lecturerId) return;
+    const ind = resolveIndividualId('', auth.user?.individual_id);
+    const own = ind ? (await loadLecturerProfile(ind, mine).catch(() => null))?.lecturer?.id : null;
+    if (own && own === lecturerId) return;
+  }
+  throw notFound();
 }

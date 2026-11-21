@@ -16,6 +16,22 @@ export function uuid(v: string, what = 'id'): string {
   return v;
 }
 
+/**
+ * Writing attendance needs the meeting to belong to the class and the class not to be locked by
+ * the study program (the API enforces ownership, not the lock).
+ */
+/** Is the class locked by the study program? (Reading attendance stays possible; writing is not.) */
+export async function isClassLocked(teachId: string): Promise<boolean> {
+  const raw = await apiFetch<Record<string, any>>(`${ROOT}/teaches/${enc(uuid(teachId, 'teach'))}`);
+  return Boolean(((raw.data ?? raw) as Record<string, any>).is_lock);
+}
+
+export async function assertClassOpen(teachId: string, meetingId: string): Promise<void> {
+  if (await isClassLocked(teachId)) throw markSafeError(new Error('classLocked'));
+  const meetings = await loadMeetings(teachId);
+  if (!meetings.some((m) => m.id === meetingId)) throw markSafeError(new Error('Meeting not found'));
+}
+
 export async function loadMeetings(teachId: string): Promise<MeetingItem[]> {
   const res = await apiFetch<unknown>(`${ROOT}/teach-meetings`, { query: { teach_id: uuid(teachId, 'teach') } });
   return asList<MeetingItem>(res).sort((a, b) => a.sequence - b.sequence);

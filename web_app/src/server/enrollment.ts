@@ -80,8 +80,24 @@ async function loadDetails(activityId: string): Promise<Raw[]> {
 
 export async function loadActivityDetail(auth: AuthState, activityId: string): Promise<ActivityDetail> {
   const { activity } = await loadOwnActivity(auth, activityId);
-  const details = await loadDetails(activity.id);
+  return buildActivityDetail(activity);
+}
 
+/**
+ * A student's semester as seen by the study program that owns it. The activity must belong to
+ * `unitId`: by the activity's own unit, else by the unit of its student.
+ */
+export async function loadUnitActivityDetail(unitId: string, activityId: string): Promise<ActivityDetail> {
+  if (!isUuid(activityId) || activityId === ZERO) throw safe('NOT_FOUND');
+  const raw = unwrap(await apiFetch<unknown>(`academic/student/campaign/student-activities/${enc(activityId)}`).catch(() => null));
+  if (!raw?.id) throw safe('NOT_FOUND');
+  const owner = raw.unit_id || (await showOrNull(`academic/student/master/students/${enc(raw.student_id)}`))?.unit_id;
+  if (owner !== unitId) throw safe('NOT_FOUND');
+  return buildActivityDetail(toHeader(raw));
+}
+
+async function buildActivityDetail(activity: ActivityDetail['activity']): Promise<ActivityDetail> {
+  const details = await loadDetails(activity.id);
   // Prefer relations the API embeds; look up only what is missing (by id, not by
   // fetching whole 100-row lists as the old page did, which silently missed rows).
   const noCourse = details.filter((d) => !d.course);
@@ -211,7 +227,14 @@ export async function dropFromPlan(auth: AuthState, activityId: string, detailId
 
   // The row must be on THIS activity: a detail id from someone else's plan is refused.
   const details = await loadDetails(activity.id);
-  if (!details.some((d) => d.id === detailId)) throw safe('NOT_FOUND');
+  const row = details.find((d) => d.id === detailId);
+  if (!row) throw safe('NOT_FOUND');
+
+  // A class the study program has locked cannot be dropped any more (the API refuses it too).
+  if (row.teach_id && row.teach_id !== ZERO) {
+    const teach = row.teach ?? unwrap(await apiFetch<unknown>(`academic/campaign/transaction/teaches/${enc(row.teach_id)}`).catch(() => null));
+    if (teach?.is_lock) throw safe('CLASS_LOCKED' satisfies EnrollBlock);
+  }
 
   await apiFetch(`academic/student/campaign/detail-activities/${enc(detailId)}`, { method: 'DELETE' });
 }

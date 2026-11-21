@@ -5,3 +5,4 @@ pub mod feeder_dikti;
 pub mod messenger;
 pub mod ai;
 pub mod compliance;
+pub mod class_lock;

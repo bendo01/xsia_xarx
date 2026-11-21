@@ -3,7 +3,7 @@
 // palette and the active-item logic on a single source of truth.
 import { getDashboardPathForRole, type DashboardContext } from './roles';
 
-export type IconName = 'user' | 'users' | 'book' | 'graduation' | 'lock' | 'unlock' | 'printer' | 'home' | 'chalkboard';
+export type IconName = 'user' | 'users' | 'book' | 'graduation' | 'lock' | 'unlock' | 'printer' | 'home' | 'chalkboard' | 'library' | 'clipboard' | 'tags';
 
 export interface MenuItem {
   id: string;
@@ -51,6 +51,22 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
       return [
         { id: 'profile', href: home, labelKey: 'menu.lecturer.lecturerProfile', icon: 'user', exact: true },
         { id: 'teach', href: '/lecturer/academic/campaign/transaction/teach', labelKey: 'menu.lecturer.teachingActivities', icon: 'chalkboard' },
+        changePassword,
+      ];
+    case 'course_department':
+      // Kepala and Staff Program Studi share one area; the API scopes the data to their unit.
+      return [
+        { id: 'dashboard', href: home, labelKey: 'menu.courseDepartment.departmentDashboard', icon: 'home', exact: true },
+        { id: 'students', href: '/course-department/academic/student/master/student', labelKey: 'menu.courseDepartment.studentDirectory', icon: 'graduation' },
+        { id: 'activities', href: '/course-department/academic/student/campaign/activity', labelKey: 'menu.courseDepartment.studentActivity', icon: 'book' },
+        { id: 'lecturers', href: '/course-department/academic/lecturer/master/lecturer', labelKey: 'menu.courseDepartment.lecturerDirectory', icon: 'chalkboard' },
+        { id: 'courses', href: '/course-department/academic/course/master/course', labelKey: 'menu.courseDepartment.courseDirectory', icon: 'library' },
+        { id: 'curricula', href: '/course-department/academic/course/master/curriculum', labelKey: 'menu.courseDepartment.curriculumDirectory', icon: 'clipboard' },
+        { id: 'class-codes', href: '/course-department/academic/campaign/transaction/class-code', labelKey: 'menu.courseDepartment.classCodeDirectory', icon: 'tags' },
+        { id: 'semesters', href: '/course-department/academic/campaign/transaction/activity', labelKey: 'menu.courseDepartment.activityDirectory', icon: 'book' },
+        { id: 'teaches', href: '/course-department/academic/campaign/transaction/teach', labelKey: 'menu.courseDepartment.teachDirectory', icon: 'chalkboard' },
+        { id: 'grades', href: '/course-department/academic/campaign/transaction/grade', labelKey: 'menu.courseDepartment.gradeDirectory', icon: 'graduation' },
+        { id: 'staff', href: '/course-department/institution/master/staff', labelKey: 'menu.courseDepartment.staffDirectory', icon: 'users' },
         changePassword,
       ];
     default:

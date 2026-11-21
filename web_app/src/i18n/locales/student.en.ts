@@ -61,6 +61,8 @@ export const stEn: Record<string, string> = {
     civilRegistry: 'Civil Registry',
     class: 'Class:',
     class2: 'Class',
+    classLocked: 'This class is locked and cannot be enrolled in.',
+    classLockedDrop: 'This class is locked, so it cannot be dropped.',
     classFull: 'Class Full',
     code: 'Code',
     comprehensiveInstitutionalRegistryOfAdmittedStudents: 'Comprehensive institutional registry of admitted students, academic credentials, and admission cohorts.',

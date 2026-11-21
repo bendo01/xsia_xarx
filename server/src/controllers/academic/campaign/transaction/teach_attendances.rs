@@ -24,6 +24,7 @@ use crate::models::academic::campaign::transaction::{teach_attendances as att_mo
 use crate::models::academic::student::campaign::{detail_activities, student_activities};
 use crate::models::academic::student::master::students;
 use crate::services::auth::data_scope::DataScope;
+use crate::services::class_lock::ensure_teach_open;
 
 pub const MEETINGS_PER_TEACH: i32 = 16;
 pub const MIDTERM_SEQUENCE: i32 = 8;
@@ -494,6 +495,7 @@ pub async fn save_attendances(req: &mut Request, depot: &mut Depot) -> Result<Js
     let scope = DataScope::resolve(&db, depot).await?;
     let meeting = find_meeting(&db, parse_id(req, "id")?).await?;
     ensure_can_manage(&db, &scope, meeting.teach_id).await?;
+    ensure_teach_open(&db, &scope, Some(meeting.teach_id)).await?;
 
     let payload: SaveAttendancesRequest = req
         .parse_json()
@@ -571,6 +573,7 @@ pub async fn open_qr(req: &mut Request, depot: &mut Depot) -> Result<Json<QrToke
     let scope = DataScope::resolve(&db, depot).await?;
     let meeting = find_meeting(&db, parse_id(req, "id")?).await?;
     ensure_can_manage(&db, &scope, meeting.teach_id).await?;
+    ensure_teach_open(&db, &scope, Some(meeting.teach_id)).await?;
 
     let payload: OpenQrRequest = req.parse_json().await.unwrap_or_default();
     let minutes = payload.minutes.unwrap_or(QR_DEFAULT_OPEN_MINUTES).clamp(1, 120);
@@ -636,6 +639,7 @@ pub async fn scan(req: &mut Request, depot: &mut Depot) -> Result<Json<ScanRespo
     if !enrolled_students(&db, meeting.teach_id).await?.iter().any(|s| s.0 == student_id) {
         return Err(StatusError::forbidden().brief("You are not enrolled in this class"));
     }
+    ensure_teach_open(&db, &DataScope::Student(student_id), Some(meeting.teach_id)).await?;
 
     let present = present_attend_type(&db).await?;
     let now = Utc::now().naive_utc();

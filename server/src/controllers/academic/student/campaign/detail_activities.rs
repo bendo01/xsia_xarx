@@ -20,6 +20,7 @@ use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::student::campaign::detail_activities as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
+use crate::services::class_lock::ensure_teach_open;
 use crate::controllers::realtime::publish_event;
 use crate::models::academic::campaign::transaction::teaches as teach_mod;
 use crate::models::academic::student::campaign::student_activities as activity_mod;
@@ -535,6 +536,8 @@ pub async fn store(
         if activity.is_lock.unwrap_or(false) {
             return Err(StatusError::conflict().brief("Activity is locked"));
         }
+        // A class the study program has locked takes no more students.
+        ensure_teach_open(&txn, &scope, payload_teach_id).await?;
 
         let duplicate = entity_mod::Entity::find()
             .filter(entity_mod::Column::ActivityId.eq(payload_activity_id))
@@ -621,6 +624,13 @@ pub async fn update(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("DetailActivity not found"))?;
 
+        // Marks, grades and the course/class itself freeze with the class. Finalising a row
+        // (`is_lock: true` alone) is not a content change and stays allowed.
+        if update_changes_content(&payload) {
+            ensure_teach_open(db, &scope, existing.teach_id).await?;
+            ensure_teach_open(db, &scope, payload.teach_id).await?;
+        }
+
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
 
@@ -697,6 +707,9 @@ pub async fn delete(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("DetailActivity not found"))?;
 
+        // Dropping a course from a locked class is refused too.
+        ensure_teach_open(db, &scope, existing.teach_id).await?;
+
         let now = Utc::now().naive_utc();
         let (ex_teach_id, ex_activity_id, ex_id) = (existing.teach_id, existing.activity_id, existing.id);
         let mut active_model = existing.into_active_model();
@@ -762,4 +775,43 @@ pub async fn option_select(
         .collect();
 
     Ok(Json(data))
+}
+
+/// Does this update change what the row records (marks, grade, credit, course, class, names), as
+/// opposed to only (un)locking it? Only content changes are frozen by the class lock.
+fn update_changes_content(p: &UpdateDetailActivityRequest) -> bool {
+    p.mark.is_some()
+        || p.credit.is_some()
+        || p.grade_id.is_some()
+        || p.course_id.is_some()
+        || p.activity_id.is_some()
+        || p.teach_id.is_some()
+        || p.feeder_id.is_some()
+        || p.name.is_some()
+        || p.feeder_grade_id.is_some()
+        || p.curiculum_detail_sequence.is_some()
+}
+
+#[cfg(test)]
+mod class_lock_tests {
+    use super::*;
+
+    fn only_lock() -> UpdateDetailActivityRequest {
+        UpdateDetailActivityRequest {
+            mark: None, credit: None, grade_id: None, course_id: None, activity_id: None, teach_id: None,
+            is_lock: Some(true), feeder_id: None, name: None, feeder_grade_id: None, curiculum_detail_sequence: None,
+        }
+    }
+
+    #[test]
+    fn finalising_alone_is_not_a_content_change() {
+        assert!(!update_changes_content(&only_lock()));
+    }
+
+    #[test]
+    fn marks_grades_and_class_moves_are() {
+        assert!(update_changes_content(&UpdateDetailActivityRequest { mark: Some(80.0), ..only_lock() }));
+        assert!(update_changes_content(&UpdateDetailActivityRequest { grade_id: Some(Uuid::nil()), ..only_lock() }));
+        assert!(update_changes_content(&UpdateDetailActivityRequest { teach_id: Some(Uuid::nil()), ..only_lock() }));
+    }
 }

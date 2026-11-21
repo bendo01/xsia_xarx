@@ -103,6 +103,7 @@ export function buildOfferings(input: OfferingInput): OfferedClass[] {
       room_name: roomNames || t.room_name || '-',
       enrolled_count: Number(t.enrolled_count ?? 0),
       max_member: Number(t.max_member ?? 40),
+      is_lock: Boolean(t.is_lock),
     };
   });
 }
@@ -153,6 +154,7 @@ export function buildEnrolled(details: Raw[], lookups: EnrolledLookups): Enrolle
       grade_letter: grade?.alphabet_code || grade?.name || d.grade_letter || '-',
       grade_point: point != null ? Number(point) : null,
       is_lock: Boolean(d.is_lock),
+      class_locked: Boolean(teach?.is_lock),
     };
   });
 }

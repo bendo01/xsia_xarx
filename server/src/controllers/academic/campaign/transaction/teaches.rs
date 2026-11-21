@@ -21,6 +21,7 @@ use crate::dtos::common::reference::{MessageResponse, ReferenceResponse, OptionI
 use crate::models::academic::campaign::transaction::teaches as entity_mod;
 use crate::middleware::auth::auth_user_id;
 use crate::services::auth::data_scope::DataScope;
+use crate::services::class_lock::{lock_blocks, locked_error};
 
 #[endpoint(tags("Academic - Campaign - Transaction - Teach"), status_codes(200, 500))]
 pub async fn index(
@@ -934,6 +935,11 @@ pub async fn update(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Teach not found"))?;
 
+        // A locked class can only be unlocked; any other edit waits for that.
+        if lock_blocks(&scope, existing.is_lock) && payload.is_lock != Some(false) {
+            return Err(locked_error());
+        }
+
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
 
@@ -1063,6 +1069,10 @@ pub async fn delete(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Teach not found"))?;
+
+        if lock_blocks(&scope, existing.is_lock) {
+            return Err(locked_error());
+        }
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();

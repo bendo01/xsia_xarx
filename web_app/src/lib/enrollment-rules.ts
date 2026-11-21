@@ -13,12 +13,13 @@ export const totalCredits = (courses: Pick<EnrolledCourse, 'credit'>[]): number 
 export function enrollBlocker(input: {
   locked: boolean;
   enrolled: Pick<EnrolledCourse, 'teach_id' | 'course_id' | 'credit'>[];
-  offering: Pick<OfferedClass, 'id' | 'course_id' | 'credits' | 'enrolled_count' | 'max_member'> | undefined;
+  offering: Pick<OfferedClass, 'id' | 'course_id' | 'credits' | 'enrolled_count' | 'max_member' | 'is_lock'> | undefined;
   max?: number;
 }): EnrollBlock | null {
   const { locked, enrolled, offering, max = MAX_SKS } = input;
   if (!offering) return 'NOT_OFFERED';
   if (locked) return 'LOCKED';
+  if (offering.is_lock) return 'CLASS_LOCKED';
   if (enrolled.some((c) => c.teach_id === offering.id)) return 'ALREADY_ENROLLED';
   if (enrolled.some((c) => c.course_id === offering.course_id)) return 'DUPLICATE_COURSE';
   if (offering.enrolled_count >= offering.max_member) return 'FULL';

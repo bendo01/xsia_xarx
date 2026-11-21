@@ -23,7 +23,7 @@ export function FieldIcon(props: { name: 'mail' | 'lock' | 'phone' | 'key' }) {
 /** Labelled input with a leading icon (`password` type gets a show/hide toggle). */
 export function AuthField(props: {
   label: string;
-  icon: keyof typeof icons;
+  icon: 'mail' | 'lock' | 'phone' | 'key';
   name: string;
   type?: string;
   value?: string;

@@ -7,6 +7,7 @@ use sea_orm::{
 use uuid::Uuid;
 use validator::Validate;
 
+use crate::services::class_lock::ensure_detail_activity_open;
 use crate::dtos::academic::student::campaign::detail_activity_evaluation_components::{
     CreateDetailActivityEvaluationComponentRequest, DetailActivityEvaluationComponentQuery,
     DetailActivityEvaluationComponentResponse, PaginatedDetailActivityEvaluationComponentResponse,
@@ -129,6 +130,7 @@ pub async fn store(
         })?;
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
+        ensure_detail_activity_open(db, &scope, payload.detail_activity_id).await?;
 
         let now = Utc::now().naive_utc();
         let new_id = Uuid::new_v4();
@@ -197,6 +199,7 @@ pub async fn update(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
+        ensure_detail_activity_open(db, &scope, existing.detail_activity_id).await?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
@@ -263,6 +266,7 @@ pub async fn delete(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("DetailActivityEvaluationComponent not found"))?;
+        ensure_detail_activity_open(db, &scope, existing.detail_activity_id).await?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();

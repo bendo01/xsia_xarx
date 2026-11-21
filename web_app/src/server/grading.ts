@@ -34,6 +34,8 @@ export interface GradeSheet {
   course: { code: string; name: string; credit: number } | null;
   academicYear: string;
   unitId: string;
+  /** The study program locked this class: grades and components are read-only. */
+  classLocked: boolean;
   evaluations: Evaluation[];
   scale: GradeScale[];
   rows: SheetRow[];
@@ -52,6 +54,11 @@ export async function assertOwnClass(auth: AuthState, teachId: string): Promise<
   const mine = await loadAssignedTeaches(lecturerId);
   if (!mine.some((t) => t.teach_id === teachId)) throw markSafeError(Object.assign(new Error('Not your class'), { status: 403 }));
 }
+
+/** A class the study program has locked takes no more grade or component changes. */
+const assertClassOpen = (teach: Raw) => {
+  if (teach.is_lock) throw fail('classLocked');
+};
 
 const toEval = (e: Raw): Evaluation => ({
   id: String(e.id),
@@ -124,6 +131,7 @@ export async function loadGradeSheet(auth: AuthState, teachId: string): Promise<
     course: course ? { code: String(course.code ?? ''), name: String(course.name ?? ''), credit: Number(course.total_credit) || 0 } : null,
     academicYear: year ? String(year.name || year.code || '') : '',
     unitId,
+    classLocked: Boolean(teach.is_lock),
     evaluations,
     scale,
     rows,
@@ -140,6 +148,7 @@ export async function saveGradeRows(auth: AuthState, teachId: string, rows: RowI
   await assertOwnClass(auth, teachId);
   if (rows.length === 0 || rows.length > 500) throw fail('Invalid rows');
   const teach = await readTeach(teachId);
+  assertClassOpen(teach);
   const evaluations = asList<Raw>(teach.teach_evaluations).map(toEval);
   const details = new Map(asList<Raw>(teach.detail_activities).map((d) => [String(d.id), d]));
   const comps = asList<Raw>(teach.detail_activity_evaluation_components);
@@ -200,6 +209,7 @@ export async function saveEvaluation(auth: AuthState, teachId: string, input: { 
   const weight = Number(input.weight);
   if (!name || name.length > 100 || !(weight >= 0 && weight <= 100)) throw fail('Invalid component');
   const teach = await readTeach(teachId);
+  assertClassOpen(teach);
   if (anyLocked(teach)) throw fail('locked');
   const evals = asList<Raw>(teach.teach_evaluations);
   if (input.id) {
@@ -216,6 +226,7 @@ export async function saveEvaluation(auth: AuthState, teachId: string, input: { 
 export async function removeEvaluation(auth: AuthState, teachId: string, id: string) {
   await assertOwnClass(auth, teachId);
   const teach = await readTeach(teachId);
+  assertClassOpen(teach);
   if (anyLocked(teach)) throw fail('locked');
   if (!asList<Raw>(teach.teach_evaluations).some((e) => e.id === id)) throw fail('Not found');
   await apiFetch(`${T}/teach-evaluations/${enc(id)}`, { method: 'DELETE' });
@@ -225,6 +236,7 @@ export async function removeEvaluation(auth: AuthState, teachId: string, id: str
 export async function seedEvaluations(auth: AuthState, teachId: string, names: Record<(typeof DEFAULT_COMPONENTS)[number]['key'], string>) {
   await assertOwnClass(auth, teachId);
   const teach = await readTeach(teachId);
+  assertClassOpen(teach);
   if (asList<Raw>(teach.teach_evaluations).length > 0) return;
   const course = teach.course_id ? await apiFetch<Raw>(`academic/course/master/courses/${enc(teach.course_id)}`).catch(() => null) : null;
   const plan = asList<Raw>(course?.course_evaluation_plannings ?? teach.course_evaluation_plannings);

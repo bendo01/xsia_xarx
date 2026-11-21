@@ -36,6 +36,8 @@ export interface EnrolledCourse {
   grade_letter: string;
   grade_point: number | null;
   is_lock: boolean;
+  /** The class itself is locked by the study program (cannot be dropped). */
+  class_locked?: boolean;
 }
 
 /** A class (teach) that can be enrolled in this semester. */
@@ -51,6 +53,8 @@ export interface OfferedClass {
   room_name: string;
   enrolled_count: number;
   max_member: number;
+  /** The study program closed this class (teaching class lock). */
+  is_lock?: boolean;
 }
 
 export interface ActivityDetail {
@@ -68,6 +72,7 @@ export interface EnrollmentData {
 export type EnrollBlock =
   | 'NOT_OFFERED'
   | 'LOCKED'
+  | 'CLASS_LOCKED'
   | 'ALREADY_ENROLLED'
   | 'DUPLICATE_COURSE'
   | 'FULL'

@@ -9,6 +9,7 @@ import QrDisplay from '../../../../../../../components/lecturer/QrDisplay';
 import PageHeader from '../../../../../../../components/student/PageHeader';
 import { Dialog, DialogClose, DialogContent, DialogTitle } from '../../../../../../../components/ui/dialog';
 import { t } from '../../../../../../../i18n';
+import { crudErrorText } from '../../../../../../../lib/crud-errors';
 import { fetchRoster, getMeetings, nextQr, saveAttendance, startQr, stopQr } from '../../../../../../../lib/attendance';
 import type { AttendTypeOption, MeetingItem, QrToken, RosterItem } from '../../../../../../../lib/attendance-types';
 import { openMeetingFeed } from '../../../../../../../lib/realtime-client';
@@ -22,7 +23,7 @@ export const route = {
 const base = '/lecturer/academic/campaign/transaction/teach';
 const card = 'rounded-xs border border-card-line bg-card shadow-2xs';
 const btn = 'rounded-xs border border-layer-line bg-layer px-3 py-1.5 text-sm font-medium hover:bg-layer-hover disabled:opacity-50';
-const msg = (e: unknown) => (e instanceof Error ? e.message : String(e));
+const msg = (e: unknown) => crudErrorText(e, 'lc.attLoadFailed');
 
 /** Attendance for one class: pick a meeting, mark the roster, optionally run a rotating QR session. */
 export default function LecturerTeachAttendance() {
@@ -51,12 +52,12 @@ export default function LecturerTeachAttendance() {
           </>
         }
       />
-      <Board meetings={meetings()} />
+      <Board meetings={meetings().meetings} locked={meetings().locked} teachId={teachId()} />
     </Errored>
   );
 }
 
-function Board(props: { meetings: MeetingItem[] }) {
+function Board(props: { meetings: MeetingItem[]; locked: boolean; teachId: string }) {
   const [meetings, setMeetings] = createSignal<MeetingItem[]>(props.meetings);
   const [activeId, setActiveId] = createSignal('');
   const [roster, setRoster] = createSignal<RosterItem[]>([]);
@@ -184,7 +185,7 @@ function Board(props: { meetings: MeetingItem[] }) {
     if (!id || entries.length === 0) return;
     setSaving(true);
     try {
-      await saveAttendance(id, entries);
+      await saveAttendance(props.teachId, id, entries);
       toast.success(t('lc.attSaved'));
       setDirty(new Map());
     } catch (e) {
@@ -197,7 +198,7 @@ function Board(props: { meetings: MeetingItem[] }) {
   const openQr = async () => {
     const id = activeId();
     try {
-      const token = await startQr(id);
+      const token = await startQr(props.teachId, id);
       setMeetings((l) => l.map((m) => (m.id === id ? { ...m, is_qr_open: true } : m)));
       rotateQr(token);
     } catch (e) {
@@ -226,6 +227,7 @@ function Board(props: { meetings: MeetingItem[] }) {
   const StatusSelect = (p: { r: RosterItem; class?: string }) => (
     <select
       value={p.r.attend_type_id ?? ''}
+      disabled={props.locked}
       onChange={(e) => setType(p.r.student_id, e.currentTarget.value)}
       class={`rounded-xs border border-layer-line bg-layer ${p.class ?? ''}`}
       aria-label={`${t('lc.attStatus')}: ${p.r.student_name}`}
@@ -238,6 +240,9 @@ function Board(props: { meetings: MeetingItem[] }) {
   return (
     <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]">
       <section class={`${card} min-w-0 space-y-4 p-4`}>
+        <Show when={props.locked}>
+          <p role="status" class="rounded-xs border border-warning/40 bg-warning/10 p-3 text-sm">{t('lc.classLocked')}</p>
+        </Show>
         <div class="flex items-center justify-between gap-2">
           <div class="flex gap-1.5 overflow-x-auto sm:flex-wrap" role="group" aria-label={t('lc.attMeetings')}>
             <For each={meetings()}>
@@ -266,11 +271,11 @@ function Board(props: { meetings: MeetingItem[] }) {
           <div class="flex flex-wrap items-center justify-between gap-2">
             <p class="text-sm text-muted-foreground-1">{meetingLabel()} · {t('lc.attPresent')} {presentCount()} / {roster().length}</p>
             <div class="flex gap-2">
-              <button type="button" onClick={markAll} class={btn}>{t('lc.attMarkAllPresent')}</button>
+              <button type="button" onClick={markAll} disabled={props.locked} class={btn}>{t('lc.attMarkAllPresent')}</button>
               <button
                 type="button"
                 onClick={() => void save()}
-                disabled={saving() || dirty().size === 0}
+                disabled={props.locked || saving() || dirty().size === 0}
                 class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50"
               >
                 {saving() ? t('lc.attSaving') : `${t('lc.attSave')}${dirty().size ? ` (${dirty().size})` : ''}`}
@@ -303,7 +308,7 @@ function Board(props: { meetings: MeetingItem[] }) {
           fallback={
             <>
               <p class="text-xs text-muted-foreground-1">{t('lc.attQrHint')}</p>
-              <button type="button" onClick={() => void openQr()} disabled={!active()} class="w-full rounded-xs bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50">
+              <button type="button" onClick={() => void openQr()} disabled={props.locked || !active()} class="w-full rounded-xs bg-primary px-3 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-50">
                 {t('lc.attQrOpen')}
               </button>
             </>

@@ -109,6 +109,7 @@ export const lcId: Record<string, string> = {
     gradeExcelBlank: 'Excel (kosong)',
     gradeExcelFilled: 'Excel (terisi)',
     gradeFailedRows: '{{count}} baris tidak dapat disimpan (terkunci atau berubah).',
+    classLocked: 'Kelas ini dikunci oleh program studi. Minta program studi membukanya untuk melakukan perubahan.',
     failedToSaveTheGradeFor: 'Gagal menyimpan nilai {{name}}.',
     formPenilaianEvaluasiPerkuliahan: 'Form Penilaian & Evaluasi Perkuliahan',
     formPenilaianMahasiswa: 'Form Penilaian Mahasiswa',
