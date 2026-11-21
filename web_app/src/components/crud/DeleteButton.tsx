@@ -1,10 +1,10 @@
 import { revalidate, useNavigate } from '@solidjs/router';
-import { createSignal } from 'solid-js';
+import { Show, createMemo, createSignal } from 'solid-js';
 import { toast } from 'solid-sonner';
 
 import { t } from '../../i18n';
 import { crudErrorText } from '../../lib/crud-errors';
-import { deleteChildRow, deleteRow } from '../../lib/crud';
+import { deleteChildRow, deleteRow, getProdiRights } from '../../lib/crud';
 import { BASE, childBase, isChild } from '../../lib/crud-forms';
 import type { ResourceKey } from '../../lib/crud-schema';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
@@ -14,6 +14,7 @@ export default function DeleteButton(props: { resource: ResourceKey; id: string;
   const navigate = useNavigate();
   const [open, setOpen] = createSignal(false);
   const [busy, setBusy] = createSignal(false);
+  const rights = createMemo(() => getProdiRights());
 
   const run = async () => {
     setBusy(true);
@@ -34,7 +35,7 @@ export default function DeleteButton(props: { resource: ResourceKey; id: string;
   };
 
   return (
-    <>
+    <Show when={props.resource === 'staff' ? rights().canManageStaff : rights().canDelete}>
       <button type="button" onClick={() => setOpen(true)} class={props.class ?? 'rounded-xs border border-destructive/40 px-3 py-1.5 text-sm font-medium text-destructive hover:bg-destructive/10'}>
         {t('cd.delete')}
       </button>
@@ -52,6 +53,6 @@ export default function DeleteButton(props: { resource: ResourceKey; id: string;
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </Show>
   );
 }

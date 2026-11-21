@@ -63,6 +63,7 @@ export default function UnitTeachDetail() {
         </TabsList>
 
         <TabsContent value="overview">
+          <p class="mb-3 text-sm"><a href={`/course-department/academic/campaign/transaction/teach/${encodeURIComponent(teach().id)}/schedule`} class="text-primary hover:underline">{t('cd.teachSchedules')}</a></p>
           <section class={`${card} px-5 py-2`}>
             <dl class="divide-y divide-card-divider">
               <Field label={t('cd.teachCourse')} value={teach().course?.name} />

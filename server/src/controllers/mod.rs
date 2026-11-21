@@ -6,6 +6,7 @@ pub mod building;
 pub mod contact;
 pub mod document;
 pub mod academic;
+pub mod general;
 pub mod feeder;
 pub mod auth;
 pub mod realtime;
@@ -26,6 +27,7 @@ pub fn api_routers() -> Vec<Router> {
         contact::router(),
         document::router(),
         academic::router(),
+        general::router(),
         feeder::router(),
         auth::router(),
         realtime::router(),

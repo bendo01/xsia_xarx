@@ -3,7 +3,7 @@
 // error *codes* the UI translates. Pure, so it is tested without a DOM.
 import { isUuid } from './validation';
 
-export type FieldKind = 'text' | 'int' | 'number' | 'bool' | 'date' | 'uuid';
+export type FieldKind = 'text' | 'int' | 'number' | 'bool' | 'date' | 'time' | 'uuid';
 
 export interface FieldSpec {
   name: string;
@@ -15,7 +15,7 @@ export interface FieldSpec {
   min?: number;
 }
 
-export type FieldError = 'required' | 'invalid' | 'tooLong' | 'range' | 'dateOrder';
+export type FieldError = 'required' | 'invalid' | 'tooLong' | 'range' | 'dateOrder' | 'timeOrder';
 export type Raw = Record<string, unknown>;
 export type ParseResult = { ok: true; body: Record<string, unknown> } | { ok: false; errors: Record<string, FieldError> };
 
@@ -36,6 +36,11 @@ function one(spec: FieldSpec, v: unknown): { value: unknown } | { error: FieldEr
       return typeof s === 'string' && isUuid(s) ? { value: s } : { error: 'invalid' };
     case 'date':
       return typeof s === 'string' && isRealDate(s) ? { value: s } : { error: 'invalid' };
+    case 'time': {
+      // "HH:MM" from the browser or "HH:MM:SS" from the API; the API wants seconds.
+      const m = typeof s === 'string' ? /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/.exec(s) : null;
+      return m ? { value: `${m[1]}:${m[2]}:${m[3] ?? '00'}` } : { error: 'invalid' };
+    }
     case 'int':
     case 'number': {
       const n = typeof s === 'number' ? s : Number(String(s).replace(',', '.'));
@@ -115,6 +120,8 @@ export const CURRICULUM_DETAIL_FIELDS: FieldSpec[] = [
   { name: 'code', kind: 'int', min: 0, max: 100000 },
   { name: 'name', kind: 'text', max: 200 },
   { name: 'concentration_id', kind: 'uuid' },
+  { name: 'is_convertable_to_mbkm', kind: 'bool' },
+  { name: 'is_convertable_to_prior_learning_recognition', kind: 'bool' },
 ];
 
 // NB: the API really spells it "decription".
@@ -162,9 +169,17 @@ export const GRADE_FIELDS: FieldSpec[] = [
   { name: 'end_date', kind: 'date' },
 ];
 
+export const TEACH_SCHEDULE_FIELDS: FieldSpec[] = [
+  { name: 'weekday_id', kind: 'uuid', required: true },
+  { name: 'room_id', kind: 'uuid', required: true },
+  { name: 'start_hour', kind: 'time', required: true },
+  { name: 'end_hour', kind: 'time', required: true },
+  { name: 'name', kind: 'text', max: 200 },
+];
+
 export type ResourceKey = TopKey | ChildKey;
 export type TopKey = 'course' | 'curriculum' | 'classCode' | 'activity' | 'grade' | 'staff' | 'teach';
-export type ChildKey = 'curriculumDetail' | 'learnPlanning' | 'evaluationPlanning' | 'teachDecree' | 'teachLecturer' | 'teachEvaluation';
+export type ChildKey = 'curriculumDetail' | 'learnPlanning' | 'evaluationPlanning' | 'teachDecree' | 'teachLecturer' | 'teachEvaluation' | 'teachSchedule';
 
 export const STAFF_FIELDS: FieldSpec[] = [
   { name: 'employee_id', kind: 'uuid', required: true },
@@ -243,6 +258,12 @@ export const RESOURCES: Record<ResourceKey, ResourceDef> = {
   },
   staff: { path: 'institution/master/staffes', fields: STAFF_FIELDS },
   teach: { path: 'academic/campaign/transaction/teaches', fields: TEACH_FIELDS, unitless: true },
+  teachSchedule: {
+    path: 'academic/campaign/transaction/schedules',
+    fields: TEACH_SCHEDULE_FIELDS,
+    parent: { field: 'teach_id', resource: 'teach' },
+    check: (b): Record<string, FieldError> => (typeof b.start_hour === 'string' && typeof b.end_hour === 'string' && b.end_hour <= b.start_hour ? { end_hour: 'timeOrder' } : {}),
+  },
   teachDecree: { path: 'academic/campaign/transaction/teach-decrees', fields: TEACH_DECREE_FIELDS, parent: { field: 'activity_id', resource: 'activity' } },
   teachLecturer: { path: 'academic/campaign/transaction/teach-lecturers', fields: TEACH_LECTURER_FIELDS, parent: { field: 'teach_id', resource: 'teach' } },
   teachEvaluation: { path: 'academic/campaign/transaction/teach-evaluations', fields: TEACH_EVALUATION_FIELDS, parent: { field: 'teach_id', resource: 'teach' } },

@@ -1,7 +1,7 @@
 // Which inputs each CRUD form shows, in order. Labels are i18n keys (`cd.*`).
 import type { ChildKey, ResourceKey, TopKey } from './crud-schema';
 
-export type Widget = 'text' | 'textarea' | 'number' | 'int' | 'date' | 'select' | 'check';
+export type Widget = 'text' | 'textarea' | 'number' | 'int' | 'date' | 'time' | 'select' | 'check';
 export interface FormFieldDef {
   name: string;
   label: string;
@@ -9,11 +9,14 @@ export interface FormFieldDef {
   required?: boolean;
   /** number inputs */
   step?: string;
+  /** select: a stored value that is not among the options is NOT kept (the user must choose again) */
+  strict?: boolean;
 }
 
 const text = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'text', required });
 const num = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'number', step: '0.5', required });
 const area = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'textarea', required });
+const time = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'time', required });
 const int = (name: string, label: string): FormFieldDef => ({ name, label, widget: 'int' });
 const date = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'date', required });
 const select = (name: string, label: string, required = false): FormFieldDef => ({ name, label, widget: 'select', required });
@@ -113,6 +116,13 @@ export const FORMS: Record<ResourceKey, FormFieldDef[]> = {
     area('description', 'cd.fDescription'),
     check('is_lecturer_credit_sum_problem', 'cd.fCreditProblem'),
   ],
+  teachSchedule: [
+    { ...select('weekday_id', 'cd.fWeekday', true), strict: true },
+    time('start_hour', 'cd.fStartHour', true),
+    time('end_hour', 'cd.fEndHour', true),
+    select('room_id', 'cd.fRoom', true),
+    text('name', 'cd.fName'),
+  ],
   teachDecree: [
     text('decree_number', 'cd.fDecreeNumber', true),
     date('decree_date', 'cd.fDecreeDate', true),
@@ -140,6 +150,8 @@ export const FORMS: Record<ResourceKey, FormFieldDef[]> = {
     int('code', 'cd.fClassNumber'),
     text('name', 'cd.fName'),
     select('concentration_id', 'cd.fConcentration'),
+    check('is_convertable_to_mbkm', 'cd.fMbkm'),
+    check('is_convertable_to_prior_learning_recognition', 'cd.fPriorLearning'),
   ],
   learnPlanning: [
     int('code', 'cd.fCode'),
@@ -169,6 +181,7 @@ export const DEFAULTS: Record<ResourceKey, Record<string, string | boolean>> = {
   grade: {},
   staff: {},
   teach: {},
+  teachSchedule: {},
   teachDecree: {},
   teachLecturer: { planning: '16', realization: '0' },
   teachEvaluation: {},
@@ -194,13 +207,15 @@ export function toFormValues(key: ResourceKey, rec: Record<string, any> | null):
   const out: Record<string, string | boolean> = {};
   for (const f of FORMS[key]) {
     const v = rec[f.name];
-    out[f.name] = f.widget === 'check' ? Boolean(v) : v === null || v === undefined ? '' : f.widget === 'date' ? String(v).slice(0, 10) : String(v);
+    out[f.name] =
+      f.widget === 'check' ? Boolean(v) : v === null || v === undefined ? '' : f.widget === 'date' ? String(v).slice(0, 10) : f.widget === 'time' ? String(v).slice(0, 5) : String(v);
   }
   return out;
 }
 
 const CHILD_SEGMENT: Record<ChildKey, { parent: TopKey; segment: string }> = {
   teachDecree: { parent: 'activity', segment: 'teach-decree' },
+  teachSchedule: { parent: 'teach', segment: 'schedule' },
   teachLecturer: { parent: 'teach', segment: 'lecturer' },
   teachEvaluation: { parent: 'teach', segment: 'evaluation' },
   curriculumDetail: { parent: 'curriculum', segment: 'curriculum-detail' },

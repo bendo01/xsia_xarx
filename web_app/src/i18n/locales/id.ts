@@ -471,6 +471,8 @@ export const id: TranslationSchema = {
             teachDirectory: 'Direktori Kelas Mengajar',
             lecturerDirectory: 'Direktori Dosen',
             staffDirectory: 'Direktori Staf',
+            adviserDirectory: 'Pembimbing Akademik',
+            finalAssignmentDirectory: 'Tugas Akhir',
             classEncounters: 'Kelas & Pertemuan',
             implementationModes: 'Mode Pelaksanaan',
             encounterCategories: 'Kategori Pertemuan',

@@ -10,6 +10,11 @@ pub struct RoomQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    /// Only rooms of this unit (study program)
+    pub unit_id: Option<Uuid>,
+    /// With `unit_id`: also the shared rooms that belong to no unit
+    pub include_shared: Option<bool>,
+    pub building_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

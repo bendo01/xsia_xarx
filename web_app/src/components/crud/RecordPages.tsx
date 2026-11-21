@@ -83,7 +83,8 @@ export function RecordListPage(props: { resource: ResourceKey }) {
 export function RecordFormPage(props: { resource: ResourceKey; id?: string }) {
   const [search] = useSearchParams();
   const emp = () => (props.resource === 'staff' ? one((search as Query).emp) : '');
-  const data = createMemo(() => getRecord(props.resource, props.id ?? '', emp()));
+  const curriculum = () => (props.resource === 'teach' ? one((search as Query).curriculum) : '');
+  const data = createMemo(() => getRecord(props.resource, props.id ?? '', emp() || curriculum()));
   const title = () => t(props.id ? TITLES[props.resource].edit : TITLES[props.resource].add);
   return (
     <Errored fallback={(err) => <ErrorBox error={err()} />}>
@@ -94,6 +95,17 @@ export function RecordFormPage(props: { resource: ResourceKey; id?: string }) {
           <input type="search" name="emp" value={emp()} placeholder={t('cd.fEmployeeSearch')} class="h-9 min-w-0 flex-1 rounded-xs border border-layer-line bg-layer px-3 text-sm sm:max-w-sm" />
           <button type="submit" class={btn}>{t('cd.applyFilters')}</button>
           <span class="text-xs text-muted-foreground-1">{t('cd.employeeSearchHint')}</span>
+        </form>
+      </Show>
+      <Show when={props.resource === 'teach'}>
+        <form method="get" class="mb-4 flex flex-wrap items-center gap-2">
+          <label for="pick-curriculum" class="text-sm font-medium">{t('cd.fCurriculumPick')}</label>
+          <select id="pick-curriculum" name="curriculum" class="h-9 min-w-0 rounded-xs border border-layer-line bg-layer px-3 text-sm">
+            <option value="">{t('cd.selectOne')}</option>
+            <For each={data().options._curricula ?? []}>{(c) => <option value={c.id} selected={curriculum() === c.id}>{c.name}</option>}</For>
+          </select>
+          <button type="submit" class={btn}>{t('cd.applyFilters')}</button>
+          <span class="text-xs text-muted-foreground-1">{t('cd.curriculumPickHint')}</span>
         </form>
       </Show>
       <RecordForm resource={props.resource} id={props.id} record={data().record} options={data().options} />
@@ -150,6 +162,7 @@ export function ChildListPage(props: { resource: ChildKey; parentId: string }) {
   const [search] = useSearchParams();
   const data = createMemo(() => getChildren(props.resource, props.parentId, parsePage((search as Query).page)));
   const cols = CHILD_COLUMNS[props.resource];
+  const ctx = createMemo(() => ({ ...data().names, _text: { unknownWeekday: `⚠ ${t('cd.weekdayUnknown')}` } }));
   const parentName = () => String(data().parent.name ?? data().parent.course?.name ?? '');
   const title = () => `${t(CHILD_TITLES[props.resource].list)} — ${parentName()}`;
   const total = () =>
@@ -180,7 +193,7 @@ export function ChildListPage(props: { resource: ChildKey; parentId: string }) {
             <For each={data().rows.data}>
               {(r) => (
                 <TableRow>
-                  <For each={cols}>{(c, i) => <TableCell class={i() === 0 ? 'font-medium' : ''} label={t(c.label)}>{c.cell(r)}</TableCell>}</For>
+                  <For each={cols}>{(c, i) => <TableCell class={i() === 0 ? 'font-medium' : ''} label={t(c.label)}>{c.cell(r, ctx())}</TableCell>}</For>
                   <TableCell class="text-end">
                     <span class="inline-flex items-center gap-x-4 text-sm font-medium">
                       <a href={`${childBase(props.resource, props.parentId)}/${encodeURIComponent(r.id)}/edit`} class="text-primary hover:underline">{t('cd.edit')}</a>

@@ -6,6 +6,7 @@ import { markSafeError } from '@solidjs/web';
 import { apiFetch, apiPaginated } from './api';
 import type { AuthState } from './auth';
 import { loadUnitLecturerOptions, resolveMyUnit, teachUnit } from './unit';
+import { prodiRights, type ProdiRight } from '../lib/prodi-rights';
 import { RESOURCES, parseResource, type ChildKey, type FieldError, type ResourceKey, type TopKey } from '../lib/crud-schema';
 import { asList } from '../lib/student-select';
 import { isUuid } from '../lib/validation';
@@ -18,6 +19,11 @@ const fail = (m: string, status?: number) => markSafeError(Object.assign(new Err
 export async function requireProdi(auth: AuthState): Promise<string> {
   if (auth.activeRole !== 'course_department') throw fail('Forbidden', 403);
   return resolveMyUnit(auth);
+}
+
+/** A single right on top of `requireProdi` (an explicit Staff position lacks delete / lock / staff changes). */
+export function requireRight(auth: AuthState, right: ProdiRight): void {
+  if (!prodiRights(auth.activeRoleItem)[right]) throw fail('Forbidden', 403);
 }
 
 export async function listRecords(key: TopKey, unitId: string, page: number, search: string, pageSize = 20) {
@@ -47,6 +53,7 @@ export type SaveResult = { ok: true; id: string } | { ok: false; errors: Record<
 
 export async function saveRecord(auth: AuthState, key: TopKey, id: string | null, input: Raw): Promise<SaveResult> {
   const unitId = await requireProdi(auth);
+  if (key === 'staff') requireRight(auth, 'canManageStaff');
   const parsed = parseResource(key, input);
   if (!parsed.ok) return parsed;
   const body: Raw = RESOURCES[key].unitless ? { ...parsed.body } : { ...parsed.body, unit_id: unitId };
@@ -76,22 +83,54 @@ export async function saveRecord(auth: AuthState, key: TopKey, id: string | null
 
 export async function removeRecord(auth: AuthState, key: TopKey, id: string): Promise<void> {
   const unitId = await requireProdi(auth);
+  requireRight(auth, key === 'staff' ? 'canManageStaff' : 'canDelete');
   const rec = await showRecord(key, unitId, id);
   if (key === 'teach') guardTeach(rec, true);
   await apiFetch(`${RESOURCES[key].path}/${enc(id)}`, { method: 'DELETE' });
 }
 
-/** The course entries of the unit's most recent curricula, labelled "curriculum · course (semester)". */
-async function loadCurriculumEntryOptions(unitId: string): Promise<Option[]> {
-  const list = await apiFetch<unknown>('academic/course/master/curriculums', { query: { page: 1, page_size: 10, unit_id: unitId } }).catch(() => []);
-  const curricula = asList<Raw>(list).filter((c) => c.unit_id === unitId).slice(0, 10);
-  const full = await Promise.all(curricula.map((c) => apiFetch<Raw>(`academic/course/master/curriculums/${enc(String(c.id))}`).then((r) => (r.data ?? r) as Raw, () => null)));
-  return full.flatMap((c) =>
-    asList<Raw>(c?.curriculum_details).map((d) => ({
-      id: String(d.id),
-      name: `${c?.name ?? ''} · ${[d.course?.code, d.course?.name ?? d.name].filter(Boolean).join(' ')}`.trim(),
-    })),
-  );
+/**
+ * Step one of the class form's curriculum picker: the unit's curricula (all of them, newest first).
+ * Step two (`loadCurriculumEntries`) lists the entries of the one chosen.
+ */
+async function loadCurriculumChoices(unitId: string): Promise<Option[]> {
+  const list = await apiFetch<unknown>('academic/course/master/curriculums', { query: { page: 1, page_size: 100, unit_id: unitId } }).catch(() => []);
+  return asList<Raw>(list)
+    .filter((c) => c.unit_id === unitId)
+    .map((c) => ({ id: String(c.id), name: String(c.name ?? c.id) }));
+}
+
+/** The course entries of one curriculum of the unit, labelled "course (semester)"; empty for any other id. */
+async function loadCurriculumEntries(unitId: string, curriculumId: string): Promise<Option[]> {
+  if (!isUuid(curriculumId)) return [];
+  const raw = await apiFetch<Raw>(`academic/course/master/curriculums/${enc(curriculumId)}`).catch(() => null);
+  const c = (raw?.data ?? raw) as Raw | null;
+  if (!c?.id || c.unit_id !== unitId) return [];
+  return asList<Raw>(c.curriculum_details).map((d) => ({
+    id: String(d.id),
+    name: [d.course?.code, d.course?.name ?? d.name, d.semester?.name ?? d.semester_name ? `(${d.semester?.name ?? d.semester_name})` : ''].filter(Boolean).join(' '),
+  }));
+}
+
+/** The seven weekdays (general_reference.weekdays), Monday first. */
+async function loadWeekdays(): Promise<Option[]> {
+  const res = await apiFetch<unknown>('general/reference/weekdays', { query: { page: 1, page_size: 20 } }).catch(() => []);
+  return asList<Raw>(res).map((d) => ({ id: String(d.id), name: String(d.name ?? d.english_name ?? d.id) }));
+}
+
+/** Rooms the unit may use: its own and the shared ones that belong to no unit (the API filters; re-checked here). */
+async function loadUnitRooms(unitId: string): Promise<Option[]> {
+  const res = await apiFetch<unknown>('building/master/rooms', { query: { page: 1, page_size: 500, unit_id: unitId, include_shared: true } }).catch(() => []);
+  return asList<Raw>(res)
+    .filter((r) => !r.unit_id || r.unit_id === unitId)
+    .map((r) => ({ id: String(r.id), name: [r.alphabet_code, r.name].filter(Boolean).join(' · ') || String(r.id) }));
+}
+
+/** id -> name maps for a schedule list (the rows only hold weekday and room ids). */
+export async function loadScheduleNames(unitId: string): Promise<Record<string, Record<string, string>>> {
+  const [weekdays, rooms] = await Promise.all([loadWeekdays(), loadUnitRooms(unitId)]);
+  const map = (o: Option[]) => Object.fromEntries(o.map((x) => [x.id, x.name]));
+  return { weekday: map(weekdays), room: map(rooms) };
 }
 
 const exists = (p: Promise<unknown>) => p.then(() => true, () => false);
@@ -167,7 +206,7 @@ export async function saveChild(auth: AuthState, key: ChildKey, parentId: string
   const { field } = parentOf(key);
   const body: Raw = { ...parsed.body };
 
-  if (key === 'teachEvaluation' && parent.is_lock) throw fail('locked');
+  if ((key === 'teachEvaluation' || key === 'teachSchedule') && parent.is_lock) throw fail('locked');
   if (key === 'teachDecree' && body.staff_id) {
     const raw = await apiFetch<Raw>(`${RESOURCES.staff.path}/${enc(String(body.staff_id))}`).catch(() => null);
     const st = (raw?.data ?? raw) as Raw | null;
@@ -191,8 +230,9 @@ export async function saveChild(auth: AuthState, key: ChildKey, parentId: string
 
 export async function removeChild(auth: AuthState, key: ChildKey, parentId: string, id: string): Promise<void> {
   const unitId = await requireProdi(auth);
+  requireRight(auth, 'canDelete');
   const parent = await ownParent(key, unitId, parentId);
-  if (key === 'teachEvaluation' && parent.is_lock) throw fail('locked');
+  if ((key === 'teachEvaluation' || key === 'teachSchedule') && parent.is_lock) throw fail('locked');
   await showChild(key, unitId, parentId, id);
   await apiFetch(`${RESOURCES[key].path}/${enc(id)}`, { method: 'DELETE' });
 }
@@ -203,6 +243,7 @@ export async function removeChild(auth: AuthState, key: ChildKey, parentId: stri
  */
 export async function setClassLock(auth: AuthState, teachId: string, locked: boolean): Promise<void> {
   const unitId = await requireProdi(auth);
+  requireRight(auth, 'canLockClass');
   const rec = await showRecord('teach', unitId, teachId);
   if (Boolean(rec.is_lock) === locked) return;
   await apiFetch(`${RESOURCES.teach.path}/${enc(teachId)}`, { method: 'PUT', body: { is_lock: locked } });
@@ -241,13 +282,14 @@ export async function loadFormOptions(key: ResourceKey, unitId: string, search =
     };
   }
   if (key === 'teach') {
-    const [courses, codes, acts, encounters, scopes, curriculumEntries] = await Promise.all([
+    const [courses, codes, acts, encounters, scopes, curriculumEntries, curricula] = await Promise.all([
       orEmpty(apiFetch<unknown>('academic/course/master/courses', { query: { page: 1, page_size: 200, unit_id: unitId } }), []),
       orEmpty(apiFetch<unknown>('academic/campaign/transaction/class-codes', { query: { page: 1, page_size: 200, unit_id: unitId } }), []),
       orEmpty(apiFetch<unknown>('academic/campaign/transaction/activities', { query: { page: 1, page_size: 100, unit_id: unitId } }), []),
       orEmpty(apiFetch<unknown>('academic/campaign/reference/encounter-categories', { query: { page: 1, page_size: 100 } }), []),
       orEmpty(apiFetch<unknown>('academic/campaign/reference/scopes', { query: { page: 1, page_size: 100 } }), []),
-      loadCurriculumEntryOptions(unitId),
+      loadCurriculumEntries(unitId, search.trim()),
+      loadCurriculumChoices(unitId),
     ]);
     const activities = asList<Raw>(acts);
     const decrees = (
@@ -263,7 +305,12 @@ export async function loadFormOptions(key: ResourceKey, unitId: string, search =
       encounter_category_id: opts(encounters, (r) => String(r.name ?? r.code ?? '')),
       scope_id: opts(scopes, (r) => String(r.name ?? r.code ?? '')),
       curriculum_detail_id: curriculumEntries,
+      _curricula: curricula,
     };
+  }
+  if (key === 'teachSchedule') {
+    const [weekdays, rooms] = await Promise.all([loadWeekdays(), loadUnitRooms(unitId)]);
+    return { weekday_id: weekdays, room_id: rooms };
   }
   if (key === 'teachDecree') {
     const staff = await orEmpty(apiFetch<unknown>('institution/master/staffes', { query: { page: 1, page_size: 200, unit_id: unitId } }), []);

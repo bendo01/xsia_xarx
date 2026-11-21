@@ -267,6 +267,24 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/index")>>>;
     },
     {
+      path: "/course-department/academic/campaign/transaction/teach/:id/schedule/:itemId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/schedule/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create")>>>;
+    },
+    {
+      path: "/course-department/academic/campaign/transaction/teach/:id/schedule/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index")>>>;
+    },
+    {
       path: "/course-department/academic/campaign/transaction/teach/create";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/create")>>>;
@@ -393,6 +411,18 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/lecturer/master/lecturer/index")>>>;
     },
     {
+      path: "/course-department/academic/student/adviser/decree/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/adviser/decree/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/adviser/decree/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/adviser/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/adviser/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/adviser/index")>>>;
+    },
+    {
       path: "/course-department/academic/student/campaign/activity/:id/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/[id]/index")>>>;
@@ -403,6 +433,42 @@ declare module "virtual:file-routes" {
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/campaign/activity/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/campaign/activity/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/adviser/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/evaluation-summary/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/final-assignment-decree/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/prerequisite/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/schedule/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index")>>>;
+    },
+    {
+      path: "/course-department/academic/student/final-assignment/transaction/submission/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index")>>>;
     },
     {
       path: "/course-department/academic/student/master/student/:id/";
@@ -754,6 +820,14 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
       children: readonly [
         {
+          path: "/academic/student/adviser/";
+          id: "/academic/student/adviser/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/adviser/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/adviser/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/institution/master/staff/";
           id: "/institution/master/staff/";
           page: true;
@@ -783,6 +857,14 @@ declare module "virtual:file-routes" {
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"default", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/institution/master/staff/create"), Extract<"route", keyof typeof import("./src/routes/course-department/institution/master/staff/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/adviser/decree/";
+          id: "/academic/student/adviser/decree/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/adviser/decree/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/adviser/decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/adviser/decree/index")>>>;
           children?: undefined;
         },
         {
@@ -1042,6 +1124,14 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/academic/campaign/transaction/teach/:id/schedule/";
+          id: "/academic/campaign/transaction/teach/:id/schedule/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/academic/campaign/transaction/teach/:id/evaluation/";
           id: "/academic/campaign/transaction/teach/:id/evaluation/";
           page: true;
@@ -1050,11 +1140,35 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/academic/student/final-assignment/transaction/adviser/";
+          id: "/academic/student/final-assignment/transaction/adviser/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/adviser/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/academic/campaign/transaction/teach/:id/lecturer/create";
           id: "/academic/campaign/transaction/teach/:id/lecturer/create";
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/schedule/create";
+          id: "/academic/campaign/transaction/teach/:id/schedule/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/create")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/final-assignment/transaction/schedule/";
+          id: "/academic/student/final-assignment/transaction/schedule/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/schedule/index")>>>;
           children?: undefined;
         },
         {
@@ -1090,11 +1204,35 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/academic/student/final-assignment/transaction/submission/";
+          id: "/academic/student/final-assignment/transaction/submission/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/submission/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/final-assignment/transaction/prerequisite/";
+          id: "/academic/student/final-assignment/transaction/prerequisite/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/prerequisite/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/academic/campaign/transaction/teach/:id/lecturer/:itemId/edit";
           id: "/academic/campaign/transaction/teach/:id/lecturer/:itemId/edit";
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/lecturer/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/campaign/transaction/teach/:id/schedule/:itemId/edit";
+          id: "/academic/campaign/transaction/teach/:id/schedule/:itemId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/campaign/transaction/teach/[id]/schedule/[itemId]/edit")>>>;
           children?: undefined;
         },
         {
@@ -1138,6 +1276,14 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/academic/student/final-assignment/transaction/evaluation-summary/";
+          id: "/academic/student/final-assignment/transaction/evaluation-summary/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/evaluation-summary/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/academic/course/master/course/:id/course-evaluation-planning/create";
           id: "/academic/course/master/course/:id/course-evaluation-planning/create";
           page: true;
@@ -1167,6 +1313,14 @@ declare module "virtual:file-routes" {
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/course/master/curriculum/[id]/curriculum-detail/[itemId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/student/final-assignment/transaction/final-assignment-decree/";
+          id: "/academic/student/final-assignment/transaction/final-assignment-decree/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index"), Extract<"default", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index"), Extract<"route", keyof typeof import("./src/routes/course-department/academic/student/final-assignment/transaction/final-assignment-decree/index")>>>;
           children?: undefined;
         },
         {

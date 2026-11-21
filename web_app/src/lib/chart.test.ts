@@ -59,3 +59,34 @@ describe('labelIndexes', () => {
     expect(new Set(idx).size).toBe(idx.length);
   });
 });
+
+import { arcPath, barRows, pieSlices } from './chart';
+
+describe('pie geometry', () => {
+  it('splits the circle by value, skipping empty values', () => {
+    const s = pieSlices([1, 0, 3]);
+    expect(s.map((x) => x.index)).toEqual([0, 2]);
+    expect(s[0].fraction).toBeCloseTo(0.25);
+    expect(s[0].start).toBe(0);
+    expect(s[1].start).toBeCloseTo(s[0].end);
+    expect(s[1].end).toBeCloseTo(Math.PI * 2);
+    expect(pieSlices([0, -2])).toEqual([]);
+  });
+  it('draws a single slice as a closed ring (two arcs)', () => {
+    const [only] = pieSlices([5]);
+    const d = arcPath(50, 50, 20, 40, only.start, only.end);
+    expect(d.match(/M/g)).toHaveLength(2);
+    expect(arcPath(50, 50, 0, 40, 0, Math.PI / 2)).toMatch(/^M50 50 L50 10 A40 40 0 0 1 90 50 Z$/);
+  });
+  it('flags large arcs', () => {
+    expect(arcPath(50, 50, 20, 40, 0, Math.PI * 1.5)).toContain(' 0 1 1 ');
+  });
+});
+
+describe('bar rows', () => {
+  it('scales to the longest and limits the rows', () => {
+    expect(barRows([10, 5, 0], 2).map((r) => r.fraction)).toEqual([1, 0.5]);
+    expect(barRows([1000, 1])[1].fraction).toBeGreaterThan(0); // never invisible
+    expect(barRows([0, 0]).map((r) => r.fraction)).toEqual([0, 0]);
+  });
+});

@@ -1,7 +1,7 @@
 use chrono::Utc;
 use salvo::prelude::*;
 use sea_orm::{
-    ActiveModelTrait, ColumnTrait, DatabaseConnection, EntityTrait, IntoActiveModel,
+    ActiveModelTrait, ColumnTrait, Condition, DatabaseConnection, EntityTrait, IntoActiveModel,
     PaginatorTrait, QueryFilter, QueryOrder, Set,
 };
 use uuid::Uuid;
@@ -32,6 +32,18 @@ pub async fn index(
 
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
+    }
+    if let Some(building_id) = query.building_id {
+        select = select.filter(entity_mod::Column::BuildingId.eq(building_id));
+    }
+    if let Some(unit_id) = query.unit_id {
+        // A unit's own rooms, and (on request) the shared ones that belong to no unit.
+        let own = Condition::any().add(entity_mod::Column::UnitId.eq(unit_id));
+        select = select.filter(if query.include_shared.unwrap_or(false) {
+            own.add(entity_mod::Column::UnitId.is_null())
+        } else {
+            own
+        });
     }
 
     let paginator = select

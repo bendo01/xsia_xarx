@@ -14,6 +14,9 @@ use crate::dtos::academic::campaign::transaction::schedules::{
 use crate::dtos::common::reference::{MessageResponse, OptionItem};
 use crate::models::academic::campaign::transaction::schedules as entity_mod;
 use crate::middleware::auth::auth_user_id;
+use crate::models::academic::campaign::transaction::teaches;
+use crate::services::auth::data_scope::DataScope;
+use crate::services::class_lock::ensure_teach_open;
 
 #[endpoint(tags("Academic - Campaign - Transaction - Schedule"), status_codes(200, 500))]
 pub async fn index(
@@ -32,6 +35,12 @@ pub async fn index(
 
     if let Some(ref name) = query.name {
         select = select.filter(entity_mod::Column::Name.contains(name));
+    }
+    if let Some(teach_id) = query.teach_id {
+        select = select.filter(entity_mod::Column::TeachId.eq(teach_id));
+    }
+    if let Some(room_id) = query.room_id {
+        select = select.filter(entity_mod::Column::RoomId.eq(room_id));
     }
 
     let paginator = select
@@ -119,6 +128,11 @@ pub async fn store(
 
         payload.validate().map_err(|e| StatusError::bad_request().brief(e.to_string()))?;
 
+        // The class must be inside the caller's data scope and not locked by the study program.
+        let scope = DataScope::resolve(db, depot).await?;
+        scope.ensure_visible::<teaches::Entity, _>(db, payload.teach_id).await?;
+        ensure_teach_open(db, &scope, Some(payload.teach_id)).await?;
+
         let now = Utc::now().naive_utc();
         let new_id = Uuid::new_v4();
 
@@ -183,6 +197,16 @@ pub async fn update(
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Schedule not found"))?;
 
+        let scope = DataScope::resolve(db, depot).await?;
+        scope.ensure_visible::<teaches::Entity, _>(db, existing.teach_id).await?;
+        ensure_teach_open(db, &scope, Some(existing.teach_id)).await?;
+        if let Some(new_teach) = payload.teach_id {
+            if new_teach != existing.teach_id {
+                scope.ensure_visible::<teaches::Entity, _>(db, new_teach).await?;
+                ensure_teach_open(db, &scope, Some(new_teach)).await?;
+            }
+        }
+
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();
 
@@ -244,6 +268,10 @@ pub async fn delete(
             .await
             .map_err(|e| StatusError::internal_server_error().brief(e.to_string()))?
             .ok_or_else(|| StatusError::not_found().brief("Schedule not found"))?;
+
+        let scope = DataScope::resolve(db, depot).await?;
+        scope.ensure_visible::<teaches::Entity, _>(db, existing.teach_id).await?;
+        ensure_teach_open(db, &scope, Some(existing.teach_id)).await?;
 
         let now = Utc::now().naive_utc();
         let mut active_model = existing.into_active_model();

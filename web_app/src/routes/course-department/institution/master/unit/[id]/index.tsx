@@ -4,7 +4,8 @@ import { useParams } from '@solidjs/router';
 import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
-import BarList from '../../../../../../components/chart/BarList';
+import BarChart from '../../../../../../components/chart/BarChart';
+import PieChart, { CHART_COLORS } from '../../../../../../components/chart/PieChart';
 import LineChart from '../../../../../../components/chart/LineChart';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Badge } from '../../../../../../components/ui/badge';
@@ -19,7 +20,7 @@ export const route = {
 } satisfies RouteDefinition;
 
 const card = 'rounded-xs border border-card-line bg-card shadow-2xs';
-const COLORS = ['#6366f1', '#0ea5e9', '#0d9488', '#f59e0b', '#ef4444', '#8b5cf6'];
+const COLORS = CHART_COLORS;
 
 function Stat(props: { label: string; value: string }) {
   return (
@@ -73,11 +74,13 @@ function Trend(props: { title: string; option: unknown; wide?: boolean }) {
   );
 }
 
-function Distribution(props: { title: string; items: { name: string; value: number }[]; wide?: boolean }) {
+function Distribution(props: { title: string; items: { name: string; value: number }[]; wide?: boolean; kind?: 'pie' | 'bar' }) {
   return (
     <Show when={props.items.length > 0}>
       <Panel title={props.title} wide={props.wide}>
-        <BarList items={props.items} ariaLabel={props.title} />
+        <Show when={props.kind === 'bar'} fallback={<PieChart items={props.items} ariaLabel={props.title} />}>
+          <BarChart items={props.items} ariaLabel={props.title} />
+        </Show>
       </Panel>
     </Show>
   );
@@ -130,6 +133,7 @@ export default function UnitDashboard() {
           <Distribution
             title={t('cd.studentDistributionByRegion')}
             items={rowsFromDataset(u().student_regency_distribution || u().student_sub_district_distribution)}
+            kind="bar"
             wide
           />
           <Trend title={t('cd.studentDistributionByReligion')} option={u().student_religion_distribution} wide />

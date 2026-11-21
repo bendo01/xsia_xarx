@@ -36,7 +36,7 @@ export type RoleKey =
   | 'user'
   | 'guest';
 
-function positionName(value: unknown): string {
+export function positionName(value: unknown): string {
   if (!value) return '';
   if (typeof value === 'string') return value;
   if (typeof value === 'object') {

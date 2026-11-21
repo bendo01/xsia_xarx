@@ -9,6 +9,7 @@ import DeleteButton from '../../../../../../../components/crud/DeleteButton';
 import PageHeader from '../../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../../components/ui/table';
 import { t } from '../../../../../../../i18n';
+import { getProdiRights } from '../../../../../../../lib/crud';
 import { getUnitStaff } from '../../../../../../../lib/unit';
 import { parsePage } from '../../../../../../../lib/url';
 
@@ -29,12 +30,17 @@ export default function UnitStaff() {
   const q = () => search as Query;
   const data = createMemo(() => load(q()));
   const refreshing = () => isPending(() => data());
+  const rights = createMemo(() => getProdiRights());
 
   return (
     <Errored fallback={(err) => <div role="alert" class="rounded-xs border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">{(err() as Error).message}</div>}>
       <Title>{`${t('menu.courseDepartment.staffDirectory')} - ${env.VITE_APP_NAME}`}</Title>
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
-        <PageHeader title={t('menu.courseDepartment.staffDirectory')} actions={<a href="/course-department/institution/master/staff/create" class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a>} />
+        <PageHeader title={t('menu.courseDepartment.staffDirectory')} actions={
+            <Show when={rights().canManageStaff}>
+              <a href="/course-department/institution/master/staff/create" class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a>
+            </Show>
+          } />
         <form method="get" class="flex flex-wrap items-center gap-2">
           <input type="search" name="q" value={one(q().q)} placeholder={t('common.search')} class="h-9 min-w-0 flex-1 rounded-xs border border-layer-line bg-layer px-3 text-sm sm:max-w-sm" />
           <button type="submit" class="h-9 rounded-xs bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.applyFilters')}</button>
@@ -61,7 +67,9 @@ export default function UnitStaff() {
                     <TableCell label={t('cd.fStartDate')}>{`${day(s.start_date)} – ${s.end_date ? day(s.end_date) : '…'}`}</TableCell>
                     <TableCell class="text-end">
                       <span class="inline-flex items-center gap-x-4 text-sm font-medium">
-                        <a href={`/course-department/institution/master/staff/${encodeURIComponent(s.id)}/edit`} class="text-primary hover:underline">{t('cd.edit')}</a>
+                        <Show when={rights().canManageStaff}>
+                          <a href={`/course-department/institution/master/staff/${encodeURIComponent(s.id)}/edit`} class="text-primary hover:underline">{t('cd.edit')}</a>
+                        </Show>
                         <DeleteButton resource="staff" id={s.id} class="text-destructive hover:underline" />
                       </span>
                     </TableCell>

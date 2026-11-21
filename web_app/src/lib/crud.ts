@@ -3,10 +3,11 @@ import { query } from '@solidjs/router';
 
 import { requireAuth } from '../server/auth';
 import {
-  listChildren, listRecords, loadFormOptions, removeChild, removeRecord, requireProdi, saveChild, saveRecord, setClassLock, showChild, showRecord,
+  listChildren, listRecords, loadFormOptions, loadScheduleNames, removeChild, removeRecord, requireProdi, saveChild, saveRecord, setClassLock, showChild, showRecord,
   type SaveResult,
 } from '../server/crud';
 import { FORMS, parentOfChild } from './crud-forms';
+import { prodiRights } from './prodi-rights';
 import type { ChildKey, ResourceKey, TopKey } from './crud-schema';
 
 export const getRecords = query(async (key: TopKey, page: number, search: string) => {
@@ -21,7 +22,7 @@ function keepCurrent(key: ResourceKey, record: Record<string, any> | null, optio
   if (!record) return;
   for (const f of FORMS[key]) {
     const v = record[f.name];
-    if (f.widget === 'select' && typeof v === 'string' && v && !options[f.name]?.some((o) => o.id === v)) {
+    if (f.widget === 'select' && !f.strict && typeof v === 'string' && v && !options[f.name]?.some((o) => o.id === v)) {
       (options[f.name] ??= []).unshift({ id: v, name: `${v.slice(0, 8)}…` });
     }
   }
@@ -52,8 +53,12 @@ export async function deleteRow(key: TopKey, id: string): Promise<void> {
 export const getChildren = query(async (key: ChildKey, parentId: string, page: number) => {
   'use server';
   const unitId = await requireProdi(await requireAuth());
-  const [parent, rows] = await Promise.all([showRecord(parentOfChild(key), unitId, parentId), listChildren(key, unitId, parentId, page)]);
-  return { parent, rows };
+  const [parent, rows, names] = await Promise.all([
+    showRecord(parentOfChild(key), unitId, parentId),
+    listChildren(key, unitId, parentId, page),
+    key === 'teachSchedule' ? loadScheduleNames(unitId) : Promise.resolve({} as Record<string, Record<string, string>>),
+  ]);
+  return { parent, rows, names };
 }, 'crud-children');
 
 /** One child (empty `id` = create form) with its parent and the form's select options. */
@@ -85,3 +90,10 @@ export async function lockClassRow(teachId: string, locked: boolean): Promise<vo
   'use server';
   await setClassLock(await requireAuth(), teachId, locked);
 }
+
+/** What the signed-in study-program position may do (see lib/prodi-rights.ts); the server enforces it too. */
+export const getProdiRights = query(async () => {
+  'use server';
+  const auth = await requireAuth();
+  return prodiRights(auth.activeRoleItem);
+}, 'prodi-rights');

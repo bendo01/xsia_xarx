@@ -2,14 +2,18 @@
 import type { ChildKey, TopKey } from './crud-schema';
 
 type Rec = Record<string, any>;
+/** Names for ids the list rows only hold (weekday, room...), keyed by kind then id. */
+export type CellContext = Record<string, Record<string, string>>;
+
 export interface ColumnDef {
   label: string;
-  cell: (r: Rec) => string;
+  cell: (r: Rec, ctx?: CellContext) => string;
 }
 
 const dash = (v: unknown) => (v === null || v === undefined || v === '' ? '-' : String(v));
 const day = (v: unknown) => (typeof v === 'string' && v ? v.slice(0, 10) : '-');
 const nameOf = (v: unknown) => (v && typeof v === 'object' ? ((v as Rec).name as string | undefined) : undefined);
+const hm = (v: unknown) => (typeof v === 'string' && v ? v.slice(0, 5) : '-');
 const period = (a: unknown, b: unknown) => (!a && !b ? '-' : `${day(a)} – ${b ? day(b) : '…'}`);
 
 const STAFF_COLS: ColumnDef[] = [
@@ -87,6 +91,9 @@ export const DETAIL: Record<TopKey, ColumnDef[]> = {
     { label: 'cd.fSimulation', cell: (r) => dash(r.simulation_credit) },
     { label: 'cd.fTotal', cell: (r) => dash(r.total_credit) },
     { label: 'cd.fStartDate', cell: (r) => period(r.start_date, r.end_date) },
+    { label: 'cd.fFeederCourseGroup', cell: (r) => dash(r.feeder_course_group_id) },
+    { label: 'cd.fFeederCourseType', cell: (r) => dash(r.feeder_course_type_id) },
+    { label: 'cd.fFeederCourse', cell: (r) => dash(r.feeder_course_id) },
   ],
   curriculum: [
     ...COLUMNS.curriculum,
@@ -117,6 +124,13 @@ const clip = (v: unknown, n = 90) => {
 };
 
 export const CHILD_COLUMNS: Record<ChildKey, ColumnDef[]> = {
+  teachSchedule: [
+    // Rows saved before weekdays existed hold an id that means nothing now: say so instead of a dash.
+    { label: 'cd.fWeekday', cell: (r, c) => c?.weekday?.[r.weekday_id] ?? (c?.weekday ? (c._text?.unknownWeekday ?? '-') : '-') },
+    { label: 'cd.fStartHour', cell: (r) => (!r.start_hour && !r.end_hour ? '-' : `${hm(r.start_hour)} – ${hm(r.end_hour)}`) },
+    { label: 'cd.fRoom', cell: (r, c) => dash(c?.room?.[r.room_id]) },
+    { label: 'cd.fName', cell: (r) => dash(r.name) },
+  ],
   teachDecree: [
     { label: 'cd.fDecreeNumber', cell: (r) => dash(r.decree_number) },
     { label: 'cd.fDecreeDate', cell: (r) => day(r.decree_date) },
@@ -137,6 +151,7 @@ export const CHILD_COLUMNS: Record<ChildKey, ColumnDef[]> = {
     { label: 'cd.fCourse', cell: (r) => dash(r.course?.name ?? r.course_name ?? r.name) },
     { label: 'cd.fSemester', cell: (r) => dash(nameOf(r.semester) ?? r.semester_name) },
     { label: 'cd.fCredit', cell: (r) => dash(r.credit ?? r.course?.total_credit) },
+    { label: 'cd.fMbkm', cell: (r) => (r.is_convertable_to_mbkm ? '✓' : '-') },
   ],
   learnPlanning: [
     { label: 'cd.fCode', cell: (r) => dash(r.code) },
@@ -152,6 +167,7 @@ export const CHILD_COLUMNS: Record<ChildKey, ColumnDef[]> = {
 };
 
 export const CHILD_TITLES: Record<ChildKey, { list: string; add: string; edit: string }> = {
+  teachSchedule: { list: 'cd.teachSchedules', add: 'cd.addSchedule', edit: 'cd.editSchedule' },
   teachDecree: { list: 'cd.teachDecrees', add: 'cd.addTeachDecree', edit: 'cd.editTeachDecree' },
   teachLecturer: { list: 'cd.teachLecturerList', add: 'cd.addTeachLecturer', edit: 'cd.editTeachLecturer' },
   teachEvaluation: { list: 'cd.teachEvaluationList', add: 'cd.addTeachEvaluation', edit: 'cd.editTeachEvaluation' },

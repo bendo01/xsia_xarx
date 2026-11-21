@@ -10,6 +10,10 @@ pub struct ScheduleQuery {
     pub page: Option<u64>,
     pub page_size: Option<u64>,
     pub name: Option<String>,
+    /// Only the schedule rows of this class
+    pub teach_id: Option<Uuid>,
+    /// Only the schedule rows in this room
+    pub room_id: Option<Uuid>,
 }
 
 #[derive(Serialize, Deserialize, ToSchema, Debug, Clone)]

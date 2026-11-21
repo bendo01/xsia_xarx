@@ -14,7 +14,7 @@ describe('getMenuForRole', () => {
   });
   it('course department (Kepala / Staff Program Studi) menu', () => {
     const m = getMenuForRole('course_department');
-    expect(m.map((i) => i.id)).toEqual(['dashboard', 'students', 'activities', 'lecturers', 'courses', 'curricula', 'class-codes', 'semesters', 'teaches', 'grades', 'staff', 'change-password']);
+    expect(m.map((i) => i.id)).toEqual(['dashboard', 'students', 'activities', 'lecturers', 'courses', 'curricula', 'class-codes', 'semesters', 'teaches', 'grades', 'advisers-academic', 'final-assignment', 'staff', 'change-password']);
     expect(m[0].href.startsWith('/course-department/institution/master/unit/')).toBe(true);
     expect(m[1].href).toBe('/course-department/academic/student/master/student');
   });

@@ -471,6 +471,8 @@ export const en: TranslationSchema = {
             teachDirectory: 'Teaching Class Directory',
             lecturerDirectory: 'Lecturer Directory',
             staffDirectory: 'Staff Directory',
+            adviserDirectory: 'Academic Advisers',
+            finalAssignmentDirectory: 'Final Assignment',
             classEncounters: 'Class & Encounters',
             implementationModes: 'Implementation Modes',
             encounterCategories: 'Encounter Categories',

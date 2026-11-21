@@ -4,13 +4,13 @@ vi.hoisted(() => {
   process.env.SESSION_SECRET = 'test-secret-test-secret-test-secret-12';
 });
 
-type Call = { path: string; method: string; body?: any };
+type Call = { path: string; method: string; body?: any; query?: Record<string, unknown> };
 let calls: Call[] = [];
 let routes: Record<string, (c: Call) => unknown> = {};
 
 vi.mock('./api', () => ({
-  apiFetch: vi.fn(async (path: string, opts: { method?: string; body?: unknown } = {}) => {
-    const call: Call = { path, method: opts.method ?? (opts.body !== undefined ? 'POST' : 'GET'), body: opts.body };
+  apiFetch: vi.fn(async (path: string, opts: { method?: string; body?: unknown; query?: Record<string, unknown> } = {}) => {
+    const call: Call = { path, method: opts.method ?? (opts.body !== undefined ? 'POST' : 'GET'), body: opts.body, query: opts.query };
     calls.push(call);
     const h = routes[`${call.method} ${path}`] ?? routes[path];
     if (!h) throw Object.assign(new Error('not found'), { status: 404 });
@@ -24,9 +24,10 @@ vi.mock('./api', () => ({
 }));
 
 import type { AuthState } from './auth';
+import { loadFaList } from './final-assignment';
 import { assertCanSeeLecturer } from './lecturer';
 import { isUnitLecturer, loadUnitLecturerOptions, loadUnitLecturers, loadUnitTeach, resolveMyUnit, teachUnit } from './unit';
-import { listChildren, removeChild, setClassLock, removeRecord, requireProdi, saveChild, saveRecord, showChild, showRecord } from './crud';
+import { listChildren, loadFormOptions, loadScheduleNames, removeChild, setClassLock, removeRecord, requireProdi, saveChild, saveRecord, showChild, showRecord } from './crud';
 
 const id = (n: number) => `123e4567-e89b-42d3-a456-4266141740${String(n).padStart(2, '0')}`;
 const MINE = id(1), OTHER = id(2), REC = id(3), VARIETY = id(4), ACT = id(5), YEAR = id(6), TYPE = id(7);
@@ -358,5 +359,134 @@ describe('class lock (server)', () => {
     await expect(setClassLock(auth(), T, true)).rejects.toThrow('Not found');
     await expect(setClassLock(auth({ activeRole: 'lecturer' }), T, true)).rejects.toThrow('Forbidden');
     expect(writes()).toEqual([]);
+  });
+});
+
+describe('Kepala / Sekretaris / Staff rights (server)', () => {
+  const T = id(71), STAFF = id(72), CUR = id(73), DET = id(74);
+  const staffRole = (name: string) => auth({ activeRoleItem: { id: 'r', name, unit_id: MINE } as any });
+  beforeEach(() => {
+    routes[`academic/campaign/transaction/teaches/${T}`] = () => ({ id: T, course: { unit_id: MINE }, is_lock: false });
+    routes[`PUT academic/campaign/transaction/teaches/${T}`] = () => ({});
+    routes[`institution/master/staffes/${STAFF}`] = () => ({ id: STAFF, unit_id: MINE });
+    routes['POST institution/master/staffes'] = () => ({ id: STAFF });
+    routes[`DELETE institution/master/staffes/${STAFF}`] = () => ({});
+    routes[`DELETE academic/course/master/courses/${REC}`] = () => ({});
+    routes[`academic/course/master/curriculums/${CUR}`] = () => ({ id: CUR, unit_id: MINE, curriculum_details: [] });
+    routes[`academic/course/master/curriculum-details/${DET}`] = () => ({ id: DET, curriculum_id: CUR });
+    routes[`DELETE academic/course/master/curriculum-details/${DET}`] = () => ({});
+  });
+
+  it('Staff cannot delete, lock or change staff, and nothing is sent', async () => {
+    const staff = staffRole('Staff Program Studi');
+    await expect(removeRecord(staff, 'course', REC)).rejects.toThrow('Forbidden');
+    await expect(removeChild(staff, 'curriculumDetail', CUR, DET)).rejects.toThrow('Forbidden');
+    await expect(setClassLock(staff, T, true)).rejects.toThrow('Forbidden');
+    await expect(saveRecord(staff, 'staff', null, { employee_id: id(75) })).rejects.toThrow('Forbidden');
+    await expect(removeRecord(staff, 'staff', STAFF)).rejects.toThrow('Forbidden');
+    expect(writes()).toEqual([]);
+  });
+
+  it('Staff can still create and edit everything else', async () => {
+    const staff = staffRole('Staff Program Studi');
+    expect(await saveRecord(staff, 'course', REC, course)).toEqual({ ok: true, id: REC });
+    expect(writes().map((c) => c.method)).toEqual(['PUT']);
+  });
+
+  it('Kepala, Sekretaris and other prodi roles keep every right', async () => {
+    for (const name of ['Kepala Program Studi', 'Sekretaris Program Studi', 'Kajur']) {
+      calls = [];
+      const a = staffRole(name);
+      await removeRecord(a, 'course', REC);
+      await setClassLock(a, T, true);
+      expect(await saveRecord(a, 'staff', null, { employee_id: id(75) })).toEqual({ ok: true, id: STAFF });
+      expect(writes().map((c) => c.method)).toEqual(['DELETE', 'PUT', 'POST']);
+    }
+  });
+});
+
+describe('teaching class form: two-step curriculum picker', () => {
+  const CUR = id(81), CUR2 = id(82), E1 = id(83), E2 = id(84);
+  beforeEach(() => {
+    routes['academic/course/master/curriculums'] = () => ({ data: [{ id: CUR, name: 'K2020', unit_id: MINE }, { id: CUR2, name: 'Other', unit_id: OTHER }] });
+    routes[`academic/course/master/curriculums/${CUR}`] = () => ({ id: CUR, unit_id: MINE, curriculum_details: [{ id: E1, course: { code: 'IF1', name: 'Algo' }, semester: { name: 'Smt 1' } }, { id: E2, name: 'Basis Data' }] });
+    routes[`academic/course/master/curriculums/${CUR2}`] = () => ({ id: CUR2, unit_id: OTHER, curriculum_details: [{ id: id(85), name: 'Secret' }] });
+  });
+  it("offers the unit's curricula and, once one is chosen, only its entries", async () => {
+    const none = await loadFormOptions('teach', MINE);
+    expect(none._curricula).toEqual([{ id: CUR, name: 'K2020' }]); // another unit's curriculum is not offered
+    expect(none.curriculum_detail_id).toEqual([]);
+
+    const chosen = await loadFormOptions('teach', MINE, CUR);
+    expect(chosen.curriculum_detail_id).toEqual([
+      { id: E1, name: 'IF1 Algo (Smt 1)' },
+      { id: E2, name: 'Basis Data' },
+    ]);
+  });
+  it("never lists the entries of another unit's curriculum or a junk id", async () => {
+    expect((await loadFormOptions('teach', MINE, CUR2)).curriculum_detail_id).toEqual([]);
+    expect((await loadFormOptions('teach', MINE, 'nope')).curriculum_detail_id).toEqual([]);
+  });
+});
+
+describe('adviser / final-assignment lists (server)', () => {
+  const S1 = id(91), L1 = id(92), D1 = id(93), S2 = id(94);
+  const page = (data: unknown[]) => ({ data, pagination: { page: 1, per_page: 20, total_page: 1, total_data: data.length } });
+  it('sends no unit (the API scopes the rows) and resolves ids to names, tolerating failed lookups', async () => {
+    routes['LIST academic/student/adviser/counsellors'] = () => page([
+      { id: 'c1', student_id: S1, lecturer_id: L1, decree_id: D1 },
+      { id: 'c2', student_id: S2, lecturer_id: L1, decree_id: D1 }, // S2 cannot be looked up
+    ]);
+    routes[`academic/student/master/students/${S1}`] = () => ({ id: S1, code: '2020', name: 'Budi' });
+    routes[`academic/lecturer/master/lecturers/${L1}`] = () => ({ id: L1, code: 'D1', name: 'Dewi' });
+    routes[`academic/student/adviser/decrees/${D1}`] = () => ({ id: D1, decree_number: 'SK/1' });
+    const r = await loadFaList('counsellor', 2);
+    const listCall = calls.find((c) => c.path === 'LIST academic/student/adviser/counsellors')!;
+    expect(listCall.body.q).toEqual({ page: 2, per_page: 20 });
+    expect(r.names).toEqual({ student: { [S1]: '2020 · Budi' }, lecturer: { [L1]: 'D1 · Dewi' }, adviserDecree: { [D1]: 'SK/1' } });
+    // each distinct id is fetched once, even when several rows share it
+    expect(calls.filter((c) => c.path === `academic/lecturer/master/lecturers/${L1}`)).toHaveLength(1);
+  });
+});
+
+describe('teaching class schedule (server)', () => {
+  const T = id(11), WD = id(12), RM = id(13), RM2 = id(14), SCH = id(15);
+  const input = { weekday_id: WD, room_id: RM, start_hour: '08:00', end_hour: '09:40' };
+  beforeEach(() => {
+    routes[`academic/campaign/transaction/teaches/${T}`] = () => ({ id: T, course: { unit_id: MINE }, is_lock: false });
+    routes['POST academic/campaign/transaction/schedules'] = () => ({ id: SCH });
+    routes[`academic/campaign/transaction/schedules/${SCH}`] = () => ({ id: SCH, teach_id: T });
+    routes[`DELETE academic/campaign/transaction/schedules/${SCH}`] = () => ({});
+    routes['general/reference/weekdays'] = () => ({ data: [{ id: WD, code: 1, name: 'Senin' }] });
+    routes['building/master/rooms'] = () => ({ data: [{ id: RM, name: 'Lab 1', alphabet_code: 'L1', unit_id: MINE }, { id: RM2, name: 'Other', unit_id: OTHER }, { id: id(16), name: 'Shared' }] });
+  });
+
+  it('creates a schedule under the unit\'s class, with seconds on the times and the class from the route', async () => {
+    expect(await saveChild(auth(), 'teachSchedule', T, null, { ...input, teach_id: id(17) })).toEqual({ ok: true, id: SCH });
+    expect(writes()[0].body).toMatchObject({ teach_id: T, weekday_id: WD, room_id: RM, start_hour: '08:00:00', end_hour: '09:40:00' });
+  });
+
+  it('refuses a bad time range without calling the API', async () => {
+    expect(await saveChild(auth(), 'teachSchedule', T, null, { ...input, end_hour: '08:00' })).toEqual({ ok: false, errors: { end_hour: 'timeOrder' } });
+    expect(await saveChild(auth(), 'teachSchedule', T, null, { ...input, start_hour: '25:00' })).toEqual({ ok: false, errors: { start_hour: 'invalid' } });
+    expect(writes()).toEqual([]);
+  });
+
+  it('freezes schedules while the class is locked', async () => {
+    routes[`academic/campaign/transaction/teaches/${T}`] = () => ({ id: T, course: { unit_id: MINE }, is_lock: true });
+    await expect(saveChild(auth(), 'teachSchedule', T, null, input)).rejects.toThrow('locked');
+    await expect(removeChild(auth(), 'teachSchedule', T, SCH)).rejects.toThrow('locked');
+    expect(writes()).toEqual([]);
+  });
+
+  it("offers the weekdays and only the unit's (and shared) rooms", async () => {
+    const o = await loadFormOptions('teachSchedule', MINE);
+    const roomCall = calls.find((c) => c.path === 'building/master/rooms')!;
+    expect(roomCall.query).toMatchObject({ unit_id: MINE, include_shared: true }); // the API does the unit filtering now
+    expect(o.weekday_id).toEqual([{ id: WD, name: 'Senin' }]);
+    expect(o.room_id.map((r) => r.name)).toEqual(['L1 · Lab 1', 'Shared']);
+    const names = await loadScheduleNames(MINE);
+    expect(names.weekday[WD]).toBe('Senin');
+    expect(names.room[RM2]).toBeUndefined();
   });
 });

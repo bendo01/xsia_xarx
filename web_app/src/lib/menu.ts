@@ -66,6 +66,8 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
         { id: 'semesters', href: '/course-department/academic/campaign/transaction/activity', labelKey: 'menu.courseDepartment.activityDirectory', icon: 'book' },
         { id: 'teaches', href: '/course-department/academic/campaign/transaction/teach', labelKey: 'menu.courseDepartment.teachDirectory', icon: 'chalkboard' },
         { id: 'grades', href: '/course-department/academic/campaign/transaction/grade', labelKey: 'menu.courseDepartment.gradeDirectory', icon: 'graduation' },
+        { id: 'advisers-academic', href: '/course-department/academic/student/adviser', labelKey: 'menu.courseDepartment.adviserDirectory', icon: 'users' },
+        { id: 'final-assignment', href: '/course-department/academic/student/final-assignment/transaction/submission', labelKey: 'menu.courseDepartment.finalAssignmentDirectory', icon: 'graduation' },
         { id: 'staff', href: '/course-department/institution/master/staff', labelKey: 'menu.courseDepartment.staffDirectory', icon: 'users' },
         changePassword,
       ];

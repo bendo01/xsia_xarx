@@ -1,0 +1,1 @@
+pub mod m20261122_100000_schema_general_reference_table_weekdays;

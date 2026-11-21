@@ -62,3 +62,71 @@ export function labelIndexes(n: number, maxLabels = 8): number[] {
   }
   return idx;
 }
+
+// ---- Pie / donut ----------------------------------------------------------------------------
+
+export interface PieSlice {
+  /** index in the input */
+  index: number;
+  value: number;
+  /** share of the total, 0..1 */
+  fraction: number;
+  /** start / end angle in radians, clockwise from 12 o'clock */
+  start: number;
+  end: number;
+}
+
+const TAU = Math.PI * 2;
+
+/** Slices for the positive values, in input order. Non-positive values get no slice. */
+export function pieSlices(values: number[]): PieSlice[] {
+  const total = values.reduce((s, v) => s + (v > 0 ? v : 0), 0);
+  if (!(total > 0)) return [];
+  let at = 0;
+  const out: PieSlice[] = [];
+  values.forEach((v, index) => {
+    if (!(v > 0)) return;
+    const fraction = v / total;
+    out.push({ index, value: v, fraction, start: at, end: at + fraction * TAU });
+    at += fraction * TAU;
+  });
+  return out;
+}
+
+const pt = (cx: number, cy: number, r: number, a: number): [number, number] => [cx + r * Math.sin(a), cy - r * Math.cos(a)];
+
+/**
+ * SVG path of a ring segment between radii `r0` (inner, 0 for a full pie) and `r1`. A segment that
+ * covers (almost) the whole circle is drawn as two halves, because one arc cannot start and end
+ * at the same point.
+ */
+export function arcPath(cx: number, cy: number, r0: number, r1: number, a0: number, a1: number): string {
+  const span = a1 - a0;
+  if (span >= TAU - 1e-6) {
+    const mid = a0 + Math.PI;
+    return `${arcPath(cx, cy, r0, r1, a0, mid)} ${arcPath(cx, cy, r0, r1, mid, a1)}`;
+  }
+  const large = span > Math.PI ? 1 : 0;
+  const [x0, y0] = pt(cx, cy, r1, a0);
+  const [x1, y1] = pt(cx, cy, r1, a1);
+  if (r0 <= 0) return `M${round(cx)} ${round(cy)} L${round(x0)} ${round(y0)} A${r1} ${r1} 0 ${large} 1 ${round(x1)} ${round(y1)} Z`;
+  const [x2, y2] = pt(cx, cy, r0, a1);
+  const [x3, y3] = pt(cx, cy, r0, a0);
+  return `M${round(x0)} ${round(y0)} A${r1} ${r1} 0 ${large} 1 ${round(x1)} ${round(y1)} L${round(x2)} ${round(y2)} A${r0} ${r0} 0 ${large} 0 ${round(x3)} ${round(y3)} Z`;
+}
+
+// ---- Horizontal bars ------------------------------------------------------------------------
+
+export interface BarRow {
+  index: number;
+  value: number;
+  /** bar length as a fraction of the longest, 0..1 (a tiny positive value still gets a visible sliver) */
+  fraction: number;
+}
+
+/** Bars for the first `limit` rows, scaled to the longest one shown. */
+export function barRows(values: number[], limit = 15): BarRow[] {
+  const shown = values.slice(0, limit).map((value, index) => ({ index, value: Math.max(0, value) }));
+  const max = Math.max(0, ...shown.map((r) => r.value));
+  return shown.map((r) => ({ ...r, fraction: max > 0 ? Math.max(r.value > 0 ? 0.01 : 0, r.value / max) : 0 }));
+}

@@ -16,6 +16,7 @@ const ERR_KEY: Record<FieldError, string> = {
   tooLong: 'cd.errTooLong',
   range: 'cd.errRange',
   dateOrder: 'cd.errDateOrder',
+  timeOrder: 'cd.errTimeOrder',
 };
 const control = 'h-9 w-full rounded-xs border border-input bg-card px-3 text-sm aria-[invalid=true]:border-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 const CREDITS = ['lecture_credit', 'practice_credit', 'field_practice_credit', 'simulation_credit'];
@@ -108,7 +109,7 @@ export default function RecordForm(props: {
               <input
                 id={id}
                 name={p.def.name}
-                type={p.def.widget === 'date' ? 'date' : p.def.widget === 'text' ? 'text' : 'number'}
+                type={p.def.widget === 'date' ? 'date' : p.def.widget === 'time' ? 'time' : p.def.widget === 'text' ? 'text' : 'number'}
                 step={p.def.widget === 'number' ? (p.def.step ?? '0.5') : p.def.widget === 'int' ? '1' : undefined}
                 min={p.def.widget === 'number' || p.def.widget === 'int' ? '0' : undefined}
                 value={String(val() ?? '')}

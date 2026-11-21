@@ -204,6 +204,8 @@ export interface TranslationSchema {
             teachDirectory: string;
             lecturerDirectory: string;
             staffDirectory: string;
+            adviserDirectory: string;
+            finalAssignmentDirectory: string;
             classEncounters: string;
             implementationModes: string;
             encounterCategories: string;

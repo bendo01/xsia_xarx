@@ -10,6 +10,7 @@ pub mod compliance;
 pub mod contact;
 pub mod document;
 pub mod feeder;
+pub mod general;
 pub mod institution;
 pub mod literate;
 pub mod location;
@@ -307,6 +308,7 @@ impl MigratorTrait for Migrator {
             Box::new(academic::student::campaign::m20261030_100000_schema_academic_student_campaign_index_detail_activities_unique_course::Migration),
             Box::new(academic::campaign::transaction::m20261111_100000_schema_academic_campaign_transaction_table_teach_meetings::Migration),
             Box::new(academic::campaign::transaction::m20261111_100100_schema_academic_campaign_transaction_table_teach_attendances::Migration),
+            Box::new(general::reference::m20261122_100000_schema_general_reference_table_weekdays::Migration),
         ]
     }
 }

@@ -34,6 +34,8 @@ pub fn get_tasks() -> Vec<Box<dyn Task>> {
         Box::new(utilities::utility_10_add_preference_mail_server::AddPreferenceMailServerTask),
         Box::new(utilities::utility_11_add_preference_openwa::AddPreferenceOpenWaTask),
         Box::new(utilities::utility_14_generate_webhook_secret::GenerateWebhookSecretTask),
+        Box::new(utilities::utility_15_seed_weekdays::SeedWeekdaysTask),
+        Box::new(utilities::utility_16_fix_schedule_weekdays::FixScheduleWeekdaysTask),
         Box::new(utilities::utility_01_generate_env::GenerateEnvTask),
         Box::new(utilities::utility_03_hash_password::HashPasswordTask),
         Box::new(utilities::utility_05_sync_staff_roles::SyncStaffRolesTask),

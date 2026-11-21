@@ -1,9 +1,9 @@
 import { revalidate } from '@solidjs/router';
-import { createSignal } from 'solid-js';
+import { Show, createMemo, createSignal } from 'solid-js';
 import { toast } from 'solid-sonner';
 
 import { t } from '../../i18n';
-import { lockClassRow } from '../../lib/crud';
+import { getProdiRights, lockClassRow } from '../../lib/crud';
 import { crudErrorText } from '../../lib/crud-errors';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '../ui/dialog';
 
@@ -11,6 +11,7 @@ import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, Di
 export default function ClassLockButton(props: { teachId: string; locked: boolean }) {
   const [open, setOpen] = createSignal(false);
   const [busy, setBusy] = createSignal(false);
+  const rights = createMemo(() => getProdiRights());
 
   const run = async () => {
     setBusy(true);
@@ -28,7 +29,7 @@ export default function ClassLockButton(props: { teachId: string; locked: boolea
   const btn = 'rounded-xs border border-layer-line bg-layer px-3 py-1.5 text-sm font-medium hover:bg-layer-hover';
 
   return (
-    <>
+    <Show when={rights().canLockClass}>
       <button type="button" class={btn} onClick={() => (props.locked ? void run() : setOpen(true))} disabled={busy()}>
         {props.locked ? t('cd.unlockClass') : t('cd.lockClass')}
       </button>
@@ -46,6 +47,6 @@ export default function ClassLockButton(props: { teachId: string; locked: boolea
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </>
+    </Show>
   );
 }
