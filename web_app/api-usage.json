@@ -944,6 +944,401 @@
       ],
       "unresolved": []
     },
+    "rectorat": {
+      "requests": [
+        {
+          "method": "GET",
+          "path": "academic/campaign/reference/encounter-categories",
+          "sources": [
+            "server/crud.ts:289"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/reference/scopes",
+          "sources": [
+            "server/crud.ts:290"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/activities/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:63",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/activities",
+          "sources": [
+            "server/unit.ts:222",
+            "server/crud.ts:30",
+            "server/crud.ts:197",
+            "server/crud.ts:288",
+            "server/crud.ts:357"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/class-codes/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/class-codes",
+          "sources": [
+            "server/unit.ts:211",
+            "server/crud.ts:30",
+            "server/crud.ts:197",
+            "server/crud.ts:287"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/grades/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/grades",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/schedules/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/schedules",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-decrees/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:159",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-decrees",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197",
+            "server/crud.ts:297"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-evaluations/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-evaluations",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-lecturers/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teach-lecturers",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teaches/{}",
+          "sources": [
+            "server/unit.ts:229",
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/campaign/transaction/teaches",
+          "sources": [
+            "server/unit.ts:197",
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/course-evaluation-plannings/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/course-evaluation-plannings",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/course-learn-plannings/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/course-learn-plannings",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/courses/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/courses",
+          "sources": [
+            "server/unit.ts:210",
+            "server/crud.ts:30",
+            "server/crud.ts:197",
+            "server/crud.ts:286",
+            "server/crud.ts:342"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/curriculum-details/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:150",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/curriculum-details",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/curriculums/{}",
+          "sources": [
+            "server/crud.ts:46",
+            "server/crud.ts:106",
+            "server/crud.ts:181"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/master/curriculums",
+          "sources": [
+            "server/crud.ts:30",
+            "server/crud.ts:97",
+            "server/crud.ts:197"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/reference/competences",
+          "sources": [
+            "server/crud.ts:267"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/reference/evaluation-types",
+          "sources": [
+            "server/crud.ts:323",
+            "server/crud.ts:353"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/reference/groups",
+          "sources": [
+            "server/crud.ts:266"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/course/reference/varieties",
+          "sources": [
+            "server/crud.ts:265"
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "academic/general/reference/academic-years/options",
+          "sources": [
+            "server/unit.ts:119"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/lecturer/transaction/homebases",
+          "sources": [
+            "server/unit.ts:128",
+            "server/unit.ts:154",
+            "server/unit.ts:168"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/student/campaign/student-activities",
+          "sources": [
+            "server/institution.ts:88",
+            "server/unit.ts:106"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/student/master/students/{}",
+          "sources": [
+            "server/unit.ts:175"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/student/master/students/academic-years",
+          "sources": [
+            "server/unit.ts:82"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/student/master/students",
+          "sources": [
+            "server/institution.ts:45",
+            "server/unit.ts:68"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "academic/student/reference/statuses",
+          "sources": [
+            "server/unit.ts:83"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "building/master/rooms",
+          "sources": [
+            "server/crud.ts:123"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "general/reference/weekdays",
+          "sources": [
+            "server/crud.ts:117"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/employees",
+          "sources": [
+            "server/crud.ts:275"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/staffes/{}",
+          "sources": [
+            "server/unit.ts:24",
+            "server/crud.ts:46",
+            "server/crud.ts:181",
+            "server/crud.ts:211"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/staffes",
+          "sources": [
+            "server/unit.ts:237",
+            "server/crud.ts:30",
+            "server/crud.ts:197",
+            "server/crud.ts:316"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/units/{}/dashboard",
+          "sources": [
+            "server/unit.ts:44"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/units",
+          "sources": [
+            "server/institution.ts:32",
+            "server/institution.ts:57"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/reference/position-type",
+          "sources": [
+            "server/crud.ts:277"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "person/master/individual/{}",
+          "sources": [
+            "server/unit.ts:31"
+          ]
+        }
+      ],
+      "unresolved": []
+    },
     "lecturer": {
       "requests": [
         {

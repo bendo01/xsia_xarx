@@ -71,6 +71,21 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
         { id: 'staff', href: '/course-department/institution/master/staff', labelKey: 'menu.courseDepartment.staffDirectory', icon: 'users' },
         changePassword,
       ];
+    case 'rectorat':
+      // Read-only institution area; the API scopes the data to the caller's institution.
+      return [
+        { id: 'dashboard', href: home, labelKey: 'menu.rectorat.facultiesDepartments', icon: 'home', exact: true },
+        { id: 'students', href: `${home}/student`, labelKey: 'menu.rectorat.studentList', icon: 'graduation' },
+        { id: 'student-activities', href: `${home}/student-activity`, labelKey: 'menu.rectorat.studentActivityList', icon: 'book' },
+        { id: 'lecturers', href: `${home}/lecturer`, labelKey: 'menu.rectorat.lecturerList', icon: 'chalkboard' },
+        { id: 'courses', href: `${home}/course`, labelKey: 'menu.rectorat.courseList', icon: 'library' },
+        { id: 'curricula', href: `${home}/curriculum`, labelKey: 'menu.rectorat.curriculumList', icon: 'clipboard' },
+        { id: 'activities', href: `${home}/activity`, labelKey: 'menu.rectorat.activityUnitList', icon: 'book' },
+        { id: 'class-codes', href: `${home}/class-code`, labelKey: 'menu.rectorat.classCodeUnitList', icon: 'tags' },
+        { id: 'teaches', href: `${home}/teach`, labelKey: 'menu.rectorat.teachActivityList', icon: 'chalkboard' },
+        { id: 'grades', href: `${home}/grade`, labelKey: 'menu.rectorat.gradeUnitList', icon: 'graduation' },
+        changePassword,
+      ];
     default:
       return [
         {

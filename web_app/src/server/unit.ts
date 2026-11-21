@@ -55,7 +55,7 @@ export interface StudentFilter {
   sort: string;
 }
 
-const SORTS: Record<string, [string, string]> = {
+export const SORTS: Record<string, [string, string]> = {
   'code-asc': ['code', 'asc'],
   'code-desc': ['code', 'desc'],
   'name-asc': ['name', 'asc'],

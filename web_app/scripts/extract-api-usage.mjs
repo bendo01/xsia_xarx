@@ -27,6 +27,12 @@ export const AREAS = {
     { file: 'server/enrollment.ts', readOnly: true },
     { file: 'routes/api/student/print/[kind]/[id].ts' },
   ],
+  // Rectorat is read-only: the institution loaders, the per-unit loaders they reuse and the GETs of the generic list.
+  rectorat: [
+    { file: 'server/institution.ts' },
+    { file: 'server/unit.ts' },
+    { file: 'server/crud.ts', readOnly: true },
+  ],
   lecturer: [
     { file: 'server/lecturer.ts' },
     { file: 'server/grading.ts' },
