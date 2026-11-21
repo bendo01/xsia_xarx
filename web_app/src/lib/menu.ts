@@ -83,6 +83,10 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
         { id: 'activities', href: `${home}/activity`, labelKey: 'menu.rectorat.activityUnitList', icon: 'book' },
         { id: 'class-codes', href: `${home}/class-code`, labelKey: 'menu.rectorat.classCodeUnitList', icon: 'tags' },
         { id: 'teaches', href: `${home}/teach`, labelKey: 'menu.rectorat.teachActivityList', icon: 'chalkboard' },
+        { id: 'candidates', href: `${home}/candidate`, labelKey: 'menu.rectorat.candidateList', icon: 'users' },
+        { id: 'employees', href: `${home}/employee`, labelKey: 'menu.rectorat.employees', icon: 'users' },
+        { id: 'feeder', href: `${home}/feeder`, labelKey: 'rt.feeder', icon: 'library' },
+        { id: 'staff', href: `${home}/staff`, labelKey: 'menu.rectorat.staff', icon: 'users' },
         { id: 'grades', href: `${home}/grade`, labelKey: 'menu.rectorat.gradeUnitList', icon: 'graduation' },
         changePassword,
       ];

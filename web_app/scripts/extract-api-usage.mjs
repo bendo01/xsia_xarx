@@ -30,9 +30,12 @@ export const AREAS = {
   // Rectorat is read-only: the institution loaders, the per-unit loaders they reuse and the GETs of the generic list.
   rectorat: [
     { file: 'server/institution.ts' },
+    { file: 'server/feeder.ts' },
     { file: 'server/unit.ts' },
     { file: 'server/crud.ts', readOnly: true },
   ],
+  // The writes (staff appointments, employees): a narrower area than rectorat (see utility_12).
+  'rectorat-admin': [{ file: 'server/institution-write.ts' }],
   lecturer: [
     { file: 'server/lecturer.ts' },
     { file: 'server/grading.ts' },

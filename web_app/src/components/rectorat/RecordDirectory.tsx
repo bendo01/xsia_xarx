@@ -20,7 +20,7 @@ export const loadRecords = (id: string, key: InstitutionRecordKey, q: Query) =>
   getInstitutionRecords(id, key, one(q.unit), parsePage(q.page), one(q.q));
 
 /** Read-only directory of one unit's records (courses, curricula, ...), reusing the prodi columns. */
-export default function RecordDirectory(props: { resource: InstitutionRecordKey; titleKey: string }) {
+export default function RecordDirectory(props: { resource: InstitutionRecordKey; titleKey: string; actions?: any; rowActions?: (r: Record<string, any>) => any }) {
   const params = useParams();
   const [search] = useSearchParams();
   const q = () => search as Query;
@@ -32,13 +32,14 @@ export default function RecordDirectory(props: { resource: InstitutionRecordKey;
     <Errored fallback={(err) => <div role="alert" class="rounded-xs border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">{(err() as Error).message}</div>}>
       <Title>{`${t(props.titleKey)} - ${env.VITE_APP_NAME}`}</Title>
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
-        <PageHeader title={t(props.titleKey)} />
+        <PageHeader title={t(props.titleKey)} actions={props.actions} />
         <UnitPicker units={data().units} unitId={data().unitId} q={one(q().q)} filtered={!!one(q().q)} />
         <Show when={data().records.data.length > 0} fallback={<p class="rounded-xs border border-card-line bg-card p-8 text-center text-sm text-muted-foreground-1">{t('cd.noRecords')}</p>}>
           <Table>
             <TableHeader>
               <TableRow>
                 <For each={cols()}>{(c) => <TableHead>{t(c.label)}</TableHead>}</For>
+                <Show when={props.rowActions}><TableHead class="text-end">{t('cd.aksi')}</TableHead></Show>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -46,6 +47,7 @@ export default function RecordDirectory(props: { resource: InstitutionRecordKey;
                 {(r) => (
                   <TableRow>
                     <For each={cols()}>{(c, i) => <TableCell class={i() === 0 ? 'font-medium' : ''} label={t(c.label)}>{c.cell(r)}</TableCell>}</For>
+                    <Show when={props.rowActions}><TableCell class="text-end" label={t('cd.aksi')}><span class="inline-flex gap-x-4">{props.rowActions!(r)}</span></TableCell></Show>
                   </TableRow>
                 )}
               </For>

@@ -61,6 +61,7 @@ export default function InstitutionStudents() {
                 <TableHead>{t('cd.mahasiswa')}</TableHead>
                 <TableHead>{t('rt.programStudi')}</TableHead>
                 <TableHead>{t('cd.status')}</TableHead>
+                <TableHead class="text-end">{t('cd.aksi')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -71,6 +72,9 @@ export default function InstitutionStudents() {
                     <TableCell class="font-medium" label={t('cd.mahasiswa')}>{s.name || s.individual?.name || '-'}</TableCell>
                     <TableCell label={t('rt.programStudi')}>{s.unit?.name ?? s.unit_name ?? '-'}</TableCell>
                     <TableCell label={t('cd.status')}>{s.status?.name ?? s.status_name ?? '-'}</TableCell>
+                    <TableCell class="text-end">
+                      <a href={`/rectorat/institution/${encodeURIComponent(params.id as string)}/student/${encodeURIComponent(s.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
+                    </TableCell>
                   </TableRow>
                 )}
               </For>

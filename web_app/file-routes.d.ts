@@ -585,6 +585,12 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/activity/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/activity/index")>>>;
     },
     {
+      path: "/rectorat/institution/:id/candidate/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/candidate/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/candidate/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/candidate/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/candidate/index")>>>;
+    },
+    {
       path: "/rectorat/institution/:id/class-code/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/class-code/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/class-code/index")>>>;
@@ -603,6 +609,36 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/curriculum/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/curriculum/index")>>>;
     },
     {
+      path: "/rectorat/institution/:id/employee/:employeeId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/employee/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/create"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/create"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/create")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/employee/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/index")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/feeder/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/index")>>>;
+      $$route?: undefined;
+    },
+    {
+      path: "/rectorat/institution/:id/feeder/master/:slug/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index")>>>;
+    },
+    {
       path: "/rectorat/institution/:id/grade/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/grade/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/grade/index")>>>;
@@ -615,16 +651,46 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/index")>>>;
     },
     {
+      path: "/rectorat/institution/:id/lecturer/:lecturerId/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index")>>>;
+    },
+    {
       path: "/rectorat/institution/:id/lecturer/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/index")>>>;
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/index")>>>;
     },
     {
+      path: "/rectorat/institution/:id/staff/:staffId/edit";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/staff/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/create"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/create")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/create"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/create")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/staff/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/index")>>>;
+    },
+    {
       path: "/rectorat/institution/:id/student-activity/";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student-activity/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/student-activity/index")>>>;
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student-activity/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/student-activity/index")>>>;
+    },
+    {
+      path: "/rectorat/institution/:id/student/:studentId/";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index")>>>;
     },
     {
       path: "/rectorat/institution/:id/student/";
@@ -878,6 +944,14 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/institution/:id/staff/";
+          id: "/institution/:id/staff/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/institution/:id/teach/";
           id: "/institution/:id/teach/";
           page: true;
@@ -891,6 +965,14 @@ declare module "virtual:file-routes" {
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/course/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/course/index")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/course/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/course/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/feeder/";
+          id: "/institution/:id/feeder/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/index")>>>;
+          $$route?: undefined;
           children?: undefined;
         },
         {
@@ -910,11 +992,27 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/institution/:id/employee/";
+          id: "/institution/:id/employee/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/index")>>>;
+          children?: undefined;
+        },
+        {
           path: "/institution/:id/lecturer/";
           id: "/institution/:id/lecturer/";
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/index")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/candidate/";
+          id: "/institution/:id/candidate/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/candidate/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/candidate/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/candidate/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/candidate/index")>>>;
           children?: undefined;
         },
         {
@@ -934,6 +1032,14 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/institution/:id/staff/create";
+          id: "/institution/:id/staff/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/create"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/create"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/create")>>>;
+          children?: undefined;
+        },
+        {
           path: "/institution/:id/unit/:unitId/";
           id: "/institution/:id/unit/:unitId/";
           page: true;
@@ -942,11 +1048,59 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/institution/:id/employee/create";
+          id: "/institution/:id/employee/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/create"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/create")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/create"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/create")>>>;
+          children?: undefined;
+        },
+        {
           path: "/institution/:id/student-activity/";
           id: "/institution/:id/student-activity/";
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student-activity/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/student-activity/index")>>>;
           $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student-activity/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/student-activity/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/staff/:staffId/edit";
+          id: "/institution/:id/staff/:staffId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/staff/[staffId]/edit")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/student/:studentId/";
+          id: "/institution/:id/student/:studentId/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/student/[studentId]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/feeder/master/:slug/";
+          id: "/institution/:id/feeder/master/:slug/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/feeder/master/[slug]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/lecturer/:lecturerId/";
+          id: "/institution/:id/lecturer/:lecturerId/";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/lecturer/[lecturerId]/index")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/:id/employee/:employeeId/edit";
+          id: "/institution/:id/employee/:employeeId/edit";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit"), Extract<"default", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit"), Extract<"route", keyof typeof import("./src/routes/rectorat/institution/[id]/employee/[employeeId]/edit")>>>;
           children?: undefined;
         }
       ];

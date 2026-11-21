@@ -1100,6 +1100,13 @@
         },
         {
           "method": "GET",
+          "path": "academic/candidate/master/candidates",
+          "sources": [
+            "server/institution.ts:151"
+          ]
+        },
+        {
+          "method": "GET",
           "path": "academic/course/master/course-evaluation-plannings/{}",
           "sources": [
             "server/crud.ts:46",
@@ -1241,6 +1248,7 @@
           "method": "GET",
           "path": "academic/student/master/students/{}",
           "sources": [
+            "server/institution.ts:106",
             "server/unit.ts:175"
           ]
         },
@@ -1263,6 +1271,7 @@
           "method": "GET",
           "path": "academic/student/reference/statuses",
           "sources": [
+            "server/institution.ts:126",
             "server/unit.ts:83"
           ]
         },
@@ -1271,6 +1280,349 @@
           "path": "building/master/rooms",
           "sources": [
             "server/crud.ts:123"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/aktifitas-kuliah-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/aktifitas-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/aktifitas-mengajar-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/anggota-aktifitas-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/bidang-minat-perguruan-tinggi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/bimbing-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/biodata-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/biodata-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/detail-nilai-perkuliahan-kelas",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/dosen-pembimbing",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/dosen-pengajar-kelas-kuliah",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/fakultas",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/hitung-transkrip-angkatan-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/kartu-rencana-studi-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/kelas-kuliah",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/komponen-evaluasi-kelas",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/konsistensi-data",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/konversi-kampus-merdeka",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/kurikulum",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/mahasiswa-bimbingan-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/mahasiswa-lulusan-dropout",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/matakuliah-kurikulum",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/matakuliah",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/nilai-perkuliahan-kelas",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/nilai-transfer-pendidikan-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/penugasan-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/perguruan-tinggi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/periode-aktif",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/periode-perkuliahan",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/perkuliahan-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/peserta-kelas-kuliah",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/prestasi-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/profil-perguruan-tinggi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/program-studi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/rencana-evaluasi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/rencana-pembelajaran",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-fungsional-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-nilai-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-pangkat-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-pendidikan-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-pendidikan-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-penelitian-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/riwayat-sertifikasi-dosen",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/skala-nilai-program-studi",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/substansi-matakuliah",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/transkrip-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "feeder/master/uji-mahasiswa",
+          "sources": [
+            "server/feeder.ts:66"
           ]
         },
         {
@@ -1284,6 +1636,7 @@
           "method": "GET",
           "path": "institution/master/employees",
           "sources": [
+            "server/institution.ts:145",
             "server/crud.ts:275"
           ]
         },
@@ -1334,6 +1687,95 @@
           "path": "person/master/individual/{}",
           "sources": [
             "server/unit.ts:31"
+          ]
+        }
+      ],
+      "unresolved": []
+    },
+    "rectorat-admin": {
+      "requests": [
+        {
+          "method": "DELETE",
+          "path": "institution/master/employees/{}",
+          "sources": [
+            "server/institution-write.ts:100"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/employees/{}",
+          "sources": [
+            "server/institution-write.ts:42"
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "institution/master/employees/{}",
+          "sources": [
+            "server/institution-write.ts:90"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/employees",
+          "sources": [
+            "server/institution-write.ts:110"
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "institution/master/employees",
+          "sources": [
+            "server/institution-write.ts:93"
+          ]
+        },
+        {
+          "method": "DELETE",
+          "path": "institution/master/staffes/{}",
+          "sources": [
+            "server/institution-write.ts:77"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/master/staffes/{}",
+          "sources": [
+            "server/institution-write.ts:34"
+          ]
+        },
+        {
+          "method": "PUT",
+          "path": "institution/master/staffes/{}",
+          "sources": [
+            "server/institution-write.ts:58"
+          ]
+        },
+        {
+          "method": "POST",
+          "path": "institution/master/staffes",
+          "sources": [
+            "server/institution-write.ts:61"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "institution/reference/position-type",
+          "sources": [
+            "server/institution-write.ts:108"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "person/master/individual/{}",
+          "sources": [
+            "server/institution-write.ts:85"
+          ]
+        },
+        {
+          "method": "GET",
+          "path": "person/master/individual",
+          "sources": [
+            "server/institution-write.ts:129"
           ]
         }
       ],

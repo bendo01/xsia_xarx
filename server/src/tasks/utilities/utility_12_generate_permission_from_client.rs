@@ -149,6 +149,22 @@ const AREA_POSITION_TYPES: &[(&str, &[(Uuid, &str)])] = &[
             ),
         ],
     ),
+    // The rectorat pages that change data (staff appointments, employees). Narrower than
+    // "rectorat" on purpose: appointing staff creates login roles, so only these three may do it.
+    (
+        "rectorat-admin",
+        &[
+            (uuid!("e34401db-84ec-450b-bdba-6b9640fc3ae8"), "Rektor"),
+            (
+                uuid!("b92fb48d-53c6-4219-a826-432bdae23ae5"),
+                "Kepala Biro Administrasi Umum",
+            ),
+            (
+                uuid!("d7208431-ba92-4c75-855c-3f8ab651646f"),
+                "Kepala Pengembangan Teknologi Informasi",
+            ),
+        ],
+    ),
 ];
 
 /// Areas every signed-in user passes through (root layout, /, /404, login pages)

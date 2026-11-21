@@ -48,6 +48,7 @@ export default function InstitutionLecturers() {
                 <TableHead>{t('cd.lecturerGroup')}</TableHead>
                 <TableHead>{t('cd.contractType2')}</TableHead>
                 <TableHead>{t('cd.status')}</TableHead>
+                <TableHead class="text-end">{t('cd.aksi')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -61,6 +62,9 @@ export default function InstitutionLecturers() {
                     <TableCell label={t('cd.lecturerGroup')}>{l.group_name ?? nameOf(l.group) ?? '-'}</TableCell>
                     <TableCell label={t('cd.contractType2')}>{l.contract_name ?? nameOf(l.contract) ?? '-'}</TableCell>
                     <TableCell label={t('cd.status')}><Badge variant="outline">{l.status_name ?? nameOf(l.status) ?? '-'}</Badge></TableCell>
+                    <TableCell class="text-end">
+                      <a href={`/rectorat/institution/${encodeURIComponent(params.id as string)}/lecturer/${encodeURIComponent(l.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
+                    </TableCell>
                   </TableRow>
                 )}
               </For>

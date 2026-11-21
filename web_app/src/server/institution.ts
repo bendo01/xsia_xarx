@@ -2,7 +2,7 @@
 // caller may see; this layer only pins every request to the caller's own institution.
 import { markSafeError } from '@solidjs/web';
 
-import { apiPaginated } from './api';
+import { apiFetch, apiPaginated } from './api';
 import type { AuthState } from './auth';
 import { isUuid } from '../lib/validation';
 import { SORTS, type StudentFilter } from './unit';
@@ -94,4 +94,60 @@ export async function loadInstitutionStudentActivities(institutionId: string, f:
     sort_by: 'student_code',
     sort_dir: 'asc',
   }, { searchParam: 'search' });
+}
+
+/**
+ * A student of this institution (by student id) and its owner's individual id, for the profile
+ * page. A student of another institution is "not found", the same as an unknown id.
+ */
+export async function loadInstitutionStudent(institutionId: string, studentId: string): Promise<{ id: string; individual_id: string }> {
+  const notFound = () => markSafeError(new Error('Student not found'));
+  if (!isUuid(studentId)) throw notFound();
+  const raw = await apiFetch<Raw>(`academic/student/master/students/${encodeURIComponent(studentId)}`).catch(() => null);
+  const st = (raw?.data ?? raw) as Raw | null;
+  if (!st?.id || !isUuid(String(st.individual_id ?? '')) || !isUuid(String(st.unit_id ?? ''))) throw notFound();
+  const units = await loadInstitutionUnitOptions(institutionId);
+  if (!units.some((u) => u.id === st.unit_id)) throw notFound();
+  return { id: String(st.id), individual_id: String(st.individual_id) };
+}
+
+/** Headline totals for the institution home (only endpoints the API scopes by institution). */
+export async function loadInstitutionSummary(institutionId: string) {
+  const total = (path: string, extra: Raw = {}) =>
+    apiPaginated<Raw>(path, { page: 1, per_page: 1, ...extra }).then((r) => r.pagination.total_data).catch(() => null);
+  const inst = { institution_id: institutionId };
+  const STUDENTS = 'academic/student/master/students';
+
+  const [units, students, activities, unitOptions, statuses] = await Promise.all([
+    total('institution/master/units', inst),
+    total(STUDENTS, inst),
+    total('academic/student/campaign/student-activities', inst),
+    loadInstitutionUnitOptions(institutionId).catch(() => []),
+    apiPaginated<Raw>('academic/student/reference/statuses', { page: 1, per_page: 100 }).then((r) => r.data).catch(() => []),
+  ]);
+
+  /** Students per study program and per status, from the API's own totals (a page of one row each). */
+  const byUnit = await inBatches(unitOptions.slice(0, 60), 10, async (u) => ({ name: u.name, value: (await total(STUDENTS, { ...inst, unit_id: u.id })) ?? 0 }));
+  const byStatus = await inBatches(statuses, 10, async (st) => ({ name: String(st.name ?? st.code ?? ''), value: (await total(STUDENTS, { ...inst, status_id: st.id })) ?? 0 }));
+  const top = (rows: { name: string; value: number }[]) => rows.filter((r) => r.value > 0).sort((a, b) => b.value - a.value);
+  return { units, students, activities, studentsByUnit: top(byUnit), studentsByStatus: top(byStatus) };
+}
+
+/** Runs `fn` over `items` a few at a time so a big institution doesn't fire hundreds of requests at once. */
+async function inBatches<T, R>(items: T[], size: number, fn: (item: T) => Promise<R>): Promise<R[]> {
+  const out: R[] = [];
+  for (let i = 0; i < items.length; i += size) out.push(...(await Promise.all(items.slice(i, i + size).map(fn))));
+  return out;
+}
+
+/** One page of the institution's employees. The API cannot filter by institution, so rows of others are dropped. */
+export async function loadInstitutionEmployees(institutionId: string, page: number, search: string, pageSize = 20) {
+  const res = await apiPaginated<Raw>('institution/master/employees', { page, per_page: pageSize, search });
+  return { ...res, data: res.data.filter((e) => !e.institution_id || e.institution_id === institutionId) };
+}
+
+/** One page of the institution's prospective students (candidates). */
+export async function loadInstitutionCandidates(institutionId: string, page: number, search: string, pageSize = 20) {
+  const res = await apiPaginated<Raw>('academic/candidate/master/candidates', { page, per_page: pageSize, search, institution_id: institutionId });
+  return { ...res, data: res.data.filter((c) => !c.institution_id || c.institution_id === institutionId) };
 }
