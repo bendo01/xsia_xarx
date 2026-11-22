@@ -18,10 +18,17 @@ describe('getMenuForRole', () => {
     expect(m[0].href.startsWith('/course-department/institution/master/unit/')).toBe(true);
     expect(m[1].href).toBe('/course-department/academic/student/master/student');
   });
-  it('other roles get their dashboard and change-password', () => {
+  it('administrator menu has the dashboard, every registered resource and change-password', () => {
     const m = getMenuForRole('administrator');
-    expect(m.map((i) => i.href)).toEqual(['/administrator/dashboard', '/account/change-password']);
+    expect(m[0].href).toBe('/administrator/dashboard');
     expect(m[0].labelKey).toBe('menu.administrator.adminDashboard');
+    expect(m.map((i) => i.href)).toContain('/administrator/institution/master/unit');
+    expect(m.map((i) => i.href)).toContain('/administrator/institution/reference/position-type');
+    expect(m[m.length - 1].id).toBe('change-password');
+  });
+  it('candidate gets its dashboard and change-password', () => {
+    const m = getMenuForRole('candidate');
+    expect(m.map((i) => i.id)).toEqual(['dashboard', 'change-password']);
   });
   it('every menu item points inside the signed-in area or auth pages', () => {
     for (const role of ['student', 'lecturer', 'administrator', 'rectorat', 'course_department', 'candidate']) {

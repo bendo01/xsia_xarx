@@ -1,6 +1,7 @@
 // Navigation per role, as data. The old client had one JSX component per role
 // (administrator alone is 2,364 lines); data keeps the shell, the command
 // palette and the active-item logic on a single source of truth.
+import { ADMIN_RESOURCES, adminUrl } from './admin-resources';
 import { getDashboardPathForRole, type DashboardContext } from './roles';
 
 export type IconName = 'user' | 'users' | 'book' | 'graduation' | 'lock' | 'unlock' | 'printer' | 'home' | 'chalkboard' | 'library' | 'clipboard' | 'tags';
@@ -88,6 +89,13 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
         { id: 'feeder', href: `${home}/feeder`, labelKey: 'rt.feeder', icon: 'library' },
         { id: 'staff', href: `${home}/staff`, labelKey: 'menu.rectorat.staff', icon: 'users' },
         { id: 'grades', href: `${home}/grade`, labelKey: 'menu.rectorat.gradeUnitList', icon: 'graduation' },
+        changePassword,
+      ];
+    case 'administrator':
+      // Master and reference data come from the CRUD registry; areas appear here as they are ported.
+      return [
+        { id: 'dashboard', href: home, labelKey: 'menu.administrator.adminDashboard', icon: 'home', exact: true },
+        ...ADMIN_RESOURCES.map((r): MenuItem => ({ id: `admin-${r.key}`, href: adminUrl(r), labelKey: r.titleKey, icon: r.path.includes('/reference/') ? 'tags' : 'library' })),
         changePassword,
       ];
     default:

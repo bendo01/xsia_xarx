@@ -59,6 +59,18 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
+      path: "/administrator/*path";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/[...path]"), Extract<"default", keyof typeof import("./src/routes/administrator/[...path]")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/[...path]"), Extract<"route", keyof typeof import("./src/routes/administrator/[...path]")>>>;
+    },
+    {
+      path: "/administrator/dashboard";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/dashboard"), Extract<"default", keyof typeof import("./src/routes/administrator/dashboard")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/dashboard"), Extract<"route", keyof typeof import("./src/routes/administrator/dashboard")>>>;
+    },
+    {
       path: "/api/candidate/:id/archive/:typeId";
       page: false;
       $POST: FileRouteLazyRef<Pick<typeof import("./src/routes/api/candidate/[id]/archive/[typeId]"), Extract<"POST", keyof typeof import("./src/routes/api/candidate/[id]/archive/[typeId]")>>>;
@@ -1193,7 +1205,24 @@ declare module "virtual:file-routes" {
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator"), Extract<"default", keyof typeof import("./src/routes/administrator")>>>;
       $$route?: undefined;
-      children?: undefined;
+      children: readonly [
+        {
+          path: "/*path";
+          id: "/*path";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/[...path]"), Extract<"default", keyof typeof import("./src/routes/administrator/[...path]")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/[...path]"), Extract<"route", keyof typeof import("./src/routes/administrator/[...path]")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/dashboard";
+          id: "/dashboard";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/dashboard"), Extract<"default", keyof typeof import("./src/routes/administrator/dashboard")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/dashboard"), Extract<"route", keyof typeof import("./src/routes/administrator/dashboard")>>>;
+          children?: undefined;
+        }
+      ];
     },
     {
       path: "/course-department";
