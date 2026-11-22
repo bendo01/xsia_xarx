@@ -1,5 +1,244 @@
 ---
-theme: tokyo-night
+title: "Compliance Anomaly Detection in Higher Education Academic Data"
+theme: "tokyo-night"
+color_accent: "#7aa2f7"
+color_selection: "#292e42"
+color_muted: "#414868"
+color_background: "#1a1b26"
+color_dark_background: "#13141c"
+color_darker_background: "#0e0e14"
+color_lighter_background: "#24283b"
+color_foreground: "#a9b1d6"
+color_dark_foreground: "#565f89"
+color_light_foreground: "#b4bee6"
+color_bright_foreground: "#c0caf5"
+color_red: "#f7768e"
+color_yellow: "#e0af68"
+color_orange: "#eb927b"
+color_green: "#9ece6a"
+color_cyan: "#449dab"
+color_blue: "#7aa2f7"
+color_magenta: "#ad8ee6"
+color_brown: "#75493d"
+color_bright_red: "#ff7a93"
+color_bright_yellow: "#ff9e64"
+color_bright_green: "#b9f27c"
+color_bright_cyan: "#0db9d7"
+color_bright_blue: "#7da6ff"
+color_bright_magenta: "#bb9af7"
 ---
 
-# Your next idea
+# Compliance Anomaly Detection in Higher Education Academic Data
+
+Rule-Based and Machine Learning Methods on PDDIKTI
+
+<!-- Add author names and affiliations here (paper is double-blind). -->
+
+---
+
+# Why it matters
+
+- Indonesian universities report data to **PDDIKTI** every semester
+- Each institution is responsible for its accuracy
+- Bad records weaken quality assurance and accreditation
+
+<!-- Permendiktisaintek 39/2025 keeps PDDIKTI as the main data source for quality assurance. Reporting goes through the Feeder application, which applies built-in validation rules before sync. -->
+
+---
+
+# The problem
+
+- Rules catch what can be written down
+  - GPA > 4.0, credit load > 24
+- Rules miss records that pass **every** threshold
+  - but are unusual in combination
+- Every new error type needs a new rule
+
+<!-- Example of a subtle anomaly: high credit load with a very low GPA. Each value is individually valid. -->
+
+---
+
+# Research questions
+
+1. Which violations do Feeder rules detect?
+2. Can unsupervised detectors find records that satisfy all rules?
+3. Does combining both improve detection?
+
+<!-- Contributions: rule set mapped to PDDIKTI attributes, evaluation protocol with injected anomalies, empirical comparison of rules, Isolation Forest, LOF, autoencoder and their combination. -->
+
+---
+
+# Data
+
+One institution, 3 study programs, 15 semesters (2020/1 to 2026/1)
+
+| Entity                 | Records |
+| ---------------------- | ------: |
+| Student-semester       |   3,948 |
+| Courses                |     348 |
+| Lecturer teaching      |   1,636 |
+
+<!-- Data replicated from the Feeder web service into a relational store. 709 students, 1,607 classes, 90 lecturers. The extract already passes Feeder validation. -->
+
+---
+
+# Compliance rules
+
+From the Feeder PDDIKTI guide
+
+- GPA or semester GPA > 4.0
+- Semester credits > 24
+- Course credit components do not add up, or credits > 9
+- Realized meetings > 18
+- Overlapping study periods, duplicate students
+
+<!-- Four Feeder validations are excluded: DUKCAPIL identity check (external data), gender consistency (no reference value), students without registration and missing study program settings (not record-level). -->
+
+---
+
+# Pipeline
+
+```svg
+<svg viewBox="0 0 800 320">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--accent)" stroke-width="2">
+    <rect x="20" y="30" width="200" height="70" rx="8"/>
+    <rect x="300" y="30" width="200" height="70" rx="8"/>
+    <rect x="580" y="30" width="200" height="70" rx="8"/>
+    <rect x="20" y="220" width="200" height="70" rx="8"/>
+    <rect x="300" y="220" width="200" height="70" rx="8"/>
+    <rect x="580" y="220" width="200" height="70" rx="8"/>
+    <line x1="220" y1="65" x2="296" y2="65" marker-end="url(#a)"/>
+    <line x1="500" y1="65" x2="576" y2="65" marker-end="url(#a)"/>
+    <line x1="680" y1="100" x2="680" y2="216" marker-end="url(#a)"/>
+    <line x1="580" y1="255" x2="504" y2="255" marker-end="url(#a)"/>
+    <line x1="300" y1="255" x2="224" y2="255" marker-end="url(#a)"/>
+  </g>
+  <g font-size="18" text-anchor="middle" fill="var(--foreground)">
+    <text x="120" y="60">PDDIKTI tables</text><text x="120" y="82" font-size="14">replicated Feeder data</text>
+    <text x="400" y="60">Anomaly injection</text><text x="400" y="82" font-size="14">10 seeds</text>
+    <text x="680" y="60">Rule-based</text><text x="680" y="82" font-size="14">detection</text>
+    <text x="680" y="250">ML detectors</text><text x="680" y="272" font-size="14">IF, LOF, autoencoder</text>
+    <text x="400" y="250">Percentile rank</text><text x="400" y="272" font-size="14">+ soft vote</text>
+    <text x="120" y="250">Evaluation</text><text x="120" y="272" font-size="14">AUC, P@k, recall</text>
+  </g>
+</svg>
+```
+
+<!-- Injected anomalies are added to a copy of the tables; rules and ML detectors are scored against injected labels. Rules and ML run in parallel and are merged by the combined detector. -->
+
+---
+
+# Three unsupervised detectors
+
+| Detector         | Idea                      |
+| ---------------- | ------------------------- |
+| Isolation Forest | Random splits, path length |
+| LOF              | Local density ratio       |
+| Autoencoder      | Reconstruction error      |
+
+Scores merged by **percentile rank** + soft vote
+
+<!-- IF: 200 trees. LOF: k=20. Autoencoder: MLP with three hidden layers, up to 400 iterations. Features standardized per entity. Combined detector ranks rule-flagged records first, then orders the rest by mean ML percentile rank. -->
+
+---
+
+# Evaluation with injected anomalies
+
+- Data already pass Feeder, so no ground truth exists
+- Inject **5%** anomalies into a copy, 10 random seeds
+- **Rule-based**: violate a rule on purpose
+- **Subtle**: satisfy every rule, deviate in combination
+
+<!-- Metrics: precision, recall, F1 for rules; AUC, Precision@k and top-k recall for ML and combined. Results are detection capability under controlled conditions, not prevalence of real violations. -->
+
+---
+
+# Result 1: AUC
+
+| Entity           | Rules | IF    | LOF   | AE    | Combined  |
+| ---------------- | ----: | ----: | ----: | ----: | --------: |
+| Student-semester | 0.904 | 0.826 | 0.884 | 0.888 | **0.982** |
+| Course           | 1.000 | 0.983 | 0.993 | 0.908 | **1.000** |
+| Teaching         | 0.750 | **0.979** | 0.865 | 0.872 | 0.971 |
+
+<!-- Rules reach 0.904 on student-semester because the rule-based four fifths are ranked perfectly and the subtle fifth is tied: 0.8 + 0.2 x 0.5. Courses: all injected anomalies break an arithmetic rule. -->
+
+---
+
+# Result 2: subtle
+
+Top-k recall on records that satisfy every rule
+
+| Entity           | Rules | IF    | LOF   | AE    |
+| ---------------- | ----: | ----: | ----: | ----: |
+| Student-semester | 0.049 | 0.015 | 0.308 | **0.390** |
+| Teaching         | 0.027 | **0.661** | **0.668** | 0.144 |
+
+Best detector depends on the entity
+
+<!-- The rules' small non-zero values come from arbitrary tie-breaking. Isolation Forest barely sees subtle student records: each single attribute looks ordinary, so axis-parallel splits do not isolate them. -->
+
+---
+
+# Result 3: flags
+
+| Entity           | Method   | Precision | Recall |
+| ---------------- | -------- | --------: | -----: |
+| Student-semester | Rules    | 1.000     | 0.808  |
+|                  | Combined | 0.638     | 0.868  |
+| Teaching         | Rules    | 1.000     | 0.500  |
+|                  | Combined | 0.410     | 0.854  |
+
+Rules never false-alarm. Combined recovers more, at a cost in precision.
+
+<!-- Course: both reach recall 1.000; combined precision 0.811. Rule precision of 1.0 is by construction, since injections come from the same rules. -->
+
+---
+
+# Analysis by entity
+
+- **Student-semester**: autoencoder best ML; combined AUC 0.982
+- **Courses**: rules are hard to beat; ML adds little
+- **Teaching**: ML matters most, IF 0.979 vs rules 0.750
+
+<!-- Teaching: realized/planned meeting ratio is likely a strong low-dimensional signal (not tested). The unweighted vote is slightly below IF, so weighted voting is a natural extension. Autoencoder variance on courses reflects only 348 records. -->
+
+---
+
+# Practical implications
+
+1. **Rules first**: exact, cheap, cite the criterion
+2. **ML second**: rank what no rule describes
+3. Show each detector's score, not one number
+4. Score per semester, not over all history
+
+---
+
+# Limitations
+
+- Anomalies are **synthetic**
+- One institution, three study programs
+- Default or lightly tuned hyperparameters
+
+<!-- Teaching data: 339 of 1,636 records (20.7%) already have zero realized meetings, overlapping the injected subtle values; 25 of 410 subtle injections left the value unchanged. -->
+
+---
+
+# Conclusion
+
+- Rules: exact on explicit violations, blind to subtle ones
+- ML: recovers part of the subtle ones, entity-dependent
+- Rules and ML are **complementary**
+
+**Next**: real violations, more institutions, weighted voting, link flags to regulation text with RAG
+
+---
+
+# Thank you
+
+Questions?

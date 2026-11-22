@@ -1,0 +1,244 @@
+---
+title: "Deteksi Anomali Kepatuhan pada Data Akademik Pendidikan Tinggi"
+theme: "tokyo-night"
+color_accent: "#7aa2f7"
+color_selection: "#292e42"
+color_muted: "#414868"
+color_background: "#1a1b26"
+color_dark_background: "#13141c"
+color_darker_background: "#0e0e14"
+color_lighter_background: "#24283b"
+color_foreground: "#a9b1d6"
+color_dark_foreground: "#565f89"
+color_light_foreground: "#b4bee6"
+color_bright_foreground: "#c0caf5"
+color_red: "#f7768e"
+color_yellow: "#e0af68"
+color_orange: "#eb927b"
+color_green: "#9ece6a"
+color_cyan: "#449dab"
+color_blue: "#7aa2f7"
+color_magenta: "#ad8ee6"
+color_brown: "#75493d"
+color_bright_red: "#ff7a93"
+color_bright_yellow: "#ff9e64"
+color_bright_green: "#b9f27c"
+color_bright_cyan: "#0db9d7"
+color_bright_blue: "#7da6ff"
+color_bright_magenta: "#bb9af7"
+---
+
+# Deteksi Anomali Kepatuhan pada Data Akademik Pendidikan Tinggi
+
+Metode Berbasis Aturan dan Pembelajaran Mesin pada PDDIKTI
+
+<!-- Tambahkan nama penulis dan afiliasi di sini (makalah bersifat double-blind). -->
+
+---
+
+# Mengapa penting
+
+- Perguruan tinggi di Indonesia melaporkan data ke **PDDIKTI** setiap semester
+- Setiap institusi bertanggung jawab atas kebenarannya
+- Data yang salah melemahkan penjaminan mutu dan akreditasi
+
+<!-- Permendiktisaintek 39/2025 menetapkan PDDIKTI sebagai sumber data utama penjaminan mutu. Pelaporan dilakukan melalui aplikasi Feeder, yang menerapkan aturan validasi bawaan sebelum sinkronisasi. -->
+
+---
+
+# Masalahnya
+
+- Aturan menangkap apa yang bisa dituliskan
+  - IPK > 4,0, beban SKS > 24
+- Aturan melewatkan data yang lolos **semua** ambang batas
+  - tetapi janggal jika dilihat secara kombinasi
+- Setiap jenis kesalahan baru membutuhkan aturan baru
+
+<!-- Contoh anomali halus: beban SKS tinggi dengan IPK sangat rendah. Setiap nilai valid jika dilihat sendiri-sendiri. -->
+
+---
+
+# Pertanyaan penelitian
+
+1. Pelanggaran apa yang terdeteksi oleh aturan Feeder?
+2. Dapatkah detektor tak terawasi menemukan data yang memenuhi semua aturan?
+3. Apakah menggabungkan keduanya meningkatkan deteksi?
+
+<!-- Kontribusi: himpunan aturan yang dipetakan ke atribut PDDIKTI, protokol evaluasi dengan anomali yang disuntikkan, perbandingan empiris aturan, Isolation Forest, LOF, autoencoder, dan gabungannya. -->
+
+---
+
+# Data
+
+Satu institusi, 3 program studi, 15 semester (2020/1 sampai 2026/1)
+
+| Entitas                | Jumlah rekaman |
+| ---------------------- | -------------: |
+| Mahasiswa-semester     |          3.948 |
+| Mata kuliah            |            348 |
+| Pengajaran dosen       |          1.636 |
+
+<!-- Data direplikasi dari web service Feeder ke penyimpanan relasional. 709 mahasiswa, 1.607 kelas, 90 dosen. Data hasil ekstraksi sudah lolos validasi Feeder. -->
+
+---
+
+# Aturan kepatuhan
+
+Dari panduan Feeder PDDIKTI
+
+- IPK atau IPS > 4,0
+- SKS semester > 24
+- Komponen SKS mata kuliah tidak sesuai total, atau SKS > 9
+- Pertemuan terealisasi > 18
+- Periode perkuliahan tumpang tindih, mahasiswa duplikat
+
+<!-- Empat validasi Feeder dikecualikan: pemeriksaan identitas DUKCAPIL (data eksternal), konsistensi jenis kelamin (tidak ada nilai acuan), mahasiswa tanpa registrasi dan program studi yang belum ada di pengaturan periode (bukan level rekaman). -->
+
+---
+
+# Alur kerja
+
+```svg
+<svg viewBox="0 0 800 320">
+  <defs>
+    <marker id="a" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 z" fill="var(--accent)"/>
+    </marker>
+  </defs>
+  <g fill="none" stroke="var(--accent)" stroke-width="2">
+    <rect x="20" y="30" width="200" height="70" rx="8"/>
+    <rect x="300" y="30" width="200" height="70" rx="8"/>
+    <rect x="580" y="30" width="200" height="70" rx="8"/>
+    <rect x="20" y="220" width="200" height="70" rx="8"/>
+    <rect x="300" y="220" width="200" height="70" rx="8"/>
+    <rect x="580" y="220" width="200" height="70" rx="8"/>
+    <line x1="220" y1="65" x2="296" y2="65" marker-end="url(#a)"/>
+    <line x1="500" y1="65" x2="576" y2="65" marker-end="url(#a)"/>
+    <line x1="680" y1="100" x2="680" y2="216" marker-end="url(#a)"/>
+    <line x1="580" y1="255" x2="504" y2="255" marker-end="url(#a)"/>
+    <line x1="300" y1="255" x2="224" y2="255" marker-end="url(#a)"/>
+  </g>
+  <g font-size="18" text-anchor="middle" fill="var(--foreground)">
+    <text x="120" y="60">Tabel PDDIKTI</text><text x="120" y="82" font-size="14">data Feeder terreplikasi</text>
+    <text x="400" y="60">Injeksi anomali</text><text x="400" y="82" font-size="14">10 seed</text>
+    <text x="680" y="60">Deteksi</text><text x="680" y="82" font-size="14">berbasis aturan</text>
+    <text x="680" y="250">Detektor ML</text><text x="680" y="272" font-size="14">IF, LOF, autoencoder</text>
+    <text x="400" y="250">Peringkat persentil</text><text x="400" y="272" font-size="14">+ soft vote</text>
+    <text x="120" y="250">Evaluasi</text><text x="120" y="272" font-size="14">AUC, P@k, recall</text>
+  </g>
+</svg>
+```
+
+<!-- Anomali yang disuntikkan ditambahkan ke salinan tabel; aturan dan detektor ML dinilai terhadap label hasil injeksi. Aturan dan ML berjalan paralel dan digabungkan oleh detektor gabungan. -->
+
+---
+
+# Tiga detektor tak terawasi
+
+| Detektor         | Gagasan                      |
+| ---------------- | ---------------------------- |
+| Isolation Forest | Pemisahan acak, panjang jalur |
+| LOF              | Rasio kepadatan lokal        |
+| Autoencoder      | Galat rekonstruksi           |
+
+Skor digabung dengan **peringkat persentil** + soft vote
+
+<!-- IF: 200 pohon. LOF: k=20. Autoencoder: MLP dengan tiga lapisan tersembunyi, maksimal 400 iterasi. Fitur distandarisasi per entitas. Detektor gabungan menempatkan rekaman yang ditandai aturan di peringkat teratas, lalu mengurutkan sisanya berdasarkan rata-rata peringkat persentil ML. -->
+
+---
+
+# Evaluasi dengan anomali suntikan
+
+- Data sudah lolos Feeder, sehingga tidak ada ground truth
+- Suntikkan anomali **5%** ke salinan data, 10 seed acak
+- **Berbasis aturan**: sengaja melanggar suatu aturan
+- **Halus**: memenuhi semua aturan, tetapi menyimpang secara kombinasi
+
+<!-- Metrik: presisi, recall, F1 untuk aturan; AUC, Precision@k, dan recall top-k untuk ML dan gabungan. Hasil mengukur kemampuan deteksi pada kondisi terkendali, bukan prevalensi pelanggaran nyata. -->
+
+---
+
+# Hasil 1: AUC
+
+| Entitas            | Aturan | IF    | LOF   | AE    | Gabungan  |
+| ------------------ | -----: | ----: | ----: | ----: | --------: |
+| Mahasiswa-semester | 0,904  | 0,826 | 0,884 | 0,888 | **0,982** |
+| Mata kuliah        | 1,000  | 0,983 | 0,993 | 0,908 | **1,000** |
+| Pengajaran         | 0,750  | **0,979** | 0,865 | 0,872 | 0,971 |
+
+<!-- Aturan mencapai 0,904 pada mahasiswa-semester karena empat perlima anomali berbasis aturan diurutkan sempurna dan seperlima anomali halus bernilai seri: 0,8 + 0,2 x 0,5. Mata kuliah: semua anomali suntikan melanggar aturan aritmetika. -->
+
+---
+
+# Hasil 2: anomali halus
+
+Recall top-k pada rekaman yang memenuhi semua aturan
+
+| Entitas            | Aturan | IF    | LOF   | AE    |
+| ------------------ | -----: | ----: | ----: | ----: |
+| Mahasiswa-semester | 0,049  | 0,015 | 0,308 | **0,390** |
+| Pengajaran         | 0,027  | **0,661** | **0,668** | 0,144 |
+
+Detektor terbaik bergantung pada entitas
+
+<!-- Nilai kecil non-nol pada aturan berasal dari penentuan urutan seri secara acak. Isolation Forest hampir tidak mengenali rekaman mahasiswa yang halus: tiap atribut tampak biasa, sehingga pemisahan sejajar sumbu tidak mengisolasinya. -->
+
+---
+
+# Hasil 3: penandaan
+
+| Entitas            | Metode   | Presisi | Recall |
+| ------------------ | -------- | ------: | -----: |
+| Mahasiswa-semester | Aturan   | 1,000   | 0,808  |
+|                    | Gabungan | 0,638   | 0,868  |
+| Pengajaran         | Aturan   | 1,000   | 0,500  |
+|                    | Gabungan | 0,410   | 0,854  |
+
+Aturan tidak pernah salah tandai. Gabungan menemukan lebih banyak, dengan presisi lebih rendah.
+
+<!-- Mata kuliah: keduanya recall 1,000; presisi gabungan 0,811. Presisi aturan 1,0 terjadi secara konstruksi, karena injeksi dibuat dari aturan yang sama. -->
+
+---
+
+# Analisis per entitas
+
+- **Mahasiswa-semester**: autoencoder ML terbaik; AUC gabungan 0,982
+- **Mata kuliah**: aturan sulit dikalahkan; ML menambah sedikit
+- **Pengajaran**: ML paling berperan, IF 0,979 vs aturan 0,750
+
+<!-- Pengajaran: rasio pertemuan terealisasi/terencana kemungkinan sinyal berdimensi rendah yang kuat (belum diuji). Voting tanpa bobot sedikit di bawah IF, sehingga voting berbobot menjadi perluasan yang wajar. Varians autoencoder pada mata kuliah mencerminkan hanya 348 rekaman. -->
+
+---
+
+# Implikasi praktis
+
+1. **Aturan lebih dulu**: tepat, murah, merujuk kriteria
+2. **ML berikutnya**: mengurutkan yang tidak dijelaskan aturan
+3. Tampilkan skor tiap detektor, bukan satu angka
+4. Beri skor per semester, bukan seluruh riwayat
+
+---
+
+# Keterbatasan
+
+- Anomali bersifat **sintetis**
+- Satu institusi, tiga program studi
+- Hiperparameter bawaan atau sedikit disetel
+
+<!-- Data pengajaran: 339 dari 1.636 rekaman (20,7%) sudah memiliki nol pertemuan terealisasi, tumpang tindih dengan nilai anomali halus yang disuntikkan; 25 dari 410 injeksi halus tidak mengubah nilai asli. -->
+
+---
+
+# Kesimpulan
+
+- Aturan: tepat pada pelanggaran eksplisit, buta terhadap yang halus
+- ML: menemukan sebagian anomali halus, bergantung pada entitas
+- Aturan dan ML bersifat **saling melengkapi**
+
+**Selanjutnya**: pelanggaran nyata, lebih banyak institusi, voting berbobot, menautkan penandaan ke teks regulasi dengan RAG
+
+---
+
+# Terima kasih
+
+Ada pertanyaan?
