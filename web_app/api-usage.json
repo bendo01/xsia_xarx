@@ -1102,7 +1102,7 @@
           "method": "GET",
           "path": "academic/candidate/master/candidates",
           "sources": [
-            "server/institution.ts:151"
+            "server/institution.ts:283"
           ]
         },
         {
@@ -1240,7 +1240,7 @@
           "method": "GET",
           "path": "academic/student/campaign/student-activities",
           "sources": [
-            "server/institution.ts:88",
+            "server/institution.ts:90",
             "server/unit.ts:106"
           ]
         },
@@ -1248,7 +1248,7 @@
           "method": "GET",
           "path": "academic/student/master/students/{}",
           "sources": [
-            "server/institution.ts:106",
+            "server/institution.ts:108",
             "server/unit.ts:175"
           ]
         },
@@ -1263,7 +1263,8 @@
           "method": "GET",
           "path": "academic/student/master/students",
           "sources": [
-            "server/institution.ts:45",
+            "server/institution.ts:47",
+            "server/institution.ts:221",
             "server/unit.ts:68"
           ]
         },
@@ -1271,7 +1272,7 @@
           "method": "GET",
           "path": "academic/student/reference/statuses",
           "sources": [
-            "server/institution.ts:126",
+            "server/institution.ts:129",
             "server/unit.ts:83"
           ]
         },
@@ -1867,7 +1868,7 @@
           "method": "GET",
           "path": "institution/master/employees",
           "sources": [
-            "server/institution.ts:145",
+            "server/institution.ts:277",
             "server/crud.ts:275"
           ]
         },
@@ -1902,8 +1903,9 @@
           "method": "GET",
           "path": "institution/master/units",
           "sources": [
-            "server/institution.ts:32",
-            "server/institution.ts:57"
+            "server/institution.ts:34",
+            "server/institution.ts:59",
+            "server/institution.ts:153"
           ]
         },
         {

@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 
 import LockStatus from './LockStatus';
 import PrintLink from './PrintLink';
+import StatusBadge from './StatusBadge';
 
 // The padlock paths differ: a closed lock's shackle ends at "v4", the open one's at "9.9-1".
 const CLOSED = 'M7 11V7a5 5 0 0 1 10 0v4';
@@ -39,5 +40,19 @@ describe('PrintLink', () => {
     const html = renderToString(() => <PrintLink variant="button" href="/x" label="Cetak KHS" />);
     expect(html).toContain('border-layer-line');
     expect(html).toContain('Cetak KHS');
+  });
+});
+
+describe('StatusBadge', () => {
+  it('colours the status by its meaning', () => {
+    expect(renderToString(() => <StatusBadge name="Aktif" />)).toContain('emerald');
+    expect(renderToString(() => <StatusBadge name="Lulus" />)).toContain('sky');
+    expect(renderToString(() => <StatusBadge name="Cuti" />)).toContain('amber');
+    expect(renderToString(() => <StatusBadge name="Putus Studi" />)).toContain('red');
+  });
+  it('shows a dash in grey when there is no status', () => {
+    const html = renderToString(() => <StatusBadge name={null} />);
+    expect(html).toContain('>-<');
+    expect(html).toContain('slate');
   });
 });

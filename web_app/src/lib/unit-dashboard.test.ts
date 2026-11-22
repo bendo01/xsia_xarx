@@ -23,5 +23,8 @@ describe('unit-dashboard adapters', () => {
     };
     expect(rowsFromDataset(opt)).toEqual([{ name: 'Kab. B', value: 9 }, { name: 'Kab. A', value: 2 }]);
     expect(rowsFromDataset({ dataset: { source: [['amount', 'product']] } })).toEqual([]);
+    // the real API: header names that the encode block does not mention
+    const real = { dataset: { source: [['total', 'regency'], [82, 'Kab. Bogor'], [5, 'Kota Depok']] }, series: [{ encode: { x: 'amount', y: 'product' } }] };
+    expect(rowsFromDataset(real)).toEqual([{ name: 'Kab. Bogor', value: 82 }, { name: 'Kota Depok', value: 5 }]);
   });
 });

@@ -245,4 +245,9 @@ export const lcEn: Record<string, string> = {
     wajib100: '(Required 100%)',
     yaKunciNilai: 'Yes, Lock Grades',
     youHaveNotBeenAssignedTo: 'You have not been assigned to any semester teaching classes yet.',
+    completionRate: 'Session completion',
+    coursesTaught: 'Courses taught',
+    plannedVsRealized: 'Planned vs realized sessions',
+    classesByCredit: 'Classes by credit weight',
+    mostTaughtCourses: 'Most taught courses',
 };

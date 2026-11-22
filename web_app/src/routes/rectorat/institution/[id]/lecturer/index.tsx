@@ -5,18 +5,18 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../components/Pager';
+import StatusBadge from '../../../../../components/student/StatusBadge';
 import UnitPicker from '../../../../../components/rectorat/UnitPicker';
 import PageHeader from '../../../../../components/student/PageHeader';
-import { Badge } from '../../../../../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { t } from '../../../../../i18n';
 import { getInstitutionLecturers } from '../../../../../lib/institution-data';
 import { fullName } from '../../../../../lib/student-select';
-import { parsePage } from '../../../../../lib/url';
+import { parsePage, parsePageSize } from '../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
-const load = (id: string, q: Query) => getInstitutionLecturers(id, one(q.unit), parsePage(q.page), one(q.q));
+const load = (id: string, q: Query) => getInstitutionLecturers(id, one(q.unit), parsePage(q.page), one(q.q), parsePageSize(q.size));
 
 export const route = {
   preload: ({ params, location }) => {
@@ -61,7 +61,7 @@ export default function InstitutionLecturers() {
                     </TableCell>
                     <TableCell label={t('cd.lecturerGroup')}>{l.group_name ?? nameOf(l.group) ?? '-'}</TableCell>
                     <TableCell label={t('cd.contractType2')}>{l.contract_name ?? nameOf(l.contract) ?? '-'}</TableCell>
-                    <TableCell label={t('cd.status')}><Badge variant="outline">{l.status_name ?? nameOf(l.status) ?? '-'}</Badge></TableCell>
+                    <TableCell label={t('cd.status')}><StatusBadge name={l.status_name ?? nameOf(l.status)} /></TableCell>
                     <TableCell class="text-end">
                       <a href={`/rectorat/institution/${encodeURIComponent(params.id as string)}/lecturer/${encodeURIComponent(l.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
                     </TableCell>
@@ -71,7 +71,7 @@ export default function InstitutionLecturers() {
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().lecturers.pagination.page} totalPages={data().lecturers.pagination.total_page} search={q()} />
+        <Pager page={data().lecturers.pagination.page} totalPages={data().lecturers.pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().lecturers.pagination.total_data} />
       </div>
     </Errored>
   );

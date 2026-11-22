@@ -7,7 +7,7 @@ import { formatDate, formatNumber, t } from '../../i18n';
 import { fullName } from '../../lib/student-select';
 import { creditTrend, summarize } from '../../lib/lecturer-teach';
 import type { LecturerRecord } from '../../lib/lecturer-types';
-import LineChart from '../chart/LineChart';
+import TeachingAnalytics from './TeachingAnalytics';
 
 const card = 'rounded-xs border border-card-line bg-card shadow-2xs';
 const date = (d?: string | null) => (d ? formatDate(d) : '-');
@@ -92,19 +92,10 @@ export default function LecturerProfileView(props: {
           </TabsList>
 
           <TabsContent value="overview">
-            <section class={`${card} p-5`}>
-              <h2 class="mb-3 font-semibold text-foreground">{t('lc.totalTeachingCreditsPerAcademicYear')}</h2>
-              <Show when={trend().length > 0} fallback={<p class="py-12 text-center text-sm text-muted-foreground-1">{t('lc.belumAdaDataPenugasanPerkuliahanDengan')}</p>}>
-                <LineChart
-                  categories={trend().map((y) => y.yearName)}
-                  series={[{ name: t('lc.sks'), color: '#6366f1', values: trend().map((y) => y.credits), area: true }]}
-                  format={(n) => `${formatNumber(n)} ${t('lc.sks')}`}
-                  tickFormat={(n) => formatNumber(n)}
-                  ariaLabel={t('lc.totalTeachingCreditsPerAcademicYear')}
-                />
-              </Show>
-              <p class="mt-3 text-sm"><a href="/lecturer/academic/campaign/transaction/teach" class="text-primary hover:underline">{t('menu.lecturer.teachingActivities')}</a></p>
-            </section>
+            <Show when={trend().length > 0} fallback={<p class={`${card} p-8 text-center text-sm text-muted-foreground-1`}>{t('lc.belumAdaDataPenugasanPerkuliahanDengan')}</p>}>
+              <TeachingAnalytics items={l()?.assigned_teaches ?? []} />
+            </Show>
+            <p class="mt-3 text-sm"><a href="/lecturer/academic/campaign/transaction/teach" class="text-primary hover:underline">{t('menu.lecturer.teachingActivities')}</a></p>
           </TabsContent>
 
           <TabsContent value="biodata">

@@ -108,7 +108,7 @@ export function RecordFormPage(props: { resource: ResourceKey; id?: string }) {
           <span class="text-xs text-muted-foreground-1">{t('cd.curriculumPickHint')}</span>
         </form>
       </Show>
-      <RecordForm resource={props.resource} id={props.id} record={data().record} options={data().options} />
+      <Show when={data()}>{(d) => <RecordForm resource={props.resource} id={props.id} record={d().record} options={d().options} />}</Show>
     </Errored>
   );
 }
@@ -221,7 +221,7 @@ export function ChildFormPage(props: { resource: ChildKey; parentId: string; id?
     <Errored fallback={(err) => <ErrorBox error={err()} />}>
       <Title>{`${title()} - ${env.VITE_APP_NAME}`}</Title>
       <PageHeader title={`${title()} — ${String(data().parent.name ?? data().parent.course?.name ?? '')}`} />
-      <RecordForm resource={props.resource} parentId={props.parentId} id={props.id} record={data().record} options={data().options} />
+      <Show when={data()}>{(d) => <RecordForm resource={props.resource} parentId={props.parentId} id={props.id} record={d().record} options={d().options} />}</Show>
     </Errored>
   );
 }

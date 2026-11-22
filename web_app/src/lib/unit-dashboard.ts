@@ -44,7 +44,10 @@ export function rowsFromDataset(opt: unknown): Slice[] {
   const header = (src[0] as unknown[]).map(String);
   const enc = (o.series?.[0]?.encode ?? {}) as Raw;
   const vi = Math.max(0, header.indexOf(String(enc.x ?? 'amount')));
-  const li = Math.max(0, header.indexOf(String(enc.y ?? 'product')));
+  let li = header.indexOf(String(enc.y ?? 'product'));
+  // The API's encode names do not always match its header (it sends ["total","regency"] with
+  // x="amount", y="product"): then the label is simply the other column.
+  if (li < 0 || li === vi) li = header.length > 1 ? (vi === 0 ? 1 : 0) : 0;
   return (src.slice(1) as unknown[][])
     .map((r) => ({ name: String(r[li] ?? ''), value: num(r[vi]) }))
     .filter((r) => r.value > 0)

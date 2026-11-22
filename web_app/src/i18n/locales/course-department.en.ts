@@ -658,4 +658,9 @@ export const cdEn: Record<string, string> = {
     unitRecordNotFound: 'Unit record not found.',
     failedToLoadUnitDetailsFrom: 'Failed to load unit details from server.',
     failedToCreateClassCode: 'Failed to create class code.',
+    kpiStudents: 'Students',
+    kpiNewStudents: 'New students',
+    kpiAverageGpa: 'Average GPA',
+    kpiLecturers: 'Lecturers',
+    sincePrevious: 'Change since the previous period',
 };

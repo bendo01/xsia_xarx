@@ -52,13 +52,14 @@ export default function LecturerTeachAttendance() {
           </>
         }
       />
-      <Board meetings={meetings().meetings} locked={meetings().locked} teachId={teachId()} />
+      {/* Read the (possibly still pending) query inside a tracking scope; Board only mounts once it has landed. */}
+      <Show when={meetings()}>{(m) => <Board meetings={m().meetings} locked={m().locked} teachId={teachId()} />}</Show>
     </Errored>
   );
 }
 
 function Board(props: { meetings: MeetingItem[]; locked: boolean; teachId: string }) {
-  const [meetings, setMeetings] = createSignal<MeetingItem[]>(props.meetings);
+  const [meetings, setMeetings] = createSignal<MeetingItem[]>(() => props.meetings);
   const [activeId, setActiveId] = createSignal('');
   const [roster, setRoster] = createSignal<RosterItem[]>([]);
   const [types, setTypes] = createSignal<AttendTypeOption[]>([]);

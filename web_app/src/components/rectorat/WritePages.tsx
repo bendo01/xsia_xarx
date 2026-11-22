@@ -64,22 +64,27 @@ export function StaffFormPage(props: { staffId?: string }) {
           <span class="text-xs text-muted-foreground-1">{t('cd.employeeSearchHint')}</span>
         </form>
       </Show>
-      <WriteForm
-        fields={[
-          { name: 'employee_id', label: 'cd.fEmployee', kind: 'select', required: true, options: data().options.employee_id },
-          { name: 'unit_id', label: 'rt.programStudi', kind: 'select', required: true, options: data().options.unit_id },
-          { name: 'position_type_id', label: 'cd.fPosition', kind: 'select', options: data().options.position_type_id },
-          { name: 'name', label: 'cd.fName', kind: 'text' },
-          { name: 'code', label: 'cd.fCode', kind: 'text' },
-          { name: 'decree_number', label: 'cd.fDecreeNumber', kind: 'text' },
-          { name: 'decree_date', label: 'cd.fDecreeDate', kind: 'date' },
-          { name: 'start_date', label: 'cd.fStartDate', kind: 'date' },
-          { name: 'end_date', label: 'cd.fEndDate', kind: 'date' },
-        ]}
-        initial={Object.fromEntries(['employee_id', 'unit_id', 'position_type_id', 'name', 'code', 'decree_number', 'decree_date', 'start_date', 'end_date'].map((k) => [k, String(data().record?.[k] ?? '').slice(0, k.endsWith('date') ? 10 : undefined)]))}
-        save={(v) => saveStaffRow(params.id as string, props.staffId ?? '', v)}
-        backHref={back()}
-      />
+      {/* Mount the form only once the (possibly pending) query has landed: it seeds its state from it. */}
+      <Show when={data()}>
+        {(_d) => (
+        <WriteForm
+          fields={[
+            { name: 'employee_id', label: 'cd.fEmployee', kind: 'select', required: true, options: data().options.employee_id },
+            { name: 'unit_id', label: 'rt.programStudi', kind: 'select', required: true, options: data().options.unit_id },
+            { name: 'position_type_id', label: 'cd.fPosition', kind: 'select', options: data().options.position_type_id },
+            { name: 'name', label: 'cd.fName', kind: 'text' },
+            { name: 'code', label: 'cd.fCode', kind: 'text' },
+            { name: 'decree_number', label: 'cd.fDecreeNumber', kind: 'text' },
+            { name: 'decree_date', label: 'cd.fDecreeDate', kind: 'date' },
+            { name: 'start_date', label: 'cd.fStartDate', kind: 'date' },
+            { name: 'end_date', label: 'cd.fEndDate', kind: 'date' },
+          ]}
+          initial={Object.fromEntries(['employee_id', 'unit_id', 'position_type_id', 'name', 'code', 'decree_number', 'decree_date', 'start_date', 'end_date'].map((k) => [k, String(data().record?.[k] ?? '').slice(0, k.endsWith('date') ? 10 : undefined)]))}
+          save={(v) => saveStaffRow(params.id as string, props.staffId ?? '', v)}
+          backHref={back()}
+        />
+        )}
+      </Show>
     </Errored>
   );
 }
@@ -101,23 +106,28 @@ export function EmployeeFormPage(props: { employeeId?: string }) {
         <button type="submit" class={btn}>{t('cd.applyFilters')}</button>
         <span class="text-xs text-muted-foreground-1">{t('cd.employeeSearchHint')}</span>
       </form>
-      <WriteForm
-        fields={[
-          { name: 'individual_id', label: 'rt.person', kind: 'select', required: true, options: data().options.individual_id },
-          { name: 'name', label: 'cd.fName', kind: 'text', required: true },
-          { name: 'code', label: 'cd.fCode', kind: 'text', required: true },
-          { name: 'decree_number', label: 'cd.fDecreeNumber', kind: 'text' },
-          { name: 'decree_date', label: 'cd.fDecreeDate', kind: 'date' },
-          { name: 'is_active', label: 'rt.active', kind: 'check' },
-        ]}
-        initial={{
-          individual_id: String(rec()?.individual_id ?? ''), name: String(rec()?.name ?? ''), code: String(rec()?.code ?? ''),
-          decree_number: String(rec()?.decree_number ?? ''), decree_date: String(rec()?.decree_date ?? '').slice(0, 10),
-          is_active: rec() ? rec()?.is_active === true : true,
-        }}
-        save={(v) => saveEmployeeRow(params.id as string, props.employeeId ?? '', v)}
-        backHref={base(params.id as string, 'employee')}
-      />
+      {/* Mount the form only once the (possibly pending) query has landed: it seeds its state from it. */}
+      <Show when={data()}>
+        {(_d) => (
+        <WriteForm
+          fields={[
+            { name: 'individual_id', label: 'rt.person', kind: 'select', required: true, options: data().options.individual_id },
+            { name: 'name', label: 'cd.fName', kind: 'text', required: true },
+            { name: 'code', label: 'cd.fCode', kind: 'text', required: true },
+            { name: 'decree_number', label: 'cd.fDecreeNumber', kind: 'text' },
+            { name: 'decree_date', label: 'cd.fDecreeDate', kind: 'date' },
+            { name: 'is_active', label: 'rt.active', kind: 'check' },
+          ]}
+          initial={{
+            individual_id: String(rec()?.individual_id ?? ''), name: String(rec()?.name ?? ''), code: String(rec()?.code ?? ''),
+            decree_number: String(rec()?.decree_number ?? ''), decree_date: String(rec()?.decree_date ?? '').slice(0, 10),
+            is_active: rec() ? rec()?.is_active === true : true,
+          }}
+          save={(v) => saveEmployeeRow(params.id as string, props.employeeId ?? '', v)}
+          backHref={base(params.id as string, 'employee')}
+        />
+        )}
+      </Show>
     </Errored>
   );
 }

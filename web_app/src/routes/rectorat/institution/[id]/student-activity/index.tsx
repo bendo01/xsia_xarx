@@ -5,17 +5,18 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../components/Pager';
+import StatusBadge from '../../../../../components/student/StatusBadge';
 import LockStatus from '../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { formatNumber, t } from '../../../../../i18n';
 import { getInstitutionStudentActivities } from '../../../../../lib/institution-data';
-import { parsePage } from '../../../../../lib/url';
+import { parsePage, parsePageSize } from '../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
 const dec = (n: unknown) => formatNumber(Number(n) || 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-const load = (id: string, q: Query) => getInstitutionStudentActivities(id, parsePage(q.page), one(q.q), one(q.year));
+const load = (id: string, q: Query) => getInstitutionStudentActivities(id, parsePage(q.page), one(q.q), one(q.year), parsePageSize(q.size));
 
 export const route = {
   preload: ({ params, location }) => {
@@ -58,6 +59,7 @@ export default function InstitutionStudentActivities() {
                 <TableHead>{t('cd.sks')}</TableHead>
                 <TableHead>{t('cd.ips')}</TableHead>
                 <TableHead>{t('cd.status')}</TableHead>
+                <TableHead>{t('st.lockStatus')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -69,14 +71,15 @@ export default function InstitutionStudentActivities() {
                     <TableCell label={t('cd.semesterTahunAjaran')}>{a.academic_year_name ?? a.academic_year?.name ?? '-'}</TableCell>
                     <TableCell label={t('cd.sks')}>{a.total_credit || 0}</TableCell>
                     <TableCell label={t('cd.ips')}>{dec(a.cumulative_index)}</TableCell>
-                    <TableCell label={t('cd.status')}><span class="inline-flex items-center gap-2">{a.status_name || '-'} <LockStatus locked={!!a.is_lock} /></span></TableCell>
+                    <TableCell label={t('cd.status')}><StatusBadge name={a.status_name} /></TableCell>
+                    <TableCell label={t('st.lockStatus')}><LockStatus locked={!!a.is_lock} /></TableCell>
                   </TableRow>
                 )}
               </For>
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().activities.pagination.page} totalPages={data().activities.pagination.total_page} search={q()} />
+        <Pager page={data().activities.pagination.page} totalPages={data().activities.pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().activities.pagination.total_data} />
       </div>
     </Errored>
   );

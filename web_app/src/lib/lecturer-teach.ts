@@ -84,3 +84,44 @@ export function creditTrend(items: AssignedTeach[], fallbackName: string): YearT
   }
   return [...map.values()].sort((x, y) => x.yearCode - y.yearCode || x.yearName.localeCompare(y.yearName));
 }
+
+export interface YearStats extends YearTrend {
+  planned: number;
+  realized: number;
+}
+
+/** Credits, classes and planned / realized sessions per academic year, oldest first. */
+export function yearStats(items: AssignedTeach[], fallbackName: string): YearStats[] {
+  const stats = new Map<string, YearStats>(creditTrend(items, fallbackName).map((y) => [y.yearId, { ...y, planned: 0, realized: 0 }]));
+  for (const a of items) {
+    const y = a.academic_year_id ? stats.get(a.academic_year_id) : undefined;
+    if (!y) continue;
+    y.planned += Number(a.planning) || 0;
+    y.realized += Number(a.realization) || 0;
+  }
+  return [...stats.values()].sort((x, y) => x.yearCode - y.yearCode || x.yearName.localeCompare(y.yearName));
+}
+
+/** Share of the planned sessions that were held, in percent (capped at 100); null with no plan. */
+export const completionRate = (planned: number, realized: number): number | null =>
+  planned > 0 ? Math.min(100, Math.round((realized / planned) * 100)) : null;
+
+/** How the classes split by credit weight ("3 SKS": 12 classes, "2 SKS": 4 classes ...), heaviest group first. */
+export function creditSlices(items: AssignedTeach[], unit: string): { name: string; value: number }[] {
+  const map = new Map<number, number>();
+  for (const a of items) {
+    const c = creditOf(a);
+    if (c > 0) map.set(c, (map.get(c) ?? 0) + 1);
+  }
+  return [...map.entries()].sort((a, b) => b[1] - a[1] || b[0] - a[0]).map(([c, value]) => ({ name: `${c} ${unit}`, value }));
+}
+
+/** The courses taught most often (classes over all years), for a ranking chart. */
+export function courseSlices(items: AssignedTeach[], limit = 8): { name: string; value: number }[] {
+  const map = new Map<string, number>();
+  for (const a of items) {
+    const name = a.course_name?.trim();
+    if (name) map.set(name, (map.get(name) ?? 0) + 1);
+  }
+  return [...map.entries()].map(([name, value]) => ({ name, value })).sort((a, b) => b.value - a.value || a.name.localeCompare(b.name)).slice(0, limit);
+}

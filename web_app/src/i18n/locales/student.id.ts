@@ -291,4 +291,7 @@ export const stId: Record<string, string> = {
     youHaveAlreadyEnrolledInCourse: 'Anda sudah terdaftar di {{course}} pada kelas lain. Silakan batalkan kelas yang ada terlebih dahulu untuk berpindah kelas.',
     realtimeLive: 'Langsung',
     realtimeOffline: 'Terputus',
+    bestSemester: 'Semester terbaik (IPS)',
+    parentsGuardians: 'Orang tua & wali',
+    noParentData: 'Belum ada data orang tua atau wali.',
 };

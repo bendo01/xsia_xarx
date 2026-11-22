@@ -27,3 +27,13 @@ export function parsePage(v: ParamValue): number {
   const n = Number.parseInt(Array.isArray(v) ? (v[0] ?? '') : (v ?? ''), 10);
   return Number.isFinite(n) && n > 0 ? Math.min(n, 100_000) : 1;
 }
+
+/** The page sizes a list may offer. */
+export const PAGE_SIZES = [10, 20, 50, 100] as const;
+export const DEFAULT_PAGE_SIZE = 20;
+
+/** A page size from a query value (or number); only the offered sizes are accepted, anything else is the default. */
+export function parsePageSize(v: ParamValue | number): number {
+  const n = typeof v === 'number' ? v : Number.parseInt(Array.isArray(v) ? (v[0] ?? '') : (v ?? ''), 10);
+  return (PAGE_SIZES as readonly number[]).includes(n) ? n : DEFAULT_PAGE_SIZE;
+}

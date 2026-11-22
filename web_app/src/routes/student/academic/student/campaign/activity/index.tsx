@@ -5,6 +5,7 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../../components/Pager';
+import StatusBadge from '../../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import StudentSwitcher from '../../../../../../components/student/StudentSwitcher';
 import LockStatus from '../../../../../../components/student/LockStatus';
@@ -90,6 +91,7 @@ export default function StudentActivities() {
                 <TableHead>{t('st.semesterIPS')}</TableHead>
                 <TableHead>{t('st.cumSKS')}</TableHead>
                 <TableHead>{t('st.ipk')}</TableHead>
+                <TableHead>{t('st.status')}</TableHead>
                 <TableHead>{t('st.lockStatus')}</TableHead>
                 <TableHead class="text-end">{t('st.action')}</TableHead>
               </TableRow>
@@ -105,6 +107,7 @@ export default function StudentActivities() {
                     <TableCell label={t('st.semesterIPS')}>{dec(a.cumulative_index)}</TableCell>
                     <TableCell label={t('st.cumSKS')}>{a.grand_total_credit}</TableCell>
                     <TableCell label={t('st.ipk')}>{dec(a.grand_cumulative_index)}</TableCell>
+                    <TableCell label={t('st.status')}><StatusBadge name={a.status_name} /></TableCell>
                     <TableCell label={t('st.lockStatus')}>
                       <LockStatus locked={a.is_lock} />
                     </TableCell>

@@ -37,6 +37,7 @@
     "@solidjs/router": "^2.0.0",
     "@solidjs/web": "^2.0.0",
     "@tailwindcss/vite": "^4.3.5",
+    "chart.js": "^4.6.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "preline": "^5.1.0",

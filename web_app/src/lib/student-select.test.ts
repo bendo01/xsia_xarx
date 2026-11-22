@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { asList, fullName, pickStudent, resolveIndividualId, shapeIndividual } from './student-select';
+import { asList, fullName, parentsOf, pickStudent, resolveIndividualId, shapeIndividual } from './student-select';
 import type { StudentItem } from './student-types';
 
 const A = '123e4567-e89b-42d3-a456-426614174000';
@@ -63,5 +63,25 @@ describe('shapeIndividual', () => {
     expect(asList([1])).toEqual([1]);
     expect(asList({ data: [2] })).toEqual([2]);
     expect(asList(null)).toEqual([]);
+  });
+});
+
+describe('parentsOf', () => {
+  const me = 'i-me';
+  const card = (members: any[]) => [{ id: 'c', code: '3201', members }];
+  it('lists parent and guardian members, naming the person who is not the student', () => {
+    const rows = parentsOf(
+      card([
+        { id: 'm1', individual_id: 'i-mom', individual_name: 'Siti', relative_id: me, relative_name: 'Budi', relative_type_name: 'Ibu Kandung' },
+        { id: 'm2', individual_id: me, individual_name: 'Budi', relative_id: 'i-dad', relative_name: 'Ahmad', relative_type_name: 'Ayah Kandung' },
+        { id: 'm3', individual_id: 'i-sis', individual_name: 'Ani', relative_id: me, relative_name: 'Budi', relative_type_name: 'Saudara Kandung' },
+      ]),
+      me,
+    );
+    expect(rows.map((r) => [r.name, r.relation])).toEqual([['Siti', 'Ibu Kandung'], ['Ahmad', 'Ayah Kandung']]);
+  });
+  it('ignores rows without a name and duplicates; empty cards give nothing', () => {
+    expect(parentsOf(card([{ id: 'm', individual_name: null, relative_type_name: 'Ayah Wali' }]), me)).toEqual([]);
+    expect(parentsOf([], me)).toEqual([]);
   });
 });

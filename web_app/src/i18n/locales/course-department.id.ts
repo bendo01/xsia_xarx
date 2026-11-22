@@ -658,4 +658,9 @@ export const cdId: Record<string, string> = {
     unitRecordNotFound: 'Data unit tidak ditemukan.',
     failedToLoadUnitDetailsFrom: 'Gagal memuat detail unit dari server.',
     failedToCreateClassCode: 'Gagal membuat kode kelas.',
+    kpiStudents: 'Mahasiswa',
+    kpiNewStudents: 'Mahasiswa baru',
+    kpiAverageGpa: 'Rata-rata IPK',
+    kpiLecturers: 'Dosen',
+    sincePrevious: 'Perubahan sejak periode sebelumnya',
 };

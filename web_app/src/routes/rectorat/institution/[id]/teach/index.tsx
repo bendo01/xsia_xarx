@@ -11,11 +11,11 @@ import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { t } from '../../../../../i18n';
 import { getInstitutionTeaches } from '../../../../../lib/institution-data';
-import { parsePage } from '../../../../../lib/url';
+import { parsePage, parsePageSize } from '../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
-const load = (id: string, q: Query) => getInstitutionTeaches(id, one(q.unit), parsePage(q.page), one(q.q), one(q.activity), one(q.lock));
+const load = (id: string, q: Query) => getInstitutionTeaches(id, one(q.unit), parsePage(q.page), one(q.q), one(q.activity), one(q.lock), parsePageSize(q.size));
 
 export const route = {
   preload: ({ params, location }) => {
@@ -56,7 +56,7 @@ export default function InstitutionTeaches() {
                 <TableHead>{t('cd.teachCourse')}</TableHead>
                 <TableHead>{t('cd.teachClassCode')}</TableHead>
                 <TableHead>{t('cd.teachMembers')}</TableHead>
-                <TableHead>{t('cd.status')}</TableHead>
+                <TableHead>{t('st.lockStatus')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -69,14 +69,14 @@ export default function InstitutionTeaches() {
                     </TableCell>
                     <TableCell label={t('cd.teachClassCode')}>{r.class_code?.name ?? '-'}</TableCell>
                     <TableCell label={t('cd.teachMembers')}>{r.enrolled_count ?? 0}{r.max_member ? ` / ${r.max_member}` : ''}</TableCell>
-                    <TableCell label={t('cd.status')}><LockStatus locked={!!r.is_lock} /></TableCell>
+                    <TableCell label={t('st.lockStatus')}><LockStatus locked={!!r.is_lock} /></TableCell>
                   </TableRow>
                 )}
               </For>
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().teaches.pagination.page} totalPages={data().teaches.pagination.total_page} search={q()} />
+        <Pager page={data().teaches.pagination.page} totalPages={data().teaches.pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().teaches.pagination.total_data} />
       </div>
     </Errored>
   );

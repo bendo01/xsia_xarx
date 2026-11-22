@@ -245,4 +245,9 @@ export const lcId: Record<string, string> = {
     wajib100: '(Wajib 100%)',
     yaKunciNilai: 'Ya, Kunci Nilai',
     youHaveNotBeenAssignedTo: 'Anda belum ditugaskan ke kelas pengajaran semester manapun.',
+    completionRate: 'Kehadiran pertemuan',
+    coursesTaught: 'Mata kuliah diampu',
+    plannedVsRealized: 'Pertemuan rencana vs realisasi',
+    classesByCredit: 'Kelas menurut bobot SKS',
+    mostTaughtCourses: 'Mata kuliah paling sering diampu',
 };

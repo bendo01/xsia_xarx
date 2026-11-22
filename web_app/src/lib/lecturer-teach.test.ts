@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { creditTrend, distinctYears, filterTeaches, progressPercent, summarize } from './lecturer-teach';
+import { completionRate, courseSlices, creditTrend, creditSlices, yearStats, distinctYears, filterTeaches, progressPercent, summarize } from './lecturer-teach';
 import type { AssignedTeach } from './lecturer-types';
 
 const mk = (o: Partial<AssignedTeach>): AssignedTeach => ({
@@ -31,5 +31,21 @@ describe('lecturer-teach', () => {
   });
   it('builds the trend oldest first', () => {
     expect(creditTrend(items, 'Year').map((y) => [y.yearId, y.credits, y.classes])).toEqual([['y1', 3, 1], ['y2', 5, 2]]);
+  });
+  it('yearStats adds planned and realized sessions per year, oldest first', () => {
+    const y = yearStats(items, 'Year');
+    expect(y.map((r) => r.yearId)).toEqual(['y1', 'y2']);
+    expect(y[1]).toMatchObject({ classes: 2, credits: 5, planned: 32, realized: 24 });
+  });
+  it('completionRate is capped and null without a plan', () => {
+    expect(completionRate(16, 8)).toBe(50);
+    expect(completionRate(10, 30)).toBe(100);
+    expect(completionRate(0, 3)).toBeNull();
+  });
+  it('creditSlices groups classes by credit weight and courseSlices ranks by count', () => {
+    const r = creditSlices([mk({ credit: 3 }), mk({ credit: 3 }), mk({ credit: 2 }), mk({ credit: 0, course_total_credit: 0 })], 'SKS');
+    expect(r).toEqual([{ name: '3 SKS', value: 2 }, { name: '2 SKS', value: 1 }]);
+    const c = courseSlices([mk({ course_name: 'A' }), mk({ course_name: 'B' }), mk({ course_name: 'A' }), mk({})], 1);
+    expect(c).toEqual([{ name: 'A', value: 2 }]);
   });
 });

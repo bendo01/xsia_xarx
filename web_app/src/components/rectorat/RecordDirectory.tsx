@@ -6,7 +6,7 @@ import { env } from 'virtual:solid-env/client';
 import { t } from '../../i18n';
 import { getInstitutionRecords, type InstitutionRecordKey } from '../../lib/institution-data';
 import { COLUMNS } from '../../lib/crud-views';
-import { parsePage } from '../../lib/url';
+import { parsePage, parsePageSize } from '../../lib/url';
 import Pager from '../Pager';
 import PageHeader from '../student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -17,7 +17,7 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) 
 
 /** Same call shape in a route's preload and in the page (query() keys on the arguments). */
 export const loadRecords = (id: string, key: InstitutionRecordKey, q: Query) =>
-  getInstitutionRecords(id, key, one(q.unit), parsePage(q.page), one(q.q));
+  getInstitutionRecords(id, key, one(q.unit), parsePage(q.page), one(q.q), parsePageSize(q.size));
 
 /** Read-only directory of one unit's records (courses, curricula, ...), reusing the prodi columns. */
 export default function RecordDirectory(props: { resource: InstitutionRecordKey; titleKey: string; actions?: any; rowActions?: (r: Record<string, any>) => any }) {
@@ -54,7 +54,7 @@ export default function RecordDirectory(props: { resource: InstitutionRecordKey;
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().records.pagination.page} totalPages={data().records.pagination.total_page} search={q()} />
+        <Pager page={data().records.pagination.page} totalPages={data().records.pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().records.pagination.total_data} />
       </div>
     </Errored>
   );

@@ -5,8 +5,8 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../../components/Pager';
+import StatusBadge from '../../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../../components/student/PageHeader';
-import { Badge } from '../../../../../../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { t } from '../../../../../../i18n';
 import { getUnitLecturers } from '../../../../../../lib/unit';
@@ -77,7 +77,7 @@ export default function UnitLecturers() {
                     <TableCell label={t('cd.lecturerGroup')}>{l.group_name ?? nameOf(l.group) ?? '-'}</TableCell>
                     <TableCell label={t('cd.contractType2')}>{l.contract_name ?? nameOf(l.contract) ?? '-'}</TableCell>
                     <TableCell label={t('cd.status')}>
-                      <Badge variant="outline">{l.status_name ?? nameOf(l.status) ?? '-'}</Badge>
+                      <StatusBadge name={l.status_name ?? nameOf(l.status)} />
                     </TableCell>
                     <TableCell class="text-end">
                       <a href={`/course-department/academic/lecturer/master/lecturer/${encodeURIComponent(l.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>

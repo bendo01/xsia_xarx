@@ -53,6 +53,34 @@ export interface CounsellorItem {
   notes?: string;
 }
 
+export interface ResidenceItem {
+  id: string;
+  street?: string | null;
+  citizens_association?: number | null;
+  neighborhood_association?: number | null;
+  residence_type_name?: string | null;
+  province_name?: string | null;
+  regency_name?: string | null;
+  sub_district_name?: string | null;
+  village_name?: string | null;
+}
+
+export interface FamilyMemberItem {
+  id: string;
+  individual_id?: string | null;
+  individual_name?: string | null;
+  relative_id?: string | null;
+  relative_name?: string | null;
+  relative_type_name?: string | null;
+}
+
+export interface FamilyCardItem {
+  id: string;
+  code?: string | null;
+  head_name?: string | null;
+  members: FamilyMemberItem[];
+}
+
 export interface ContactItem {
   id: string;
   value: string;
@@ -83,6 +111,8 @@ export interface StudentProfile {
   };
   phones: ContactItem[];
   emails: ContactItem[];
+  residences: ResidenceItem[];
+  familyCards: FamilyCardItem[];
   students: StudentItem[];
   selected: StudentItem | null;
   activities: ActivityItem[];

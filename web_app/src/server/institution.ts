@@ -5,7 +5,9 @@ import { markSafeError } from '@solidjs/web';
 import { apiFetch, apiPaginated } from './api';
 import type { AuthState } from './auth';
 import { isUuid } from '../lib/validation';
-import { SORTS, type StudentFilter } from './unit';
+import { SORTS, loadUnitDashboard, type StudentFilter } from './unit';
+import { withData, meanLine, sumLines, sumSlices, totalsPerCategory, trimTrailingEmpty } from '../lib/analytics';
+import { lineFromOption, slicesFromOption } from '../lib/unit-dashboard';
 
 type Raw = Record<string, any>;
 
@@ -118,10 +120,11 @@ export async function loadInstitutionSummary(institutionId: string) {
   const inst = { institution_id: institutionId };
   const STUDENTS = 'academic/student/master/students';
 
-  const [units, students, activities, unitOptions, statuses] = await Promise.all([
+  const [units, students, activities, candidates, unitOptions, statuses] = await Promise.all([
     total('institution/master/units', inst),
     total(STUDENTS, inst),
     total('academic/student/campaign/student-activities', inst),
+    total('academic/candidate/master/candidates', inst),
     loadInstitutionUnitOptions(institutionId).catch(() => []),
     apiPaginated<Raw>('academic/student/reference/statuses', { page: 1, per_page: 100 }).then((r) => r.data).catch(() => []),
   ]);
@@ -130,7 +133,136 @@ export async function loadInstitutionSummary(institutionId: string) {
   const byUnit = await inBatches(unitOptions.slice(0, 60), 10, async (u) => ({ name: u.name, value: (await total(STUDENTS, { ...inst, unit_id: u.id })) ?? 0 }));
   const byStatus = await inBatches(statuses, 10, async (st) => ({ name: String(st.name ?? st.code ?? ''), value: (await total(STUDENTS, { ...inst, status_id: st.id })) ?? 0 }));
   const top = (rows: { name: string; value: number }[]) => rows.filter((r) => r.value > 0).sort((a, b) => b.value - a.value);
-  return { units, students, activities, studentsByUnit: top(byUnit), studentsByStatus: top(byStatus) };
+  return { units, students, activities, candidates, studentsByUnit: top(byUnit), studentsByStatus: top(byStatus) };
+}
+
+/** Unit types that are study programs (the old dashboard counted only these, not offices or institutes). */
+export const isStudyProgram = (typeName: unknown) => /program studi|prodi|jurusan|department|study program/i.test(String(typeName ?? ''));
+
+export interface Program {
+  id: string;
+  name: string;
+  code: string;
+  education: string;
+  parent: string;
+  active: boolean;
+}
+
+/** The institution's study programs, A-Z. */
+export async function loadInstitutionPrograms(institutionId: string): Promise<Program[]> {
+  const res = await apiPaginated<Raw>('institution/master/units', { page: 1, per_page: 200, institution_id: institutionId, with_relations: 'true' });
+  return res.data
+    .filter((u) => (!u.institution_id || u.institution_id === institutionId) && isStudyProgram(u.unit_type?.name))
+    .map((u) => ({
+      id: String(u.id),
+      name: String(u.name ?? u.code ?? u.id),
+      code: String(u.code ?? ''),
+      education: String(u.education?.name ?? ''),
+      parent: String(u.parent?.name ?? ''),
+      active: u.is_active !== false,
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
+ * A short-lived cache of the programs' dashboards: building the institution view needs one call per
+ * program (and the selected program's detail needs the same one again). Keyed by the caller's role
+ * too, so nobody is served a dashboard fetched under someone else's permissions. Failures are not cached.
+ */
+const DASH_TTL_MS = 5 * 60_000;
+const dashCache = new Map<string, { at: number; data: Raw | null }>();
+
+/**
+ * One program's dashboard. `data` is null when the API has none for it ("Unit not found": a program
+ * without curriculum or students yet, which is normal and cached); `failed` is true for real errors
+ * (access denied, server errors), which are never cached.
+ */
+async function cachedDashboard(scope: string, unitId: string): Promise<{ data: Raw | null; failed: boolean }> {
+  const key = `${scope}:${unitId}`;
+  const hit = dashCache.get(key);
+  if (hit && Date.now() - hit.at < DASH_TTL_MS) return { data: hit.data, failed: false };
+  try {
+    const data = await loadUnitDashboard(unitId);
+    dashCache.set(key, { at: Date.now(), data });
+    if (dashCache.size > 500) dashCache.delete(dashCache.keys().next().value as string);
+    return { data, failed: false };
+  } catch (e) {
+    if ((e as Error).message === 'Unit not found') {
+      dashCache.set(key, { at: Date.now(), data: null });
+      return { data: null, failed: false };
+    }
+    console.warn(`[institution] dashboard of unit ${unitId} unavailable: ${(e as Error).message}`);
+    return { data: null, failed: true };
+  }
+}
+
+/** The full dashboard of one of the institution's study programs (inline detail panel). */
+export async function loadInstitutionProgram(institutionId: string, scope: string, rawUnitId: string) {
+  const programs = await loadInstitutionPrograms(institutionId);
+  const unit = rawUnitId ? programs.find((p) => p.id === rawUnitId) : programs[0];
+  if (!unit) throw markSafeError(new Error('Unit not found'));
+  const { data } = await cachedDashboard(scope, unit.id);
+  if (!data) throw markSafeError(new Error('Unit not found'));
+  return data;
+}
+
+const lastPositive = (values: number[]) => values.filter((v) => v > 0).at(-1) ?? null;
+
+/**
+ * The executive view of the institution: every study program's own dashboard rolled up into totals,
+ * trends and distributions, plus one row per program for the comparison charts and table. A program
+ * whose dashboard cannot be read still gets a row (marked not loaded) and is counted in `failed`.
+ */
+export async function loadInstitutionAnalytics(institutionId: string, scope: string) {
+  const programs = await loadInstitutionPrograms(institutionId);
+  const rows = await inBatches(programs, 5, async (p) => {
+    const [{ data: d, failed }, headcount] = await Promise.all([
+      cachedDashboard(scope, p.id),
+      apiPaginated<Raw>('academic/student/master/students', { page: 1, per_page: 1, institution_id: institutionId, unit_id: p.id }).then((r) => r.pagination.total_data).catch(() => 0),
+    ]);
+    return { p, d, headcount, failed };
+  });
+  const ok = rows.filter((r): r is { p: Program; d: Raw; headcount: number; failed: boolean } => r.d !== null);
+  const lines = (key: string) => ok.map((r) => lineFromOption(r.d[key]));
+
+  const perProgram = rows.map(({ p, d, headcount }) => {
+    const sl = d ? trimTrailingEmpty(lineFromOption(d.student_academic_year_chart)) : null;
+    const gl = d ? trimTrailingEmpty(lineFromOption(d.average_gpa_trend)) : null;
+    const periods = totalsPerCategory(sl).filter((v) => v > 0);
+    return {
+      ...p,
+      loaded: d !== null,
+      students: headcount,
+      latestStudents: periods.at(-1) ?? 0,
+      courses: Number(d?.matakuliah?.total_matakuliah) || 0,
+      credits: Number(d?.matakuliah?.total_credit) || 0,
+      curricula: Number(d?.total_curriculum) || 0,
+      gpa: gl ? lastPositive(gl.series[0]?.values ?? []) : null,
+      lecturers: d ? slicesFromOption(d.lecturer_academic_group_distribution).reduce((a, b) => a + b.value, 0) : 0,
+    };
+  });
+
+  const gpas = perProgram.map((r) => r.gpa).filter((g): g is number => g !== null);
+  return {
+    institutionName: String(ok.find((r) => r.d.institution?.name)?.d.institution?.name ?? ''),
+    failed: rows.filter((r) => r.failed).length,
+    totals: {
+      programs: perProgram.length,
+      active: perProgram.filter((r) => r.active).length,
+      students: perProgram.reduce((s, r) => s + r.students, 0),
+      courses: perProgram.reduce((s, r) => s + r.courses, 0),
+      credits: perProgram.reduce((s, r) => s + r.credits, 0),
+      lecturers: perProgram.reduce((s, r) => s + r.lecturers, 0),
+      gpa: gpas.length ? gpas.reduce((a, b) => a + b, 0) / gpas.length : null,
+    },
+    studentTrend: trimTrailingEmpty(sumLines(lines('student_academic_year_chart'))),
+    registrantTrend: trimTrailingEmpty(sumLines(lines('registered_student_academic_year_chart'))),
+    gpaTrend: withData(trimTrailingEmpty(meanLine(lines('average_gpa_trend'), 'IPK'))),
+    lecturerGroups: sumSlices(ok.map((r) => slicesFromOption(r.d.lecturer_academic_group_distribution))),
+    lecturerRanks: sumSlices(ok.map((r) => slicesFromOption(r.d.lecturer_academic_rank_distribution))),
+    courseCategories: sumSlices(ok.map((r) => slicesFromOption(r.d.course_category_distribution))),
+    programs: perProgram.sort((a, b) => b.students - a.students || a.name.localeCompare(b.name)),
+  };
 }
 
 /** Runs `fn` over `items` a few at a time so a big institution doesn't fire hundreds of requests at once. */

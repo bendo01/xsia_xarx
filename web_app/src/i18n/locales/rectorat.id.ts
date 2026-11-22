@@ -1459,4 +1459,13 @@ export const rtId: Record<string, string> = {
     nomorKip: 'Nomor KIP',
     feederMaster: 'Tabel master',
     feederReferensi: 'Tabel referensi',
+    analytics: 'Analitik',
+    analyticsHint: 'Gabungan seluruh program studi, dari dasbor masing-masing program.',
+    analyticsPartial: '{{failed}} dari {{total}} program studi gagal dimuat dan tidak disertakan.',
+    programCount: '{{count}} program studi',
+    shareOfStudents: 'Porsi mahasiswa',
+    candidates: 'Calon mahasiswa',
+    studentsAndGpaPerProgram: 'Mahasiswa dan rata-rata IPK per program studi',
+    others: 'Lainnya',
+    showingRange: 'Menampilkan {{from}}–{{to}} dari {{total}}',
 };

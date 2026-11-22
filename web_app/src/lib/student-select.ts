@@ -1,4 +1,4 @@
-import type { StudentItem } from './student-types';
+import type { FamilyCardItem, FamilyMemberItem, ResidenceItem, StudentItem } from './student-types';
 import { isUuid } from './validation';
 
 const ZERO_UUID = '00000000-0000-0000-0000-000000000000';
@@ -71,8 +71,40 @@ export function shapeIndividual(raw: Raw) {
     },
     phones: asList<{ id: string; value: string; type_name?: string | null }>(raw.phones),
     emails: asList<{ id: string; value: string; type_name?: string | null }>(raw.electronic_mails),
+    residences: asList<ResidenceItem>(raw.residences),
+    familyCards: asList<Raw>(raw.family_cards).map((c) => ({ ...c, members: asList<FamilyMemberItem>(c.members) }) as FamilyCardItem),
     students: asList<StudentItem>(raw.students),
   };
 }
 
 export { asList };
+
+const PARENT_TYPE = /ayah|ibu|bapak|wali|orang\s*tua|father|mother|guardian|parent/i;
+
+export interface ParentRow {
+  id: string;
+  name: string;
+  relation: string;
+  familyCard: string;
+}
+
+/**
+ * The parents / guardians recorded on the person's family cards: members whose relationship is a
+ * parent or guardian type. A row relates `individual` to `relative`; the parent is the one who is
+ * not the person themselves (when neither is, the member is listed as is).
+ */
+export function parentsOf(cards: FamilyCardItem[], individualId: string): ParentRow[] {
+  const rows: ParentRow[] = [];
+  const seen = new Set<string>();
+  for (const c of cards) {
+    for (const m of c.members) {
+      if (!PARENT_TYPE.test(m.relative_type_name ?? '')) continue;
+      const self = individualId !== '' && (m.individual_id === individualId || m.relative_id === individualId);
+      const name = (self && m.individual_id === individualId ? m.relative_name : m.individual_name) ?? '';
+      if (!name || seen.has(m.id)) continue;
+      seen.add(m.id);
+      rows.push({ id: m.id, name, relation: m.relative_type_name ?? '', familyCard: c.code ?? '' });
+    }
+  }
+  return rows;
+}

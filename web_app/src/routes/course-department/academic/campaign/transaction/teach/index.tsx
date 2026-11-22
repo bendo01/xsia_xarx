@@ -57,7 +57,7 @@ export default function UnitTeaches() {
                 <TableHead>{t('cd.teachCourse')}</TableHead>
                 <TableHead>{t('cd.teachClassCode')}</TableHead>
                 <TableHead>{t('cd.teachMembers')}</TableHead>
-                <TableHead>{t('cd.status')}</TableHead>
+                <TableHead>{t('st.lockStatus')}</TableHead>
                 <TableHead class="text-end">{t('cd.aksi')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -71,7 +71,7 @@ export default function UnitTeaches() {
                     </TableCell>
                     <TableCell label={t('cd.teachClassCode')}>{r.class_code?.name ?? '-'}</TableCell>
                     <TableCell label={t('cd.teachMembers')}>{r.enrolled_count ?? 0}{r.max_member ? ` / ${r.max_member}` : ''}</TableCell>
-                    <TableCell label={t('cd.status')}><LockStatus locked={!!r.is_lock} /></TableCell>
+                    <TableCell label={t('st.lockStatus')}><LockStatus locked={!!r.is_lock} /></TableCell>
                     <TableCell class="text-end">
                       <span class="inline-flex gap-x-4 text-sm font-medium">
                         <a href={`/course-department/academic/campaign/transaction/teach/${encodeURIComponent(r.id)}`} class="text-primary hover:underline">{t('cd.detail')}</a>

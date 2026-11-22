@@ -4,13 +4,13 @@ import { useSearchParams } from '@solidjs/router';
 import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
-import LineChart from '../../../../../../components/chart/LineChart';
+import TeachingAnalytics from '../../../../../../components/lecturer/TeachingAnalytics';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Badge } from '../../../../../../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
-import { formatNumber, t } from '../../../../../../i18n';
+import { t } from '../../../../../../i18n';
 import { getMyLecturer } from '../../../../../../lib/lecturer';
-import { creditTrend, creditOf, distinctYears, filterTeaches, progressPercent, summarize } from '../../../../../../lib/lecturer-teach';
+import { creditOf, distinctYears, filterTeaches, progressPercent } from '../../../../../../lib/lecturer-teach';
 import type { AssignedTeach } from '../../../../../../lib/lecturer-types';
 
 type Query = Record<string, string | string[] | undefined>;
@@ -24,16 +24,6 @@ export const route = {
 
 const base = '/lecturer/academic/campaign/transaction/teach';
 const className = (a: AssignedTeach) => a.class_name || `${t('lc.classCode')} ${a.class_alphabet_code ?? ''}`.trim();
-const card = 'rounded-xs border border-card-line bg-card shadow-2xs';
-
-function Stat(props: { label: string; value: string }) {
-  return (
-    <div class={`${card} p-4`}>
-      <p class="text-xs font-medium uppercase text-muted-foreground-1">{props.label}</p>
-      <p class="mt-1 text-2xl font-semibold text-foreground">{props.value}</p>
-    </div>
-  );
-}
 
 function ClassActions(props: { a: AssignedTeach }) {
   const link = 'text-sm font-medium text-primary hover:underline';
@@ -64,8 +54,6 @@ export default function LecturerTeachIndex() {
   const all = () => data().lecturer?.assigned_teaches ?? [];
   const years = createMemo(() => distinctYears(all(), t('lc.tahunAkademik')));
   const rows = createMemo(() => filterTeaches(all(), one((search as Query).q), one((search as Query).year)));
-  const sum = createMemo(() => summarize(all()));
-  const trend = createMemo(() => creditTrend(all(), t('lc.tahunAkademik')));
   const filtered = () => one((search as Query).q) !== '' || ['', 'all'].indexOf(one((search as Query).year)) < 0;
 
   return (
@@ -89,25 +77,7 @@ export default function LecturerTeachIndex() {
           when={data().lecturer}
           fallback={<p class="rounded-xs border border-card-line bg-card p-8 text-center text-sm text-muted-foreground-1">{t('lc.noLecturerRecord')}</p>}
         >
-          <section class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-            <Stat label={t('lc.assignedClasses')} value={formatNumber(sum().classes)} />
-            <Stat label={t('lc.totalSKSCredits')} value={formatNumber(sum().credits)} />
-            <Stat label={t('lc.plannedSessions')} value={formatNumber(sum().planned)} />
-            <Stat label={t('lc.realizedSessions')} value={formatNumber(sum().realized)} />
-          </section>
-
-          <Show when={trend().length > 0}>
-            <section class={`${card} p-4`}>
-              <h2 class="text-sm font-semibold">{t('lc.totalTeachingCreditsPerAcademicYear')}</h2>
-              <LineChart
-                categories={trend().map((y) => y.yearName)}
-                series={[{ name: t('lc.sks'), color: '#6366f1', values: trend().map((y) => y.credits), area: true }]}
-                format={(n) => `${formatNumber(n)} ${t('lc.sks')}`}
-                tickFormat={(n) => formatNumber(n)}
-                ariaLabel={t('lc.totalTeachingCreditsPerAcademicYear')}
-              />
-            </section>
-          </Show>
+          <TeachingAnalytics items={all()} kpis />
 
           <form method="get" class="flex flex-wrap items-center gap-2">
             <input

@@ -5,6 +5,7 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../../components/Pager';
+import StatusBadge from '../../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { t } from '../../../../../../i18n';
@@ -87,7 +88,7 @@ export default function UnitStudents() {
                     <TableCell class="font-mono" label={t('cd.nim')}>{s.code || '-'}</TableCell>
                     <TableCell class="font-medium" label={t('cd.mahasiswa')}>{s.name || s.individual?.name || '-'}</TableCell>
                     <TableCell label={t('cd.semesterTahunAjaran')}>{s.academic_year?.name ?? s.academic_year_name ?? '-'}</TableCell>
-                    <TableCell label={t('cd.status')}>{s.status?.name ?? s.status_name ?? '-'}</TableCell>
+                    <TableCell label={t('cd.status')}><StatusBadge name={s.status?.name ?? s.status_name} /></TableCell>
                     <TableCell class="text-end">
                       <a href={`/course-department/academic/student/master/student/${encodeURIComponent(s.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
                     </TableCell>

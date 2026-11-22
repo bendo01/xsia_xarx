@@ -1,10 +1,11 @@
 import { Title } from '@solidjs/meta';
 import { useParams, useSearchParams } from '@solidjs/router';
+import type { JSX } from '@solidjs/web';
 import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import { t } from '../../i18n';
-import { parsePage } from '../../lib/url';
+import { parsePage, parsePageSize } from '../../lib/url';
 import Pager from '../Pager';
 import PageHeader from '../student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
@@ -15,17 +16,17 @@ const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) 
 
 export interface SimpleColumn {
   label: string;
-  cell: (r: Rec) => string;
+  cell: (r: Rec) => JSX.Element;
 }
 
 /** Same call shape in a route's preload and in the page (query() keys on the arguments). */
-export const loadSimple = (fn: (id: string, page: number, search: string) => Promise<any>, id: string, q: Query) =>
-  fn(id, parsePage(q.page), one(q.q));
+export const loadSimple = (fn: (id: string, page: number, search: string, size: number) => Promise<any>, id: string, q: Query) =>
+  fn(id, parsePage(q.page), one(q.q), parsePageSize(q.size));
 
 /** Institution-wide read-only list: search box, table, pager (no unit picker). */
 export default function SimpleList(props: {
   titleKey: string;
-  load: (id: string, page: number, search: string) => Promise<any>;
+  load: (id: string, page: number, search: string, size: number) => Promise<any>;
   columns: SimpleColumn[];
   actions?: any;
   rowActions?: (r: Rec) => any;
@@ -66,7 +67,7 @@ export default function SimpleList(props: {
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} />
+        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().pagination.total_data} />
       </div>
     </Errored>
   );

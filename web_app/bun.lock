@@ -12,6 +12,7 @@
         "@solidjs/router": "^2.0.0",
         "@solidjs/web": "^2.0.0",
         "@tailwindcss/vite": "^4.3.5",
+        "chart.js": "^4.6.1",
         "class-variance-authority": "^0.7.1",
         "clsx": "^2.1.1",
         "preline": "^5.1.0",
@@ -80,6 +81,8 @@
     "@kobalte/core": ["@kobalte/core@2.0.0-alpha.4", "", { "dependencies": { "@floating-ui/dom": "^1.8.0", "@internationalized/number": "^3.6.9", "@kobalte/utils": "2.0.0-alpha.1", "@solid-primitives/a11y": "1.0.0-next.3", "@solid-primitives/controlled-signal": "1.0.0-next.3", "@solid-primitives/event-listener": "3.0.0-next.9", "@solid-primitives/focus": "1.0.0-next.4", "@solid-primitives/form": "1.0.0-next.3", "@solid-primitives/i18n": "3.0.0-next.4", "@solid-primitives/interaction": "1.0.0-next.7", "@solid-primitives/keyboard": "2.0.0-next.8", "@solid-primitives/platform": "1.0.0-next.2", "@solid-primitives/presence": "1.0.0-next.2", "@solid-primitives/props": "4.0.0-next.3", "@solid-primitives/refs": "3.0.0-next.2", "@solid-primitives/resize-observer": "4.0.0-next.7", "@solid-primitives/scroll": "3.0.0-next.7", "@solid-primitives/upload": "1.0.0-next.4", "@solid-primitives/utils": "7.0.0-next.7" }, "peerDependencies": { "@solidjs/web": "2.0.0-rc.16", "solid-js": "2.0.0-rc.16" } }, "sha512-Md6Q400q3us2wwIHqGLpcwKioCEFTJ88Q5XOrKWGJV60GSQj/PnsrpWYnMbAvuuzF0WkBysx7oQvbr1IGOSp6g=="],
 
     "@kobalte/utils": ["@kobalte/utils@2.0.0-alpha.1", "", { "dependencies": { "@solid-primitives/event-listener": "3.0.0-next.9", "@solid-primitives/keyed": "3.0.0-next.2", "@solid-primitives/map": "1.0.0-next.2", "@solid-primitives/media": "4.0.0-next.5", "@solid-primitives/props": "4.0.0-next.3", "@solid-primitives/refs": "3.0.0-next.2", "@solid-primitives/utils": "7.0.0-next.7" }, "peerDependencies": { "@solidjs/web": "2.0.0-rc.16", "solid-js": "2.0.0-rc.16" } }, "sha512-hWOYqtWKhIJ36sx9RDsfOtMEFl4Miti11fwkY2YEOa7+1sF498uniQs+Hj3cOWSMgheV1L/fMH5C78tCItkXYA=="],
+
+    "@kurkle/color": ["@kurkle/color@0.3.4", "", {}, "sha512-M5UknZPHRu3DEDWoipU6sE8PdkZ6Z/S+v4dD+Ke8IaNlpdSQah50lz1KtcFBa2vsdOnwbbnxJwVM4wty6udA5w=="],
 
     "@lucide/solid": ["@lucide/solid@1.77.0", "", { "peerDependencies": { "solid-js": "^2.0.0-rc.0" } }, "sha512-d1wQC9wYkIBSJZ800pz/EztvhLpouZd978V33VDCxXkhd9cwexv8UsdGipaRoKPhH2i7156plPTcKA8CTYWUUw=="],
 
@@ -416,6 +419,8 @@
     "camelcase": ["camelcase@5.3.1", "", {}, "sha512-L28STB170nwWS63UjtlEOE3dldQApaJXZkOI1uMFfzf3rRuPegHaHesyee+YxQ+W6SvRDQV6UrdOdRiR153wJg=="],
 
     "chai": ["chai@6.3.0", "", {}, "sha512-XWAtwJ6OHO+tj0EKCs0Y2UamnyOxseZWltU4x2U2wh8g4AigdjwvtUjvLP2tqkA/avxHEtzxNaqGq/YGNwckKg=="],
+
+    "chart.js": ["chart.js@4.6.1", "", { "dependencies": { "@kurkle/color": "^0.3.0" } }, "sha512-hJyniucsFmq//EvXYvJ6c6mahPoI3kaxdjVH8awTaJ/fDNWeSqqqArixMJWkWNN6fcYvPU3HneSANFNYtRi61g=="],
 
     "class-variance-authority": ["class-variance-authority@0.7.1", "", { "dependencies": { "clsx": "^2.1.1" } }, "sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg=="],
 

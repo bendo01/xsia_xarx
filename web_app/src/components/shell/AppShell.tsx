@@ -1,10 +1,12 @@
-import { useLocation, useNavigate } from '@solidjs/router';
+import { useIsRouting, useLocation, useNavigate } from '@solidjs/router';
 import type { ParentProps } from 'solid-js';
-import { createEffect, createMemo, createSignal, onSettled } from 'solid-js';
+import { Loading, Show, createEffect, createMemo, createSignal, onSettled } from 'solid-js';
 
 import { t } from '../../i18n';
 import { getAuthState } from '../../lib/auth';
 import { getMenuForRole } from '../../lib/menu';
+import { skeletonKind } from '../../lib/skeleton-kind';
+import PageSkeleton from '../ui/page-skeleton';
 import { CommandPalette, type CommandItem } from '../ui/command';
 import Header, { roleLabel } from './Header';
 import { Icon } from './icons';
@@ -16,6 +18,24 @@ export default function AppShell(props: ParentProps) {
   const location = useLocation();
   const navigate = useNavigate();
   const auth = createMemo(() => getAuthState());
+
+  // While a navigation waits for the next page's data, Solid keeps the old page on screen. After a
+  // short grace period (so quick navigations do not flash) show the skeleton of the page we are going to.
+  const routing = useIsRouting();
+  const [slow, setSlow] = createSignal(false);
+  createEffect(
+    () => routing(),
+    (r) => {
+      if (!r) {
+        setSlow(false);
+        return;
+      }
+      const id = setTimeout(() => setSlow(true), 120);
+      return () => clearTimeout(id);
+    },
+  );
+  // The URL already points at the target while routing; the router's location may still be the old page.
+  const targetPath = () => (typeof window === 'undefined' ? location.pathname : window.location.pathname);
   const [searchOpen, setSearchOpen] = createSignal(false);
 
   const items = createMemo(() => {
@@ -65,7 +85,13 @@ export default function AppShell(props: ParentProps) {
         onOpenSearch={() => setSearchOpen(true)}
       />
       <main class="w-full px-4 py-6 sm:px-6">
-        <div class="w-full">{props.children}</div>
+        {/* The frame stays; only the page area shows a skeleton while its data loads. */}
+        <Show when={slow()}>
+          <PageSkeleton kind={skeletonKind(targetPath())} />
+        </Show>
+        <Loading fallback={<PageSkeleton kind={skeletonKind(location.pathname)} />}>
+          <div class={['w-full', { hidden: slow() }]}>{props.children}</div>
+        </Loading>
       </main>
       <CommandPalette
         open={searchOpen()}

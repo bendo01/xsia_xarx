@@ -1,29 +1,22 @@
 import { For, Show } from 'solid-js';
 
-import LineChart from '../chart/LineChart';
-import { Badge } from '../ui/badge';
+import ChartJs from '../chart/ChartJs';
+import Kpi from '../chart/Kpi';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../ui/table';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../ui/tabs';
 import { formatDate, formatNumber, t } from '../../i18n';
 import { chronological } from '../../lib/academic-trend';
-import { fullName } from '../../lib/student-select';
+import { deltaOf } from '../../lib/analytics';
+import { fullName, parentsOf } from '../../lib/student-select';
 import type { StudentItem, StudentProfile } from '../../lib/student-types';
 import LockStatus from './LockStatus';
+import StatusBadge from './StatusBadge';
 import StudentSwitcher from './StudentSwitcher';
 
 type Query = Record<string, string | string[] | undefined>;
 const dec = (n: number | undefined) => formatNumber(n ?? 0, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
 const cardClass = 'rounded-xs border border-card-line bg-card shadow-2xs';
-
-function Stat(props: { label: string; value: string }) {
-  return (
-    <div class={`${cardClass} p-4`}>
-      <p class="text-xs font-medium uppercase text-muted-foreground-1">{props.label}</p>
-      <p class="mt-1 text-2xl font-semibold text-foreground">{props.value}</p>
-    </div>
-  );
-}
 
 function Field(props: { label: string; value?: string | null }) {
   return (
@@ -44,6 +37,12 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
   // The trend is oldest-first; its last point is the latest semester.
   const latest = () => profile().trend.at(-1);
   const semesters = () => profile().trend.map((p, i) => p.label || t('st.semN', { n: i + 1 }));
+  /** The semester with the highest IPS (ignores semesters without grades yet). */
+  const best = () => {
+    const graded = profile().trend.map((p, i) => ({ ips: p.ips, label: semesters()[i] })).filter((p) => p.ips > 0);
+    return graded.length ? graded.reduce((a, b) => (b.ips > a.ips ? b : a)) : null;
+  };
+  const parents = () => parentsOf(profile().familyCards, profile().individual.id);
   const newestFirst = () => chronological(profile().activities).reverse();
 
   return (
@@ -68,10 +67,7 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
             </div>
             <Show when={profile().selected}>
               {(s) => (
-                <Badge variant="outline" class="gap-x-1.5 rounded-full bg-primary-100 py-1.5 text-primary-800 dark:bg-primary-500/20 dark:text-primary-400">
-                  <span class="size-1.5 rounded-full bg-primary-800 dark:bg-primary-400" />
-                  {statusName(s())}
-                </Badge>
+                <StatusBadge name={statusName(s())} />
               )}
             </Show>
           </div>
@@ -80,12 +76,15 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
 
         <StudentSwitcher students={profile().students} selectedId={profile().selected?.id} search={props.search} />
 
-        {/* Stats from the most recent semester record */}
-        <section class="grid grid-cols-2 gap-4 lg:grid-cols-4">
-          <Stat label={t('st.cumulativeIPK')} value={dec(latest()?.ipk)} />
-          <Stat label={t('st.cumulativeSKS')} value={String(latest()?.totalSks ?? 0)} />
-          <Stat label={t('st.semesterActivities')} value={String(profile().activities.length)} />
-          <Stat label={t('st.academicAdvisers')} value={String(profile().advisers.length)} />
+        {/* Headline numbers from the most recent semester, with the change since the one before */}
+        <section class="grid grid-cols-2 gap-4 lg:grid-cols-5">
+          <Kpi label={t('st.cumulativeIPK')} value={dec(latest()?.ipk)} caption={semesters().at(-1)} delta={deltaOf(profile().trend.map((p) => p.ipk))} decimals={2} />
+          <Kpi label={t('st.ips2')} value={dec(latest()?.ips)} delta={deltaOf(profile().trend.map((p) => p.ips))} decimals={2} />
+          <Kpi label={t('st.cumulativeSKS')} value={String(latest()?.totalSks ?? 0)} caption={`+${latest()?.sks ?? 0} ${t('st.sks')}`} />
+          <Show when={best()}>
+            {(b) => <Kpi label={t('st.bestSemester')} value={dec(b().ips)} caption={b().label} />}
+          </Show>
+          <Kpi label={t('st.semesterActivities')} value={String(profile().activities.length)} caption={`${profile().advisers.length} ${t('st.academicAdvisers')}`} />
         </section>
 
         <Tabs defaultValue="overview">
@@ -103,16 +102,18 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
                   when={profile().trend.length > 0}
                   fallback={<p class="py-12 text-center text-sm text-muted-foreground-1">{t('st.noAcademicSemesterActivityRecordsFound')}</p>}
                 >
-                  <LineChart
+                  <ChartJs
                     ariaLabel={t('st.academicPerformanceTrend')}
-                    categories={semesters()}
-                    yMax={4}
-                    yStep={1}
-                    format={dec}
-                    series={[
-                      { name: t('st.ipk'), color: '#6366f1', values: profile().trend.map((p) => p.ipk), area: true },
-                      { name: t('st.ips2'), color: '#0ea5e9', values: profile().trend.map((p) => p.ips) },
-                    ]}
+                    spec={{
+                      kind: 'bar',
+                      labels: semesters(),
+                      yMax: 4,
+                      format: dec,
+                      datasets: [
+                        { label: t('st.ips2'), data: profile().trend.map((p) => p.ips), color: '#0ea5e9' },
+                        { label: t('st.ipk'), data: profile().trend.map((p) => p.ipk), type: 'line', color: '#6366f1' },
+                      ],
+                    }}
                   />
                 </Show>
               </div>
@@ -122,15 +123,18 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
                   when={profile().trend.length > 0}
                   fallback={<p class="py-12 text-center text-sm text-muted-foreground-1">{t('st.noAcademicCreditRecordsFoundTo')}</p>}
                 >
-                  <LineChart
+                  <ChartJs
                     ariaLabel={t('st.progresBebanKreditSKS')}
-                    categories={semesters()}
-                    format={(n) => `${n} ${t('st.sks')}`}
-                    tickFormat={String}
-                    series={[
-                      { name: t('st.cumulativeSKS'), color: '#0d9488', values: profile().trend.map((p) => p.totalSks), area: true },
-                      { name: t('st.semesterSKS'), color: '#f59e0b', values: profile().trend.map((p) => p.sks) },
-                    ]}
+                    spec={{
+                      kind: 'bar',
+                      labels: semesters(),
+                      format: (n) => `${formatNumber(n)} ${t('st.sks')}`,
+                      format1: (n) => `${formatNumber(n)} ${t('st.sks')}`,
+                      datasets: [
+                        { label: t('st.semesterSKS'), data: profile().trend.map((p) => p.sks), color: '#f59e0b' },
+                        { label: t('st.cumulativeSKS'), data: profile().trend.map((p) => p.totalSks), type: 'line', axis: 'y1', color: '#0d9488' },
+                      ],
+                    }}
                   />
                 </Show>
               </div>
@@ -152,6 +156,7 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
                       <TableHead>{t('st.semesterIPS')}</TableHead>
                       <TableHead>{t('st.cumSKS')}</TableHead>
                       <TableHead>{t('st.ipk')}</TableHead>
+                      <TableHead>{t('st.status')}</TableHead>
                       <TableHead>{t('st.lockStatus')}</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -167,6 +172,7 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
                           <TableCell label={t('st.semesterIPS')}>{dec(a.cumulative_index)}</TableCell>
                           <TableCell label={t('st.cumSKS')}>{a.grand_total_credit}</TableCell>
                           <TableCell label={t('st.ipk')}>{dec(a.grand_cumulative_index)}</TableCell>
+                          <TableCell label={t('st.status')}><StatusBadge name={a.status_name} /></TableCell>
                           <TableCell label={t('st.lockStatus')}>
                             <LockStatus locked={a.is_lock} />
                           </TableCell>
@@ -180,6 +186,7 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
           </TabsContent>
 
           <TabsContent value="biodata">
+            <div class="space-y-6">
             <section class={`${cardClass} px-5 py-2`}>
               <dl class="divide-y divide-card-divider">
                 <Field label={t('common.name')} value={fullName(profile().individual)} />
@@ -195,6 +202,71 @@ export default function StudentProfileView(props: { profile: StudentProfile; sea
                 <For each={profile().phones}>{(p) => <Field label={t('st.phoneNumber')} value={p.value} />}</For>
               </dl>
             </section>
+
+            {/* Parents / guardians, taken from the family cards */}
+            <section class={cardClass}>
+              <h2 class="border-b border-card-line px-5 py-3 text-sm font-semibold">{t('st.parentsGuardians')}</h2>
+              <Show
+                when={parents().length > 0}
+                fallback={<p class="p-5 text-sm text-muted-foreground-1">{t('st.noParentData')}</p>}
+              >
+                <dl class="divide-y divide-card-divider px-5 py-2">
+                  <For each={parents()}>{(p) => <Field label={p.relation} value={p.name} />}</For>
+                </dl>
+              </Show>
+            </section>
+
+            <section class={cardClass}>
+              <h2 class="border-b border-card-line px-5 py-3 text-sm font-semibold">{t('ad.residencesTitle')}</h2>
+              <Show when={profile().residences.length > 0} fallback={<p class="p-5 text-sm text-muted-foreground-1">{t('ad.noneRecorded')}</p>}>
+                <ul class="divide-y divide-card-divider">
+                  <For each={profile().residences}>
+                    {(r) => (
+                      <li class="space-y-0.5 px-5 py-3 text-sm">
+                        <p class="font-medium">
+                          {r.street || '-'}
+                          <Show when={r.neighborhood_association || r.citizens_association}>
+                            <span class="font-normal text-muted-foreground-1"> ({t('ad.rtRw')} {r.neighborhood_association}/{r.citizens_association})</span>
+                          </Show>
+                        </p>
+                        <p class="text-muted-foreground-1">{[r.village_name, r.sub_district_name, r.regency_name, r.province_name].filter(Boolean).join(', ') || '-'}</p>
+                        <Show when={r.residence_type_name}><p class="text-xs text-muted-foreground-1">{r.residence_type_name}</p></Show>
+                      </li>
+                    )}
+                  </For>
+                </ul>
+              </Show>
+            </section>
+
+            <For each={profile().familyCards}>
+              {(c) => (
+                <section class={cardClass}>
+                  <h2 class="border-b border-card-line px-5 py-3 text-sm font-semibold">{t('ad.familyCards')} · {t('ad.familyCardNumber')} {c.code || '-'}</h2>
+                  <p class="px-5 pt-3 text-sm text-muted-foreground-1">{t('ad.familyHead')}: <span class="font-medium text-foreground">{c.head_name || '-'}</span></p>
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>{t('ad.familyMember')}</TableHead>
+                        <TableHead>{t('ad.familyRelationship')}</TableHead>
+                        <TableHead />
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <For each={c.members}>
+                        {(m) => (
+                          <TableRow>
+                            <TableCell label={t('ad.familyMember')}>{m.individual_name || '-'}</TableCell>
+                            <TableCell label={t('ad.familyRelationship')}>{m.relative_type_name || '-'}</TableCell>
+                            <TableCell>{m.relative_name || '-'}</TableCell>
+                          </TableRow>
+                        )}
+                      </For>
+                    </TableBody>
+                  </Table>
+                </section>
+              )}
+            </For>
+            </div>
           </TabsContent>
 
           <TabsContent value="academic">

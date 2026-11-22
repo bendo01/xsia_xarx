@@ -10,10 +10,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '.
 import { t } from '../../../../../../../i18n';
 import { FEEDER_SLUGS, feederCell, feederColumns, feederLabel, feederTitle } from '../../../../../../../lib/feeder';
 import { getFeederPage } from '../../../../../../../lib/institution-data';
-import { parsePage } from '../../../../../../../lib/url';
+import { parsePage, parsePageSize } from '../../../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
-const load = (id: string, slug: string, q: Query) => getFeederPage(id, 'master', slug, parsePage(q.page));
+const load = (id: string, slug: string, q: Query) => getFeederPage(id, 'master', slug, parsePage(q.page), parsePageSize(q.size));
 
 export const route = {
   preload: ({ params, location }) => {
@@ -52,7 +52,7 @@ export default function FeederTable() {
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} />
+        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().pagination.total_data} />
       </div>
     </Errored>
   );

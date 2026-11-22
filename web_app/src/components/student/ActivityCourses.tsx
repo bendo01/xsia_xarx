@@ -60,7 +60,7 @@ export default function ActivityCourses(props: { data: ActivityDetail }) {
                 <TableHead>{t('academic.mark')}</TableHead>
                 <TableHead>{t('academic.grade')}</TableHead>
                 <TableHead>{t('academic.point')}</TableHead>
-                <TableHead>{t('academic.status')}</TableHead>
+                <TableHead>{t('st.lockStatus')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -83,7 +83,7 @@ export default function ActivityCourses(props: { data: ActivityDetail }) {
                       <span class={['inline-block rounded-xs px-2 py-0.5 text-xs font-bold', TONE[gradeTone(c.grade_letter)]]}>{c.grade_letter}</span>
                     </TableCell>
                     <TableCell class="font-mono font-semibold" label={t('academic.point')}>{c.grade_point != null ? c.grade_point.toFixed(2) : '-'}</TableCell>
-                    <TableCell label={t('academic.status')}>
+                    <TableCell label={t('st.lockStatus')}>
                       <LockStatus locked={c.is_lock} />
                     </TableCell>
                   </TableRow>

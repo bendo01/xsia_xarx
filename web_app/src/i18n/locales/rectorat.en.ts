@@ -1459,4 +1459,13 @@ export const rtEn: Record<string, string> = {
     nomorKip: 'KIP Number',
     feederMaster: 'Master tables',
     feederReferensi: 'Reference tables',
+    analytics: 'Analytics',
+    analyticsHint: "All study programs combined, from each program's own dashboard.",
+    analyticsPartial: '{{failed}} of {{total}} programs could not be loaded and are left out.',
+    programCount: '{{count}} programs',
+    shareOfStudents: 'Share of students',
+    candidates: 'Prospective students',
+    studentsAndGpaPerProgram: 'Students and average GPA per program',
+    others: 'Others',
+    showingRange: 'Showing {{from}}–{{to}} of {{total}}',
 };

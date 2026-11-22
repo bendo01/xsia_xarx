@@ -2,6 +2,7 @@ import type { RouteDefinition } from '@solidjs/router';
 
 import { t } from '../../../../../i18n';
 import SimpleList, { loadSimple } from '../../../../../components/rectorat/SimpleList';
+import StatusBadge from '../../../../../components/student/StatusBadge';
 import { AddButton, RowActions } from '../../../../../components/rectorat/WritePages';
 import { getInstitutionEmployees } from '../../../../../lib/institution-data';
 import { getInstitutionRights } from '../../../../../lib/institution-write';
@@ -27,7 +28,7 @@ export default function Page() {
         { label: 'cd.fName', cell: (r) => dash(r.name) },
         { label: 'cd.fCode', cell: (r) => dash(r.code) },
         { label: 'cd.fDecree', cell: (r) => dash(r.decree_number) },
-        { label: 'cd.status', cell: (r) => (r.is_active ? t('rt.active') : '-') },
+        { label: 'cd.status', cell: (r) => <StatusBadge name={r.is_active ? t('rt.active') : t('rt.tidakAktif')} /> },
       ]}
     />
   );

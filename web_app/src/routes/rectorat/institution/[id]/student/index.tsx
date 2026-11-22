@@ -5,15 +5,16 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../components/Pager';
+import StatusBadge from '../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { t } from '../../../../../i18n';
 import { getInstitutionStudents } from '../../../../../lib/institution-data';
-import { parsePage } from '../../../../../lib/url';
+import { parsePage, parsePageSize } from '../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
-const load = (id: string, q: Query) => getInstitutionStudents(id, parsePage(q.page), one(q.q), one(q.sort) || 'code-asc');
+const load = (id: string, q: Query) => getInstitutionStudents(id, parsePage(q.page), one(q.q), one(q.sort) || 'code-asc', parsePageSize(q.size));
 
 export const route = {
   preload: ({ params, location }) => {
@@ -71,7 +72,7 @@ export default function InstitutionStudents() {
                     <TableCell class="font-mono" label={t('cd.nim')}>{s.code || '-'}</TableCell>
                     <TableCell class="font-medium" label={t('cd.mahasiswa')}>{s.name || s.individual?.name || '-'}</TableCell>
                     <TableCell label={t('rt.programStudi')}>{s.unit?.name ?? s.unit_name ?? '-'}</TableCell>
-                    <TableCell label={t('cd.status')}>{s.status?.name ?? s.status_name ?? '-'}</TableCell>
+                    <TableCell label={t('cd.status')}><StatusBadge name={s.status?.name ?? s.status_name} /></TableCell>
                     <TableCell class="text-end">
                       <a href={`/rectorat/institution/${encodeURIComponent(params.id as string)}/student/${encodeURIComponent(s.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
                     </TableCell>
@@ -81,7 +82,7 @@ export default function InstitutionStudents() {
             </TableBody>
           </Table>
         </Show>
-        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} />
+        <Pager page={data().pagination.page} totalPages={data().pagination.total_page} search={q()} pageSize={parsePageSize(q().size)} total={data().pagination.total_data} />
       </div>
     </Errored>
   );

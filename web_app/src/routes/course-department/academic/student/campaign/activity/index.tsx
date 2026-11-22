@@ -5,6 +5,7 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../../components/Pager';
+import StatusBadge from '../../../../../../components/student/StatusBadge';
 import LockStatus from '../../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
@@ -79,6 +80,7 @@ export default function UnitActivities() {
                 <TableHead>{t('cd.ips')}</TableHead>
                 <TableHead>{t('cd.ipk')}</TableHead>
                 <TableHead>{t('cd.status')}</TableHead>
+                <TableHead>{t('st.lockStatus')}</TableHead>
                 <TableHead class="text-end">{t('cd.aksi')}</TableHead>
               </TableRow>
             </TableHeader>
@@ -96,9 +98,8 @@ export default function UnitActivities() {
                     <TableCell label={t('cd.sks')}>{a.total_credit || 0}</TableCell>
                     <TableCell label={t('cd.ips')}>{dec(a.cumulative_index)}</TableCell>
                     <TableCell label={t('cd.ipk')}>{dec(a.grand_cumulative_index || a.cumulative_index)}</TableCell>
-                    <TableCell label={t('cd.status')}>
-                      <span class="inline-flex items-center gap-2">{a.status_name || '-'} <LockStatus locked={!!a.is_lock} /></span>
-                    </TableCell>
+                    <TableCell label={t('cd.status')}><StatusBadge name={a.status_name} /></TableCell>
+                    <TableCell label={t('st.lockStatus')}><LockStatus locked={!!a.is_lock} /></TableCell>
                     <TableCell class="text-end">
                       <a href={`/course-department/academic/student/campaign/activity/${encodeURIComponent(a.id)}`} class="text-sm font-medium text-primary hover:underline">{t('cd.detail')}</a>
                     </TableCell>

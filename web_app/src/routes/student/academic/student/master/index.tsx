@@ -5,8 +5,8 @@ import { Errored, For, Show, createMemo } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import Pager from '../../../../../components/Pager';
+import StatusBadge from '../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../components/student/PageHeader';
-import { Badge } from '../../../../../components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { formatDate, t } from '../../../../../i18n';
 import { getStudentDirectory } from '../../../../../lib/student';
@@ -93,7 +93,7 @@ export default function StudentDirectory() {
                   <TableCell label={t('st.admissionPath')}>{s.selection_type?.name ?? '-'}</TableCell>
                   <TableCell label={t('st.registrationDate')}>{s.registered ? formatDate(s.registered) : '-'}</TableCell>
                   <TableCell label={t('st.status')}>
-                    <Badge variant="success">{s.status?.name ?? s.status_name ?? t('st.active')}</Badge>
+                    <StatusBadge name={s.status?.name ?? s.status_name ?? t('st.active')} />
                   </TableCell>
                   <TableCell class="text-end">
                     {/* The detail view is the student home's academic tab, scoped to this identity. */}

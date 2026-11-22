@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { safeFilename } from './files';
-import { parsePage, withParams } from './url';
+import { parsePage, parsePageSize, withParams } from './url';
 
 describe('withParams', () => {
   it('keeps existing params and applies changes', () => {
@@ -31,5 +31,17 @@ describe('safeFilename', () => {
   it('falls back when nothing usable remains', () => {
     expect(safeFilename('///', 'doc.pdf')).toBe('doc.pdf');
     expect(safeFilename(undefined, 'doc.pdf')).toBe('doc.pdf');
+  });
+});
+
+describe('parsePageSize', () => {
+  it('accepts only the offered sizes, otherwise the default', () => {
+    expect(parsePageSize('50')).toBe(50);
+    expect(parsePageSize(['100', '10'])).toBe(100);
+    expect(parsePageSize(10)).toBe(10);
+    expect(parsePageSize('25')).toBe(20);
+    expect(parsePageSize('abc')).toBe(20);
+    expect(parsePageSize(undefined)).toBe(20);
+    expect(parsePageSize('100000')).toBe(20);
   });
 });

@@ -291,4 +291,7 @@ export const stEn: Record<string, string> = {
     youHaveAlreadyEnrolledInCourse: 'You have already enrolled in {{course}} in another class. Please drop the existing class first to change classes.',
     realtimeLive: 'Live',
     realtimeOffline: 'Offline',
+    bestSemester: 'Best semester (IPS)',
+    parentsGuardians: 'Parents & guardians',
+    noParentData: 'No parent or guardian recorded.',
 };
