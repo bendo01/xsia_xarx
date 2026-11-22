@@ -10,7 +10,7 @@ import LockStatus from '../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { t } from '../../../../../i18n';
-import { getInstitutionTeaches } from '../../../../../lib/institution-data';
+import { getInstitutionActivityOptions, getInstitutionTeaches, getInstitutionUnitOptions } from '../../../../../lib/institution-data';
 import { parsePage, parsePageSize } from '../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
@@ -20,6 +20,8 @@ const load = (id: string, q: Query) => getInstitutionTeaches(id, one(q.unit), pa
 export const route = {
   preload: ({ params, location }) => {
     void load(params.id as string, location.query as Query);
+    void getInstitutionUnitOptions(params.id as string);
+    void getInstitutionActivityOptions(params.id as string, one((location.query as Query).unit));
   },
 } satisfies RouteDefinition;
 
@@ -31,6 +33,9 @@ export default function InstitutionTeaches() {
   const [search] = useSearchParams();
   const q = () => search as Query;
   const data = createMemo(() => load(params.id as string, q()));
+  // Option lists do not depend on the page or filters: their own queries, requested once.
+  const units = createMemo(() => getInstitutionUnitOptions(params.id as string));
+  const activities = createMemo(() => getInstitutionActivityOptions(params.id as string, one(q().unit)));
   const refreshing = () => isPending(() => data());
 
   return (
@@ -38,10 +43,10 @@ export default function InstitutionTeaches() {
       <Title>{`${t('menu.rectorat.teachActivityList')} - ${env.VITE_APP_NAME}`}</Title>
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
         <PageHeader title={t('menu.rectorat.teachActivityList')} />
-        <UnitPicker units={data().units} unitId={data().unitId} q={one(q().q)} filtered={!!(one(q().q) || one(q().activity) || one(q().lock))}>
+        <UnitPicker units={units()} unitId={data().unitId} q={one(q().q)} filtered={!!(one(q().q) || one(q().activity) || one(q().lock))}>
           <select name="activity" class={field}>
             <option value="">{t('cd.allActivities')}</option>
-            <For each={data().teaches.activities}>{(a) => <option value={a.id} selected={one(q().activity) === a.id}>{a.name}</option>}</For>
+            <For each={activities()}>{(a) => <option value={a.id} selected={one(q().activity) === a.id}>{a.name}</option>}</For>
           </select>
           <select name="lock" class={field}>
             <option value="">{t('cd.status')}</option>

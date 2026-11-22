@@ -43,7 +43,7 @@ export default function InstitutionDashboard(props: {
     return programs().filter((p) => !q || p.name.toLowerCase().includes(q) || p.code.toLowerCase().includes(q));
   });
   const ranked = (pick: (p: Row) => number) => programs().map((p) => ({ name: p.name, value: pick(p) })).filter((r) => r.value > 0).sort((a, b) => b.value - a.value);
-  const href = (id: string) => `/rectorat/institution/${encodeURIComponent(props.institutionId)}`;
+  const href = () => `/rectorat/institution/${encodeURIComponent(props.institutionId)}`;
 
   return (
     <div class="space-y-6">
@@ -130,7 +130,7 @@ export default function InstitutionDashboard(props: {
                     <TableCell label={t('rt.status')}><Badge variant={p.active ? 'success' : 'secondary'}>{p.active ? t('rt.aktif') : t('rt.tidakAktif')}</Badge></TableCell>
                     <TableCell class="text-end">
                       <Show when={p.loaded} fallback="-">
-                        <a href={`${href(p.id)}?program=${encodeURIComponent(p.id)}#program-detail`} class="text-sm font-medium text-primary hover:underline">{t('rt.detail')}</a>
+                        <a href={`${href()}?program=${encodeURIComponent(p.id)}#program-detail`} class="text-sm font-medium text-primary hover:underline">{t('rt.detail')}</a>
                       </Show>
                     </TableCell>
                   </TableRow>

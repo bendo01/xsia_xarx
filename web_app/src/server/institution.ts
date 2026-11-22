@@ -55,12 +55,26 @@ export async function loadInstitutionStudents(institutionId: string, f: Pick<Stu
 }
 
 /** The institution's units as select options (up to 200, A-Z). */
+// Every list of the rectorat area validates the chosen unit against this list, and its picker shows it:
+// remember it for a few minutes instead of asking on every page. Only a successful answer is kept.
+const UNITS_TTL_MS = 5 * 60_000;
+const unitOptionCache = new Map<string, { at: number; data: { id: string; name: string }[] }>();
+
 export async function loadInstitutionUnitOptions(institutionId: string) {
+  const hit = unitOptionCache.get(institutionId);
+  if (hit && Date.now() - hit.at < UNITS_TTL_MS) return hit.data;
   const res = await apiPaginated<Raw>('institution/master/units', { page: 1, per_page: 200, institution_id: institutionId });
-  return res.data
+  const data = res.data
     .filter((u) => !u.institution_id || u.institution_id === institutionId)
     .map((u) => ({ id: String(u.id), name: String(u.name ?? u.code ?? u.id) }))
     .sort((a, b) => a.name.localeCompare(b.name));
+  unitOptionCache.set(institutionId, { at: Date.now(), data });
+  return data;
+}
+
+/** Forget the cached unit options (tests). */
+export function resetUnitOptionsCache() {
+  unitOptionCache.clear();
 }
 
 /**

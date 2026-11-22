@@ -10,6 +10,7 @@ import LockStatus from '../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { formatNumber, t } from '../../../../../i18n';
+import { getAcademicYears } from '../../../../../lib/unit';
 import { getInstitutionStudentActivities } from '../../../../../lib/institution-data';
 import { parsePage, parsePageSize } from '../../../../../lib/url';
 
@@ -21,6 +22,7 @@ const load = (id: string, q: Query) => getInstitutionStudentActivities(id, parse
 export const route = {
   preload: ({ params, location }) => {
     void load(params.id as string, location.query as Query);
+    void getAcademicYears();
   },
 } satisfies RouteDefinition;
 
@@ -33,6 +35,8 @@ export default function InstitutionStudentActivities() {
   const q = () => search as Query;
   const data = createMemo(() => load(params.id as string, q()));
   const refreshing = () => isPending(() => data());
+  // The year options do not depend on the page or the filters: a query of their own, requested once.
+  const years = createMemo(() => getAcademicYears());
   const rows = () => data().activities.data;
 
   return (
@@ -44,7 +48,7 @@ export default function InstitutionStudentActivities() {
           <input type="search" name="q" value={one(q().q)} placeholder={t('cd.cariNIMNamaMahasiswa')} class={`${field} min-w-0 flex-1 sm:max-w-sm`} />
           <select name="year" class={field}>
             <option value="">{t('cd.semuaTahunAjaran')}</option>
-            <For each={data().years}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
+            <For each={years()}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
           </select>
           <button type="submit" class="h-9 rounded-xs bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.applyFilters')}</button>
           <Show when={one(q().q) || one(q().year)}><a href="?" class="text-sm text-primary hover:underline">{t('cd.reset')}</a></Show>

@@ -10,7 +10,7 @@ import UnitPicker from '../../../../../components/rectorat/UnitPicker';
 import PageHeader from '../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../components/ui/table';
 import { t } from '../../../../../i18n';
-import { getInstitutionLecturers } from '../../../../../lib/institution-data';
+import { getInstitutionLecturers, getInstitutionUnitOptions } from '../../../../../lib/institution-data';
 import { fullName } from '../../../../../lib/student-select';
 import { parsePage, parsePageSize } from '../../../../../lib/url';
 
@@ -21,6 +21,7 @@ const load = (id: string, q: Query) => getInstitutionLecturers(id, one(q.unit), 
 export const route = {
   preload: ({ params, location }) => {
     void load(params.id as string, location.query as Query);
+    void getInstitutionUnitOptions(params.id as string);
   },
 } satisfies RouteDefinition;
 
@@ -32,6 +33,7 @@ export default function InstitutionLecturers() {
   const [search] = useSearchParams();
   const q = () => search as Query;
   const data = createMemo(() => load(params.id as string, q()));
+  const units = createMemo(() => getInstitutionUnitOptions(params.id as string));
   const refreshing = () => isPending(() => data());
 
   return (
@@ -39,7 +41,7 @@ export default function InstitutionLecturers() {
       <Title>{`${t('menu.rectorat.lecturerList')} - ${env.VITE_APP_NAME}`}</Title>
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
         <PageHeader title={t('menu.rectorat.lecturerList')} />
-        <UnitPicker units={data().units} unitId={data().unitId} q={one(q().q)} filtered={!!one(q().q)} />
+        <UnitPicker units={units()} unitId={data().unitId} q={one(q().q)} filtered={!!one(q().q)} />
         <Show when={data().lecturers.data.length > 0} fallback={<p class="rounded-xs border border-card-line bg-card p-8 text-center text-sm text-muted-foreground-1">{t('cd.noRecords')}</p>}>
           <Table>
             <TableHeader>

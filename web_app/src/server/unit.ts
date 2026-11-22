@@ -115,9 +115,27 @@ export async function loadUnitActivities(unitId: string, f: ActivityFilter, page
   return { ...res, data: res.data.filter((a) => !a.unit_id || a.unit_id === unitId) };
 }
 
+// The academic years change a few times a year: keep them for a while instead of asking the API on
+// every page of every list. Only a successful answer is kept (a failure must be retried).
+const YEARS_TTL_MS = 10 * 60_000;
+let yearsCache: { at: number; data: { id: string; name: string }[] } | null = null;
+
 export async function loadAcademicYearOptions() {
-  const res = await apiFetch<unknown>('academic/general/reference/academic-years/options', { method: 'POST', body: {} }).catch(() => []);
-  return asList<Raw>(res).map((r) => ({ id: String(r.id), name: String(r.name ?? r.code ?? '') }));
+  if (yearsCache && Date.now() - yearsCache.at < YEARS_TTL_MS) return yearsCache.data;
+  let res: unknown;
+  try {
+    res = await apiFetch<unknown>('academic/general/reference/academic-years/options', { method: 'POST', body: {} });
+  } catch {
+    return [];
+  }
+  const data = asList<Raw>(res).map((r) => ({ id: String(r.id), name: String(r.name ?? r.code ?? '') }));
+  yearsCache = { at: Date.now(), data };
+  return data;
+}
+
+/** Forget the cached years (tests). */
+export function resetAcademicYearsCache() {
+  yearsCache = null;
 }
 
 /**
@@ -214,13 +232,32 @@ export async function loadUnitTeaches(unitId: string, f: TeachFilter, pageSize =
     const km = new Map(asList<Raw>(codes).map((c) => [c.id, c]));
     rows = rows.map((t) => ({ ...t, course: t.course ?? cm.get(t.course_id), class_code: t.class_code ?? km.get(t.class_code_id) }));
   }
-  const activities = await loadUnitActivityOptions(unitId);
-  return { ...res, data: rows, activities };
+  return { ...res, data: rows };
 }
 
+// A unit's activities (semesters) change a few times a year: remember them per unit for a while
+// instead of asking on every page of the classes list. Only a successful answer is kept.
+const ACTIVITIES_TTL_MS = 5 * 60_000;
+const activityCache = new Map<string, { at: number; data: { id: string; name: string }[] }>();
+
 export async function loadUnitActivityOptions(unitId: string) {
-  const res = await apiFetch<unknown>('academic/campaign/transaction/activities', { query: { page: 1, page_size: 100, unit_id: unitId } }).catch(() => []);
-  return asList<Raw>(res).map((a) => ({ id: String(a.id), name: String(a.name ?? a.academic_year?.name ?? a.id) }));
+  const hit = activityCache.get(unitId);
+  if (hit && Date.now() - hit.at < ACTIVITIES_TTL_MS) return hit.data;
+  let res: unknown;
+  try {
+    res = await apiFetch<unknown>('academic/campaign/transaction/activities', { query: { page: 1, page_size: 100, unit_id: unitId } });
+  } catch {
+    return [];
+  }
+  const data = asList<Raw>(res).map((a) => ({ id: String(a.id), name: String(a.name ?? a.academic_year?.name ?? a.id) }));
+  activityCache.set(unitId, { at: Date.now(), data });
+  if (activityCache.size > 200) activityCache.delete(activityCache.keys().next().value as string);
+  return data;
+}
+
+/** Forget the cached activity options (tests). */
+export function resetActivityOptionsCache() {
+  activityCache.clear();
 }
 
 /** A teaching class of my unit with its lecturers, students and evaluation components. */

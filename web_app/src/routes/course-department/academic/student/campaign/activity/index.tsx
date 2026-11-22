@@ -10,7 +10,7 @@ import LockStatus from '../../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { formatNumber, t } from '../../../../../../i18n';
-import { getUnitActivities } from '../../../../../../lib/unit';
+import { getAcademicYears, getUnitActivities } from '../../../../../../lib/unit';
 import { parsePage } from '../../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
@@ -21,6 +21,7 @@ const load = (q: Query) => getUnitActivities(parsePage(q.page), one(q.q), one(q.
 export const route = {
   preload: ({ location }) => {
     void load(location.query as Query);
+    void getAcademicYears();
   },
 } satisfies RouteDefinition;
 
@@ -33,6 +34,7 @@ export default function UnitActivities() {
   const q = () => search as Query;
   const data = createMemo(() => load(q()));
   const refreshing = () => isPending(() => data());
+  const years = createMemo(() => getAcademicYears());
   const rows = () => data().activities.data;
 
   return (
@@ -52,7 +54,7 @@ export default function UnitActivities() {
           <input type="search" name="q" value={one(q().q)} placeholder={t('cd.cariNIMNamaMahasiswa')} class={`${field} min-w-0 flex-1 sm:max-w-sm`} />
           <select name="year" class={field}>
             <option value="">{t('cd.semuaTahunAjaran')}</option>
-            <For each={data().years}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
+            <For each={years()}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
           </select>
           <select name="sort" class={field}>
             <option value="student_code-asc" selected={one(q().sort) === 'student_code-asc'}>{t('cd.nimCodeAscending')}</option>

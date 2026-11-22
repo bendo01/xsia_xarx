@@ -9,7 +9,7 @@ import StatusBadge from '../../../../../../components/student/StatusBadge';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { t } from '../../../../../../i18n';
-import { getUnitStudents } from '../../../../../../lib/unit';
+import { getUnitStudentFilters, getUnitStudents } from '../../../../../../lib/unit';
 import { parsePage } from '../../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
@@ -20,6 +20,7 @@ const load = (q: Query) => getUnitStudents(parsePage(q.page), one(q.q), one(q.ye
 export const route = {
   preload: ({ location }) => {
     void load(location.query as Query);
+    void getUnitStudentFilters();
   },
 } satisfies RouteDefinition;
 
@@ -30,6 +31,8 @@ export default function UnitStudents() {
   const [search] = useSearchParams();
   const q = () => search as Query;
   const data = createMemo(() => load(q()));
+  // Year and status options do not depend on the page or the filters: requested once.
+  const filters = createMemo(() => getUnitStudentFilters());
   const refreshing = () => isPending(() => data());
   const filtered = () => !!(one(q().q) || one(q().year) || one(q().status));
 
@@ -49,11 +52,11 @@ export default function UnitStudents() {
           <input type="search" name="q" value={one(q().q)} placeholder={t('cd.cariNIMNamaMahasiswa')} class={`${field} min-w-0 flex-1 sm:max-w-sm`} />
           <select name="year" class={field}>
             <option value="">{t('cd.semuaTahunAjaran')}</option>
-            <For each={data().years}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
+            <For each={filters().years}>{(y) => <option value={y.id} selected={one(q().year) === y.id}>{y.name}</option>}</For>
           </select>
           <select name="status" class={field}>
             <option value="">{t('cd.status')}</option>
-            <For each={data().statuses}>{(s) => <option value={s.id} selected={one(q().status) === s.id}>{s.name}</option>}</For>
+            <For each={filters().statuses}>{(s) => <option value={s.id} selected={one(q().status) === s.id}>{s.name}</option>}</For>
           </select>
           <select name="sort" class={field}>
             <option value="code-asc" selected={one(q().sort) === 'code-asc'}>{t('cd.nimCodeAscending')}</option>

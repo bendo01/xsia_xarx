@@ -9,7 +9,7 @@ import LockStatus from '../../../../../../components/student/LockStatus';
 import PageHeader from '../../../../../../components/student/PageHeader';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../../../../../../components/ui/table';
 import { t } from '../../../../../../i18n';
-import { getUnitTeaches } from '../../../../../../lib/unit';
+import { getUnitActivityOptions, getUnitTeaches } from '../../../../../../lib/unit';
 import { parsePage } from '../../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
@@ -19,6 +19,7 @@ const load = (q: Query) => getUnitTeaches(parsePage(q.page), one(q.q), one(q.act
 export const route = {
   preload: ({ location }) => {
     void load(location.query as Query);
+    void getUnitActivityOptions();
   },
 } satisfies RouteDefinition;
 
@@ -29,6 +30,7 @@ export default function UnitTeaches() {
   const [search] = useSearchParams();
   const q = () => search as Query;
   const data = createMemo(() => load(q()));
+  const activities = createMemo(() => getUnitActivityOptions());
   const refreshing = () => isPending(() => data());
 
   return (
@@ -40,7 +42,7 @@ export default function UnitTeaches() {
           <input type="search" name="q" value={one(q().q)} placeholder={t('common.search')} class={`${field} min-w-0 flex-1 sm:max-w-sm`} />
           <select name="activity" class={field}>
             <option value="">{t('cd.allActivities')}</option>
-            <For each={data().activities}>{(a) => <option value={a.id} selected={one(q().activity) === a.id}>{a.name}</option>}</For>
+            <For each={activities()}>{(a) => <option value={a.id} selected={one(q().activity) === a.id}>{a.name}</option>}</For>
           </select>
           <select name="lock" class={field}>
             <option value="">{t('cd.status')}</option>

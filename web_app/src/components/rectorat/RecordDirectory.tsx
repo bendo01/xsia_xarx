@@ -4,7 +4,7 @@ import { Errored, For, Show, createMemo, isPending } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import { t } from '../../i18n';
-import { getInstitutionRecords, type InstitutionRecordKey } from '../../lib/institution-data';
+import { getInstitutionRecords, getInstitutionUnitOptions, type InstitutionRecordKey } from '../../lib/institution-data';
 import { COLUMNS } from '../../lib/crud-views';
 import { parsePage, parsePageSize } from '../../lib/url';
 import Pager from '../Pager';
@@ -16,8 +16,10 @@ type Query = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? '';
 
 /** Same call shape in a route's preload and in the page (query() keys on the arguments). */
-export const loadRecords = (id: string, key: InstitutionRecordKey, q: Query) =>
-  getInstitutionRecords(id, key, one(q.unit), parsePage(q.page), one(q.q), parsePageSize(q.size));
+export const loadRecords = (id: string, key: InstitutionRecordKey, q: Query) => {
+  void getInstitutionUnitOptions(id); // the picker's units: requested with the first page, then reused
+  return getInstitutionRecords(id, key, one(q.unit), parsePage(q.page), one(q.q), parsePageSize(q.size));
+};
 
 /** Read-only directory of one unit's records (courses, curricula, ...), reusing the prodi columns. */
 export default function RecordDirectory(props: { resource: InstitutionRecordKey; titleKey: string; actions?: any; rowActions?: (r: Record<string, any>) => any }) {
@@ -25,6 +27,7 @@ export default function RecordDirectory(props: { resource: InstitutionRecordKey;
   const [search] = useSearchParams();
   const q = () => search as Query;
   const data = createMemo(() => loadRecords(params.id as string, props.resource, q()));
+  const units = createMemo(() => getInstitutionUnitOptions(params.id as string));
   const refreshing = () => isPending(() => data());
   const cols = () => COLUMNS[props.resource];
 
@@ -33,7 +36,7 @@ export default function RecordDirectory(props: { resource: InstitutionRecordKey;
       <Title>{`${t(props.titleKey)} - ${env.VITE_APP_NAME}`}</Title>
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
         <PageHeader title={t(props.titleKey)} actions={props.actions} />
-        <UnitPicker units={data().units} unitId={data().unitId} q={one(q().q)} filtered={!!one(q().q)} />
+        <UnitPicker units={units()} unitId={data().unitId} q={one(q().q)} filtered={!!one(q().q)} />
         <Show when={data().records.data.length > 0} fallback={<p class="rounded-xs border border-card-line bg-card p-8 text-center text-sm text-muted-foreground-1">{t('cd.noRecords')}</p>}>
           <Table>
             <TableHeader>
