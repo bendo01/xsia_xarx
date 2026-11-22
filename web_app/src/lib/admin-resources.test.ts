@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest';
 
 import { adEn } from '../i18n/locales/administrator.en';
 import { adId } from '../i18n/locales/administrator.id';
-import { ADMIN_RESOURCES, adminUrl, findAdminResourceByKey, matchAdminPath, optionApi, parseAdminForm } from './admin-resources';
+import { ADMIN_RESOURCES, adminUrl, findAdminResourceByKey, matchAdminPath, optionApi, parseAdminForm, parseSort, sortableFields, exportFields, overviewResources } from './admin-resources';
+import { FK_SOURCES, RELATED } from './admin-related';
 
 const ID = '11111111-1111-4111-8111-111111111111';
 
@@ -119,5 +120,75 @@ describe('person, contact, auth', () => {
   });
   it('never registers a secret as a form field', () => {
     for (const r of ADMIN_RESOURCES) for (const f of r.fields) expect(f.name, `${r.key}.${f.name}`).not.toMatch(/password|api_key|token/i);
+  });
+});
+
+describe('permission owners', () => {
+  it('marks roles and position types, and leaves the permissions url to its own route', () => {
+    expect(findAdminResourceByKey('auth-role')!.permissionOwner).toBe('role');
+    expect(findAdminResourceByKey('position-type')!.permissionOwner).toBe('position-type');
+    expect(matchAdminPath(`auth/role/${ID}/permissions`)).toBeNull();
+  });
+});
+
+describe('list sorting', () => {
+  const unit = findAdminResourceByKey('unit')!;
+  it('sorts only by plain columns, never by foreign keys', () => {
+    expect(sortableFields(findAdminResourceByKey('academic-student-master-student')!)).toEqual(['code', 'name', 'registered', 'nisn', 'finance_fee']);
+    expect(sortableFields(findAdminResourceByKey('academic-student-adviser-counsellor')!)).toEqual([]);
+  });
+  it('accepts a known column and a direction, defaulting to ascending', () => {
+    expect(parseSort(unit, 'name', 'desc')).toEqual({ sort_by: 'name', sort_dir: 'desc' });
+    expect(parseSort(unit, 'name', 'sideways')).toEqual({ sort_by: 'name', sort_dir: 'asc' });
+  });
+  it('ignores unknown fields, so a hand-edited url cannot sort by anything else', () => {
+    expect(parseSort(unit, 'password', 'asc')).toBeUndefined();
+    expect(parseSort(unit, 'institution_id', 'asc')).toBeUndefined();
+    expect(parseSort(unit, undefined, undefined)).toBeUndefined();
+  });
+});
+
+describe('exportFields', () => {
+  it('starts with the id and lists each column or field once', () => {
+    const f = exportFields(findAdminResourceByKey('unit')!);
+    expect(f[0].field).toBe('id');
+    expect(new Set(f.map((x) => x.field)).size).toBe(f.length);
+    expect(f.map((x) => x.field)).toEqual(expect.arrayContaining(['code', 'name', 'is_active', 'institution_id', 'unit_type_id']));
+  });
+  it('covers read-only resources through their columns', () => {
+    expect(exportFields(findAdminResourceByKey('academic-student-adviser-counsellor')!).map((x) => x.field)).toEqual(['id', 'student_id', 'lecturer_id', 'decree_id']);
+  });
+});
+
+describe('overviews and profiles', () => {
+  it('maps the top-level location and literate addresses to their groups', () => {
+    expect(matchAdminPath('location')).toEqual({ view: 'overview', path: 'location', group: 'ad.location' });
+    expect(matchAdminPath('/literate/')).toMatchObject({ view: 'overview', group: 'ad.literate' });
+    expect(matchAdminPath('building')).toBeNull();
+    expect(overviewResources('ad.location').map((r) => r.key)).toContain('location-regency');
+    expect(overviewResources('ad.literate')).toHaveLength(5);
+  });
+  it('flags the resources with a profile page', () => {
+    expect(findAdminResourceByKey('institution')!.hasProfile).toBe(true);
+    expect(findAdminResourceByKey('person-master-individual')!.hasProfile).toBe(true);
+  });
+});
+
+describe('detail page relations', () => {
+  it('every related list names a registered resource that holds the pointing field', () => {
+    for (const [key, specs] of Object.entries(RELATED)) {
+      expect(findAdminResourceByKey(key), key).toBeTruthy();
+      for (const s of specs) {
+        const target = findAdminResourceByKey(s.key);
+        expect(target, `${key} -> ${s.key}`).toBeTruthy();
+        const known = new Set([...target!.columns.map((c) => c.field), ...target!.fields.map((f) => f.name)]);
+        // Read-only lists show columns only; the pointing field must be one the page can name.
+        expect(s.field.endsWith('_id'), `${key} -> ${s.key}.${s.field}`).toBe(true);
+        if (target!.fields.length) expect(known.has(s.field), `${s.key} has no ${s.field}`).toBe(true);
+      }
+    }
+  });
+  it('every foreign-key source resolves to an endpoint', () => {
+    for (const [field, source] of Object.entries(FK_SOURCES)) expect(optionApi(source), `${field} -> ${source}`).toBeTruthy();
   });
 });

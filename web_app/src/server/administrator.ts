@@ -2,8 +2,9 @@
 // only has to make sure the caller really is an administrator before anything is fetched.
 import { markSafeError } from '@solidjs/web';
 
-import { apiPaginated } from './api';
+import { apiFetch, apiPaginated } from './api';
 import type { AuthState } from './auth';
+import { normaliseStatistics, type PersonStatistics } from '../lib/person-statistics';
 import { isUuid } from '../lib/validation';
 
 const ZERO = '00000000-0000-0000-0000-000000000000';
@@ -50,4 +51,10 @@ export async function loadAdministratorCounts(): Promise<AdministratorCounts> {
     if (r.status === 'fulfilled') counts[COUNT_SOURCES[i][0]] = r.value.pagination.total_data;
   });
   return counts;
+}
+
+/** Person demographics for the dashboard charts. */
+export async function loadPersonStatistics(auth: AuthState): Promise<PersonStatistics> {
+  requireAdministrator(auth);
+  return normaliseStatistics(await apiFetch<Record<string, any>>('person/master/individual/statistics'));
 }

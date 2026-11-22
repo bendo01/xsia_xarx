@@ -34,6 +34,7 @@ export const cdId: Record<string, string> = {
     errInvalid: 'Nilai tidak valid.',
     errTooLong: 'Terlalu panjang.',
     errRange: 'Di luar rentang yang diizinkan.',
+    errTooShort: 'Terlalu pendek.',
     errDateOrder: 'Tidak boleh sebelum tanggal mulai.',
     save: 'Simpan',
     back: 'Kembali',

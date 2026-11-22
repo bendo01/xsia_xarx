@@ -61,7 +61,9 @@ export function FeederList(props: { group: FeederGroup; slug: string }) {
         <p class="text-sm"><a href="/administrator/feeder" class="text-primary hover:underline">{t('ad.feederPDDikti')}</a></p>
         <PageHeader
           title={feederTitle(props.slug)}
-          actions={<Show when={writable()}><a href={feederUrl(props.group, props.slug, 'create')} class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a></Show>}
+          actions={<>
+            <a href={`/api/administrator/feeder-export?group=${encodeURIComponent(props.group)}&slug=${encodeURIComponent(props.slug)}`} download class="rounded-xs border border-layer-line bg-layer px-3 py-1.5 text-sm hover:bg-layer-hover">{t('ad.exportCSV')}</a>
+            <Show when={writable()}><a href={feederUrl(props.group, props.slug, 'create')} class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a></Show></>}
         />
         <Show when={data().data.length > 0} fallback={<p class="rounded-xs border border-card-line bg-card p-8 text-center text-sm text-muted-foreground-1">{t('cd.noRecords')}</p>}>
           <Table>

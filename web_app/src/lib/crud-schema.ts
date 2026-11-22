@@ -15,7 +15,7 @@ export interface FieldSpec {
   min?: number;
 }
 
-export type FieldError = 'required' | 'invalid' | 'tooLong' | 'range' | 'dateOrder' | 'timeOrder';
+export type FieldError = 'required' | 'invalid' | 'tooShort' | 'tooLong' | 'range' | 'dateOrder' | 'timeOrder';
 export type Raw = Record<string, unknown>;
 export type ParseResult = { ok: true; body: Record<string, unknown> } | { ok: false; errors: Record<string, FieldError> };
 

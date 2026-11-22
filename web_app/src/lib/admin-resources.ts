@@ -120,6 +120,7 @@ const ACADEMIC_REFERENCES: AdminResource[] = [
 export const ADMIN_RESOURCES: AdminResource[] = [
   {
     key: 'institution',
+    hasProfile: true,
     group: INST,
     path: 'institution/master/institution',
     api: 'institution/master/institutions',
@@ -195,7 +196,7 @@ export const ADMIN_RESOURCES: AdminResource[] = [
   reference('category', 'institution/reference/category', 'institution/reference/categories', 'ad.category', { group: INST }),
   reference('variety', 'institution/reference/variety', 'institution/reference/varieties', 'ad.variety', { group: INST }),
   reference('unit-type', 'institution/reference/unit-type', 'institution/reference/unit-types', 'ad.unitType', { group: INST }),
-  reference('position-type', 'institution/reference/position-type', 'institution/reference/position-type', 'ad.positionType', { group: INST }),
+  { ...reference('position-type', 'institution/reference/position-type', 'institution/reference/position-type', 'ad.positionType', { group: INST }), permissionOwner: 'position-type' },
   ...ACADEMIC_REFERENCES,
   ...ACADEMIC_MASTERS,
   ...LOCATION_RESOURCES,
@@ -211,15 +212,22 @@ export type AdminView =
   | { resource: AdminResource; view: 'list' }
   | { resource: AdminResource; view: 'create' }
   | { resource: AdminResource; view: 'edit'; id: string }
-  | { resource: AdminResource; view: 'show'; id: string };
+  | { resource: AdminResource; view: 'show'; id: string }
+  | { resource?: undefined; view: 'overview'; path: string; group: string };
 
 export function findAdminResourceByKey(key: string): AdminResource | undefined {
   return ADMIN_RESOURCES.find((r) => r.key === key);
 }
 
 /** Map the URL under /administrator (`institution/master/unit`, `.../create`, `.../<id>/edit`) to a resource and view. */
+/** Areas whose top-level address lists their resources: url path -> menu group key. */
+export const ADMIN_OVERVIEWS: Record<string, string> = { location: 'ad.location', literate: 'ad.literate' };
+
+export const overviewResources = (group: string) => ADMIN_RESOURCES.filter((r) => r.group?.[0] === group);
+
 export function matchAdminPath(path: string): AdminView | null {
   const parts = path.split('/').filter(Boolean);
+  if (parts.length === 1 && Object.prototype.hasOwnProperty.call(ADMIN_OVERVIEWS, parts[0])) return { view: 'overview', path: parts[0], group: ADMIN_OVERVIEWS[parts[0]] };
   for (const resource of ADMIN_RESOURCES) {
     const base = resource.path.split('/');
     if (parts.length < base.length || !base.every((s, i) => parts[i] === s)) continue;
@@ -236,3 +244,22 @@ export function matchAdminPath(path: string): AdminView | null {
 export const adminUrl = (r: AdminResource, ...rest: string[]) => `/administrator/${[r.path, ...rest].join('/')}`;
 
 export const parseAdminForm = (r: AdminResource, input: Raw): ParseResult => parseForm(r.fields, input);
+
+export type SortDir = 'asc' | 'desc';
+
+/** Columns a list can be sorted by: foreign keys are ids, not something to order a list by. */
+export const sortableFields = (r: AdminResource): string[] => r.columns.map((c) => c.field).filter((f) => !f.endsWith('_id'));
+
+/** The sort a URL asks for, if it is one of the resource's sortable columns; anything else is no sort. */
+export function parseSort(r: AdminResource, sort: string | undefined, dir: string | undefined): { sort_by: string; sort_dir: SortDir } | undefined {
+  if (!sort || !sortableFields(r).includes(sort)) return undefined;
+  return { sort_by: sort, sort_dir: dir === 'desc' ? 'desc' : 'asc' };
+}
+
+/** Fields of a CSV export of one resource: the id, then its columns and form fields (each once). */
+export function exportFields(r: AdminResource): { field: string; label: string }[] {
+  const out = new Map<string, string>([['id', 'ad.uuid2']]);
+  for (const c of r.columns) if (!out.has(c.field)) out.set(c.field, c.label);
+  for (const f of r.fields) if (!out.has(f.name)) out.set(f.name, f.label);
+  return [...out].map(([field, label]) => ({ field, label }));
+}

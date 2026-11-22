@@ -36,3 +36,16 @@
 body {
   @apply bg-background-1 text-foreground antialiased;
 }
+
+/* Printing a page prints the page: no app chrome, toasts or dialogs. */
+@media print {
+  header.sticky,
+  #app-nav-drawer,
+  [data-sonner-toaster],
+  .hs-overlay-backdrop {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+}

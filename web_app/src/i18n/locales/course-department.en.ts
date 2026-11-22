@@ -34,6 +34,7 @@ export const cdEn: Record<string, string> = {
     errInvalid: 'Invalid value.',
     errTooLong: 'Too long.',
     errRange: 'Out of the allowed range.',
+    errTooShort: 'Too short.',
     errDateOrder: 'Must not be before the start date.',
     save: 'Save',
     back: 'Back',

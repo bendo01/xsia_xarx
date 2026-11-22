@@ -34,6 +34,13 @@ export const MISC_RESOURCES: AdminResource[] = [
     fk('education_id', 'education', true), fk('income_id', personKey('income'), true), fk('identification_type_id', personKey('identification-type'), true),
     fk('marital_status_id', personKey('marital-status'), true), fk('profession_id', personKey('profession'), true), fk('age_classification_id', personKey('age-classification'), true),
     flag('is_special_need'), flag('is_social_protection_card_recipient'), flag('is_deceased'),
+  ], { hasProfile: true }),
+  res('person', 'master', 'biodata', 'person/master/biodata', ['individual_id', 'height', 'weight', 'blood_type_id'], [
+    pick('individual_id', 'individual', true), num('height', true, 0, 300), num('weight', true, 0, 700),
+    fk('blood_type_id', personKey('blood-type'), true), flag('is_positive_blood_rhesus'),
+    fk('hair_type_id', personKey('hair-type'), true), fk('hair_color_id', personKey('hair-color'), true), fk('eye_color_id', personKey('eye-color'), true),
+    num('bust', true, 0, 500), num('waist', true, 0, 500), num('hip', true, 0, 500), num('arm_circumference', true, 0, 200),
+    int('menarche_age', true, 0, 100), int('menopause_age', true, 0, 100),
   ]),
   // building
   ...[['category', 'categories'], ['condition', 'conditions'], ['room-type', 'room-types'], ['variety', 'varieties']].map(([s, p]) => ref('building', 'reference', s, p)),
@@ -70,7 +77,7 @@ export const MISC_RESOURCES: AdminResource[] = [
     str('name', true), str('dir', true, 500), str('mimetype', true, 100), int('size', false, 0, 2_000_000_000),
     fk('archive_type_id', 'document-reference-archive-type', true), str('archiveable_type', false, 100), pick('archiveable_id', 'individual'),
     str('description', false, 1000), flag('is_knowledge'),
-  ]),
+  ], { extraLinks: [{ segment: 'upload', label: 'ad.upload' }, { segment: 'knowledge', label: 'ad.knowledgeBase' }] }),
   // literate (endpoints are top level)
   ...[['category', 'categories'], ['group', 'groups'], ['level', 'levels'], ['variety', 'varieties']].map(([s, p]) => reference(`literate-${s}`, `literate/${s}`, p, labelKey(s), { group: ['ad.literate'] })),
   {
@@ -93,8 +100,10 @@ export const MISC_RESOURCES: AdminResource[] = [
     columns: ['name', 'email', 'is_active'].map((field) => ({ label: labelKey(field), field })),
     fields: [str('name', true), str('email', true), pick('individual_id', 'individual', true), flag('is_active')],
     noCreate: true,
+    customCreate: true,
   },
-  res('auth', 'master', 'role', 'role', ['name', 'roleable_type'], [str('name', true, 100), pick('user_id', 'auth-user'), fk('position_type_id', 'position_type'), str('roleable_type', false, 100), pick('roleable_id', 'institution')], { path: 'auth/role', key: 'auth-role', titleKey: 'ad.roles' }),
+  res('auth', 'master', 'role', 'role', ['name', 'roleable_type'], [str('name', true, 100), pick('user_id', 'auth-user'), fk('position_type_id', 'position_type'), str('roleable_type', false, 100), pick('roleable_id', 'institution')], { path: 'auth/role', key: 'auth-role', titleKey: 'ad.roles', permissionOwner: 'role' }),
   res('auth', 'master', 'permission', 'permission', ['name', 'uri', 'is_open'], [str('name', true, 200), text('uri', labelKey('uri'), { max: 500 }), flag('is_open')], { path: 'auth/permission', key: 'auth-permission', titleKey: 'ad.permissions' }),
+  res('auth', 'master', 'permission-position-type', 'permission-position-type', ['position_type_id', 'permission_id'], [fk('position_type_id', 'position_type', true), pick('permission_id', 'auth-permission', true)], { path: 'auth/permission-position-type', key: 'auth-permission-position-type', titleKey: 'ad.permissionPositionTypes' }),
   res('auth', 'master', 'permission-role', 'permission-role', ['role_id', 'permission_id'], [pick('role_id', 'auth-role', true), pick('permission_id', 'auth-permission', true)], { path: 'auth/permission-role', key: 'auth-permission-role', titleKey: 'ad.permissionRoles' }),
 ];

@@ -13,6 +13,7 @@ type Values = Record<string, string | boolean>;
 const ERR_KEY: Record<FieldError, string> = {
   required: 'cd.errRequired',
   invalid: 'cd.errInvalid',
+  tooShort: 'cd.errTooShort',
   tooLong: 'cd.errTooLong',
   range: 'cd.errRange',
   dateOrder: 'cd.errDateOrder',

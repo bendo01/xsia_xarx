@@ -1,7 +1,7 @@
 // Academic master and transaction resources of the administrator registry. The old client let
 // the administrator create/edit only a few of them (course, curriculum, concentration, exam
 // class, survey questions...); the rest were list-only and stay read-only here.
-import { day, fk, flag, int, labelKey, num, pick, str, stamp, clock, uid, type AdminField, type AdminResource } from './admin-fields';
+import { day, fk, flag, int, labelKey, num, pick, str, stamp, clock, text, uid, type AdminField, type AdminResource } from './admin-fields';
 
 const AREA_LABEL: Record<string, string> = {
   campaign: 'ad.campaign',
@@ -23,6 +23,8 @@ interface Spec {
   columns: string[];
   /** Present = editable resource; absent = read-only list. */
   fields?: AdminField[];
+  /** Records have a richer page at `<path>/<id>/profile`. */
+  hasProfile?: boolean;
   title?: string;
 }
 
@@ -39,6 +41,7 @@ const make = (s: Spec): AdminResource => {
     columns: s.columns.map((field) => ({ label: labelKey(field), field })),
     fields: s.fields ?? [],
     readOnly: !s.fields,
+    hasProfile: s.hasProfile,
   };
 };
 
@@ -71,7 +74,31 @@ export const ACADEMIC_MASTERS: AdminResource[] = ([
       uid('feeder_id'), day('start_date'), day('end_date'), flag('is_active'),
     ],
   },
+  {
+    path: 'course/master/course-learn-planning',
+    plural: 'course-learn-plannings',
+    columns: ['code', 'name'],
+    fields: [int('code', true), str('name', true), pick('course_id', 'academic-course-master-course', true), text('decription_indonesian', 'ad.descriptionIndonesian', { required: true, max: 2000 }), text('decription_english', 'ad.descriptionEnglish', { max: 2000 }), uid('feeder_id_rencana_ajar')],
+  },
+  {
+    path: 'course/master/course-evaluation-planning',
+    plural: 'course-evaluation-plannings',
+    columns: ['code', 'name', 'percentage'],
+    fields: [int('code'), str('name', true), num('percentage', false, 0, 100), pick('course_id', 'academic-course-master-course', true), fk('evaluation_type_id', 'academic-course-evaluation-type', true), text('decription_indonesian', 'ad.descriptionIndonesian', { required: true, max: 2000 }), text('decription_english', 'ad.descriptionEnglish', { max: 2000 })],
+  },
+  {
+    path: 'course/master/curriculum-detail',
+    plural: 'curriculum-details',
+    columns: ['code', 'name', 'credit'],
+    fields: [int('code'), str('name'), num('credit', false, 0, 50), pick('curriculum_id', 'academic-course-master-curriculum', true), fk('semester_id', 'academic-course-semester', true), pick('course_id', 'academic-course-master-course', true), pick('concentration_id', 'academic-course-master-concentration'), flag('is_convertable_to_mbkm'), flag('is_convertable_to_prior_learning_recognition'), uid('feeder_id')],
+  },
   // candidate
+  {
+    path: 'candidate/master/candidate-unit',
+    plural: 'candidate-unit',
+    columns: ['candidate_id', 'unit_id', 'registration_category_id'],
+    fields: [pick('candidate_id', 'academic-candidate-master-candidate', true), fk('unit_id', 'unit', true), fk('registration_category_id', 'academic-candidate-registration-category', true)],
+  },
   {
     path: 'candidate/master/exam-class',
     plural: 'exam-classes',
@@ -125,7 +152,7 @@ export const ACADEMIC_MASTERS: AdminResource[] = ([
     fields: [str('name', true), pick('calendar_id', 'academic-campaign-transaction-calendar', true), fk('calendar_category_id', 'academic-campaign-calendar-category', true), day('start_date', true), day('end_date', true)],
   },
   // lecturer
-  { path: 'lecturer/master/lecturer', plural: 'lecturers', columns: ['code', 'name', 'front_title', 'last_title', 'nuptk'] },
+  { path: 'lecturer/master/lecturer', plural: 'lecturers', columns: ['code', 'name', 'front_title', 'last_title', 'nuptk'], hasProfile: true },
   { path: 'lecturer/transaction/academic-group', plural: 'academic-groups', columns: ['decree_number', 'decree_date', 'start_date', 'end_date'] },
   { path: 'lecturer/transaction/academic-rank', plural: 'academic-ranks', columns: ['decree_number', 'decree_date', 'start_date', 'end_date'] },
   { path: 'lecturer/transaction/homebase', plural: 'homebases', columns: ['lecturer_id', 'unit_id', 'institution_id'] },

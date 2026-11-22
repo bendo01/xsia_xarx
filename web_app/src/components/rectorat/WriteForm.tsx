@@ -10,7 +10,7 @@ import type { WriteResult } from '../../lib/institution-write';
 export interface WriteField {
   name: string;
   label: string;
-  kind: 'text' | 'date' | 'datetime' | 'select' | 'lookup' | 'check';
+  kind: 'text' | 'date' | 'datetime' | 'password' | 'select' | 'lookup' | 'check';
   /** lookup: the option source searched by the form's `lookup` function. */
   source?: string;
   required?: boolean;
@@ -21,6 +21,7 @@ type Values = Record<string, string | boolean>;
 const ERR: Record<FieldError, string> = {
   required: 'cd.errRequired',
   invalid: 'cd.errInvalid',
+  tooShort: 'cd.errTooShort',
   tooLong: 'cd.errTooLong',
   range: 'cd.errRange',
   dateOrder: 'cd.errDateOrder',
@@ -136,7 +137,7 @@ export default function WriteForm(props: {
                   <Show
                     when={f.kind === 'select'}
                     fallback={
-                      <input id={id} name={f.name} type={f.kind === 'date' ? 'date' : f.kind === 'datetime' ? 'datetime-local' : 'text'} value={String(values()[f.name] ?? '')} onInput={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control} />
+                      <input id={id} name={f.name} type={f.kind === 'date' ? 'date' : f.kind === 'datetime' ? 'datetime-local' : f.kind === 'password' ? 'password' : 'text'} autocomplete={f.kind === 'password' ? 'new-password' : undefined} value={String(values()[f.name] ?? '')} onInput={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control} />
                     }
                   >
                     <select id={id} name={f.name} value={String(values()[f.name] ?? '')} onChange={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control}>

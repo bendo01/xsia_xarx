@@ -65,10 +65,28 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/[...path]"), Extract<"route", keyof typeof import("./src/routes/administrator/[...path]")>>>;
     },
     {
+      path: "/administrator/academic/lecturer/master/lecturer/:id/profile";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile")>>>;
+    },
+    {
       path: "/administrator/agent/chatbot";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/agent/chatbot"), Extract<"default", keyof typeof import("./src/routes/administrator/agent/chatbot")>>>;
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/agent/chatbot"), Extract<"route", keyof typeof import("./src/routes/administrator/agent/chatbot")>>>;
+    },
+    {
+      path: "/administrator/auth/role/:id/permissions";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/auth/role/[id]/permissions"), Extract<"default", keyof typeof import("./src/routes/administrator/auth/role/[id]/permissions")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/auth/role/[id]/permissions"), Extract<"route", keyof typeof import("./src/routes/administrator/auth/role/[id]/permissions")>>>;
+    },
+    {
+      path: "/administrator/auth/user/create";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/auth/user/create"), Extract<"default", keyof typeof import("./src/routes/administrator/auth/user/create")>>>;
+      $$route?: undefined;
     },
     {
       path: "/administrator/auth/verification";
@@ -89,16 +107,46 @@ declare module "virtual:file-routes" {
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/dashboard"), Extract<"route", keyof typeof import("./src/routes/administrator/dashboard")>>>;
     },
     {
+      path: "/administrator/document/transaction/archive/knowledge";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/knowledge"), Extract<"default", keyof typeof import("./src/routes/administrator/document/transaction/archive/knowledge")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/knowledge"), Extract<"route", keyof typeof import("./src/routes/administrator/document/transaction/archive/knowledge")>>>;
+    },
+    {
+      path: "/administrator/document/transaction/archive/upload";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/upload"), Extract<"default", keyof typeof import("./src/routes/administrator/document/transaction/archive/upload")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/upload"), Extract<"route", keyof typeof import("./src/routes/administrator/document/transaction/archive/upload")>>>;
+    },
+    {
       path: "/administrator/feeder/*path";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/feeder/[...path]"), Extract<"default", keyof typeof import("./src/routes/administrator/feeder/[...path]")>>>;
       $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/feeder/[...path]"), Extract<"route", keyof typeof import("./src/routes/administrator/feeder/[...path]")>>>;
     },
     {
+      path: "/administrator/institution/master/institution/:id/profile";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/institution/master/institution/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/institution/master/institution/[id]/profile")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/institution/master/institution/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/institution/master/institution/[id]/profile")>>>;
+    },
+    {
+      path: "/administrator/institution/reference/position-type/:id/permissions";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions"), Extract<"default", keyof typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions"), Extract<"route", keyof typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions")>>>;
+    },
+    {
       path: "/administrator/person/history";
       page: true;
       $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/person/history"), Extract<"default", keyof typeof import("./src/routes/administrator/person/history")>>>;
       $$route?: undefined;
+    },
+    {
+      path: "/administrator/person/master/individual/:id/profile";
+      page: true;
+      $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/person/master/individual/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/person/master/individual/[id]/profile")>>>;
+      $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/person/master/individual/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/person/master/individual/[id]/profile")>>>;
     },
     {
       path: "/administrator/preference/application";
@@ -119,9 +167,29 @@ declare module "virtual:file-routes" {
       $$route?: undefined;
     },
     {
+      path: "/api/administrator/archive-upload";
+      page: false;
+      $POST: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/archive-upload"), Extract<"POST", keyof typeof import("./src/routes/api/administrator/archive-upload")>>>;
+      $$route?: undefined;
+    },
+    {
       path: "/api/administrator/ask";
       page: false;
       $POST: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/ask"), Extract<"POST", keyof typeof import("./src/routes/api/administrator/ask")>>>;
+      $$route?: undefined;
+    },
+    {
+      path: "/api/administrator/export/:key";
+      page: false;
+      $GET: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/export/[key]"), Extract<"GET", keyof typeof import("./src/routes/api/administrator/export/[key]")>>>;
+      $HEAD: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/export/[key]"), Extract<"GET", keyof typeof import("./src/routes/api/administrator/export/[key]")>>>;
+      $$route?: undefined;
+    },
+    {
+      path: "/api/administrator/feeder-export";
+      page: false;
+      $GET: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/feeder-export"), Extract<"GET", keyof typeof import("./src/routes/api/administrator/feeder-export")>>>;
+      $HEAD: FileRouteLazyRef<Pick<typeof import("./src/routes/api/administrator/feeder-export"), Extract<"GET", keyof typeof import("./src/routes/api/administrator/feeder-export")>>>;
       $$route?: undefined;
     },
     {
@@ -1301,6 +1369,14 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/auth/user/create";
+          id: "/auth/user/create";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/auth/user/create"), Extract<"default", keyof typeof import("./src/routes/administrator/auth/user/create")>>>;
+          $$route?: undefined;
+          children?: undefined;
+        },
+        {
           path: "/auth/verification";
           id: "/auth/verification";
           page: true;
@@ -1333,11 +1409,67 @@ declare module "virtual:file-routes" {
           children?: undefined;
         },
         {
+          path: "/auth/role/:id/permissions";
+          id: "/auth/role/:id/permissions";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/auth/role/[id]/permissions"), Extract<"default", keyof typeof import("./src/routes/administrator/auth/role/[id]/permissions")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/auth/role/[id]/permissions"), Extract<"route", keyof typeof import("./src/routes/administrator/auth/role/[id]/permissions")>>>;
+          children?: undefined;
+        },
+        {
           path: "/authentification/reset-password";
           id: "/authentification/reset-password";
           page: true;
           $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/authentification/reset-password"), Extract<"default", keyof typeof import("./src/routes/administrator/authentification/reset-password")>>>;
           $$route?: undefined;
+          children?: undefined;
+        },
+        {
+          path: "/document/transaction/archive/upload";
+          id: "/document/transaction/archive/upload";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/upload"), Extract<"default", keyof typeof import("./src/routes/administrator/document/transaction/archive/upload")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/upload"), Extract<"route", keyof typeof import("./src/routes/administrator/document/transaction/archive/upload")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/person/master/individual/:id/profile";
+          id: "/person/master/individual/:id/profile";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/person/master/individual/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/person/master/individual/[id]/profile")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/person/master/individual/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/person/master/individual/[id]/profile")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/document/transaction/archive/knowledge";
+          id: "/document/transaction/archive/knowledge";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/knowledge"), Extract<"default", keyof typeof import("./src/routes/administrator/document/transaction/archive/knowledge")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/document/transaction/archive/knowledge"), Extract<"route", keyof typeof import("./src/routes/administrator/document/transaction/archive/knowledge")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/master/institution/:id/profile";
+          id: "/institution/master/institution/:id/profile";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/institution/master/institution/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/institution/master/institution/[id]/profile")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/institution/master/institution/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/institution/master/institution/[id]/profile")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/academic/lecturer/master/lecturer/:id/profile";
+          id: "/academic/lecturer/master/lecturer/:id/profile";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile"), Extract<"default", keyof typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile"), Extract<"route", keyof typeof import("./src/routes/administrator/academic/lecturer/master/lecturer/[id]/profile")>>>;
+          children?: undefined;
+        },
+        {
+          path: "/institution/reference/position-type/:id/permissions";
+          id: "/institution/reference/position-type/:id/permissions";
+          page: true;
+          $component: FileRouteLazyRef<Pick<typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions"), Extract<"default", keyof typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions")>>>;
+          $$route: FileRouteEagerRef<Pick<typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions"), Extract<"route", keyof typeof import("./src/routes/administrator/institution/reference/position-type/[id]/permissions")>>>;
           children?: undefined;
         }
       ];

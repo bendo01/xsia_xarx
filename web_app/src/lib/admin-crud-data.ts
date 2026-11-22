@@ -8,9 +8,9 @@ import { parsePageSize } from './url';
 
 export type { WriteResult };
 
-export const getAdminRecords = query(async (key: string, page: number, search: string, size: number) => {
+export const getAdminRecords = query(async (key: string, page: number, search: string, size: number, sort: string, dir: string) => {
   'use server';
-  return listAdminRecords(await requireAuth(), key, page, search, parsePageSize(size));
+  return listAdminRecords(await requireAuth(), key, page, search, parsePageSize(size), sort, dir);
 }, 'admin-records');
 
 export const getAdminForm = query(async (key: string, id: string) => {
@@ -37,4 +37,11 @@ export async function deleteAdminRow(key: string, id: string): Promise<void> {
 export async function searchAdminOptions(key: string, source: string, search: string) {
   'use server';
   return searchOptions(await requireAuth(), key, source, search);
+}
+
+/** Create a login account (see server/user-create.ts for why this is not the generic create). */
+export async function createUserRow(input: Record<string, unknown>) {
+  'use server';
+  const { createUserAccount } = await import('../server/user-create');
+  return createUserAccount(await requireAuth(), input);
 }

@@ -75,3 +75,14 @@ export function parseFeederForm(fields: FeederField[], input: Rec): FeederParse 
   }
   return Object.keys(errors).length ? { ok: false, errors } : { ok: true, body };
 }
+
+const EXPORT_SKIP = new Set(['deleted_at', 'created_by', 'updated_by']);
+
+/** Columns of a CSV export of a feeder table: every scalar field of the rows, in order of first appearance, `id` first. */
+export function feederExportColumns(rows: Rec[]): string[] {
+  const seen = new Set<string>(rows.some((r) => 'id' in r) ? ['id'] : []);
+  for (const r of rows) {
+    for (const [k, v] of Object.entries(r)) if (!EXPORT_SKIP.has(k) && (v === null || typeof v !== 'object')) seen.add(k);
+  }
+  return [...seen];
+}

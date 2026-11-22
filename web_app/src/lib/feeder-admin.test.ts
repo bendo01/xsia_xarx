@@ -43,3 +43,14 @@ describe('inferFeederFields / parseFeederForm', () => {
     expect(parseFeederForm(fields, { id_agama: 'abc' })).toMatchObject({ ok: false, errors: { id_agama: 'invalid' } });
   });
 });
+
+import { feederExportColumns } from './feeder-admin';
+
+describe('feederExportColumns', () => {
+  it('lists id first, then each scalar field once, skipping bookkeeping and objects', () => {
+    expect(feederExportColumns([{ nama: 'a', id: 'x', deleted_at: null, extra: { k: 1 } }, { id: 'y', nama: 'b', baru: 2 }])).toEqual(['id', 'nama', 'baru']);
+  });
+  it('is empty for no rows', () => {
+    expect(feederExportColumns([])).toEqual([]);
+  });
+});

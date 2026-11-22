@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { requireAdministrator, resolveAnyInstitution } from './administrator';
+import { loadPersonStatistics, requireAdministrator, resolveAnyInstitution } from './administrator';
 import type { AuthState } from './auth';
 
 const MINE = '11111111-1111-4111-8111-111111111111';
@@ -30,5 +30,11 @@ describe('resolveAnyInstitution', () => {
     expect(() => resolveAnyInstitution(auth(), 'nope')).toThrow('Institution not found');
     expect(() => resolveAnyInstitution(auth({ activeRoleItem: null }), '[id]')).toThrow('Institution not found');
     expect(() => resolveAnyInstitution(auth({ activeRole: 'rectorat' }), OTHER)).toThrow('Forbidden');
+  });
+});
+
+describe('loadPersonStatistics', () => {
+  it('is administrator-only', async () => {
+    await expect(loadPersonStatistics(auth({ activeRole: 'rectorat' }))).rejects.toThrow('Forbidden');
   });
 });

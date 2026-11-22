@@ -18,7 +18,11 @@ export interface AskSettings {
   temperature: number;
   max_new_tokens: number;
   conversation_id: string | null;
+  /** Optional model id; the API checks it against the models it has. */
+  model?: string;
 }
+
+const MODEL_ID = /^[A-Za-z0-9][A-Za-z0-9._:/-]{0,99}$/;
 
 const clamp = (v: unknown, min: number, max: number, fallback: number) => {
   const n = typeof v === 'number' ? v : Number(v);
@@ -39,6 +43,7 @@ export function parseAskSettings(input: Raw): AskSettings {
     temperature: clamp(input.temperature, 0, 1, 0.2),
     max_new_tokens: Math.round(clamp(input.max_new_tokens, 16, 1024, 400)),
     conversation_id: conversation,
+    ...(typeof input.model === 'string' && MODEL_ID.test(input.model) ? { model: input.model } : {}),
   };
 }
 
@@ -64,4 +69,19 @@ export async function removeConversation(auth: AuthState, id: string): Promise<v
   requireAdministrator(auth);
   if (!isUuid(id)) throw markSafeError(new Error('Not found'));
   await apiFetch(`ai/rag/conversations/${encodeURIComponent(id)}`, { method: 'DELETE' });
+}
+
+export type Feedback = -1 | 0 | 1;
+
+/** Rate an answer: 1 good, -1 bad, 0 clear; the note is trimmed to 500 characters. */
+export async function sendFeedback(auth: AuthState, messageId: string, feedback: unknown, note: unknown): Promise<void> {
+  requireAdministrator(auth);
+  if (!isUuid(messageId) || (feedback !== -1 && feedback !== 0 && feedback !== 1)) throw markSafeError(new Error('Invalid feedback'));
+  await apiFetch(`ai/rag/messages/${encodeURIComponent(messageId)}/feedback`, { method: 'POST', body: { feedback, note: typeof note === 'string' ? note.trim().slice(0, 500) : '' } });
+}
+
+/** Retrieval only: the passages the chatbot would be given, without running the language model. */
+export async function retrieveChunks(auth: AuthState, input: Raw): Promise<Raw> {
+  requireAdministrator(auth);
+  return apiFetch<Raw>('ai/rag/retrieve', { method: 'POST', body: parseAskSettings(input) });
 }

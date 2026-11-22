@@ -31,6 +31,14 @@ export interface AdminResource {
   readOnly?: boolean;
   /** Editable, but records cannot be created here (the API needs data this form must not collect, such as a password). */
   noCreate?: boolean;
+  /** `noCreate`, but `<path>/create` is a route of its own (so the list still offers the Add button). */
+  customCreate?: boolean;
+  /** Records of this resource hold permissions that can be edited on `<path>/<id>/permissions`. */
+  permissionOwner?: 'role' | 'position-type';
+  /** Records have a richer page at `<path>/<id>/profile`. */
+  hasProfile?: boolean;
+  /** Extra buttons in the list header: `<path>/<segment>` pages with their own route. */
+  extraLinks?: { segment: string; label: string }[];
 }
 
 /** `week_quantity` -> `ad.weekQuantity`; a trailing `_id` is dropped (`unit_id` -> `ad.unit`). */
