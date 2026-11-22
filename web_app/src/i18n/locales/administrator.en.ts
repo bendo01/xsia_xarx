@@ -4389,4 +4389,9 @@ export const adEn: Record<string, string> = {
     llmDisabledTitle: 'Chatbot is disabled',
     llmDisabledDesc: 'Enable the LLM in the application preference to use the chatbot.',
     save: 'Save',
+    evaluationBase: 'Evaluation Base',
+    componentEvaluation: 'Evaluation Component',
+    isOdd: 'Odd semester',
+    year: 'Year',
+    feederName: 'Feeder Name',
 };

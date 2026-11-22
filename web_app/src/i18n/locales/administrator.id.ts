@@ -4389,4 +4389,9 @@ export const adId: Record<string, string> = {
     llmDisabledTitle: 'Chatbot dinonaktifkan',
     llmDisabledDesc: 'Aktifkan LLM pada preferensi aplikasi untuk memakai chatbot.',
     save: 'Simpan',
+    evaluationBase: 'Dasar Evaluasi',
+    componentEvaluation: 'Komponen Evaluasi',
+    isOdd: 'Semester ganjil',
+    year: 'Tahun',
+    feederName: 'Nama Feeder',
 };

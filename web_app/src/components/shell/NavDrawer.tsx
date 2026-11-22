@@ -1,6 +1,6 @@
 import { X } from '@lucide/solid';
 import { useLocation } from '@solidjs/router';
-import { For } from 'solid-js';
+import { For, Show } from 'solid-js';
 import { env } from 'virtual:solid-env/client';
 
 import { t } from '../../i18n';
@@ -49,9 +49,18 @@ export default function NavDrawer(props: { items: MenuItem[]; roleLabel: string 
           <p class="px-2.5 pb-2 pt-1 text-xs font-medium uppercase text-muted-foreground-1">{props.roleLabel}</p>
           <ul class="space-y-1">
             <For each={props.items}>
-              {(item) => {
+              {(item, i) => {
+                const heading = () => {
+                  const g = (item.group ?? []).map((k) => t(k)).join(' · ');
+                  const prev = (props.items[i() - 1]?.group ?? []).map((k) => t(k)).join(' · ');
+                  return g && g !== prev ? g : '';
+                };
                 const active = () => isMenuItemActive(item, location.pathname);
                 return (
+                  <>
+                    <Show when={heading()}>
+                      <li class="px-2.5 pb-1 pt-3 text-xs font-medium uppercase text-muted-foreground-1" role="presentation">{heading()}</li>
+                    </Show>
                   <li>
                     <a
                       href={item.href}
@@ -67,6 +76,7 @@ export default function NavDrawer(props: { items: MenuItem[]; roleLabel: string 
                       <span class="truncate">{t(item.labelKey)}</span>
                     </a>
                   </li>
+                  </>
                 );
               }}
             </For>

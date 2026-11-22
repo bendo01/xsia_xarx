@@ -51,3 +51,21 @@ describe('parseAdminForm', () => {
     expect(r).toMatchObject({ ok: false, errors: { end_date: 'dateOrder' } });
   });
 });
+
+describe('academic reference tables', () => {
+  it('keeps the old client urls and the API endpoints', () => {
+    expect(matchAdminPath('academic/campaign/reference/attend-type')).toMatchObject({ resource: { api: 'academic/campaign/reference/attend-types' } });
+    expect(matchAdminPath('academic/student/final-assignment/reference/stage')).toMatchObject({ resource: { api: 'academic/student/final-assignment/reference/stages' } });
+    expect(matchAdminPath('academic/student/reference/status')).toMatchObject({ resource: { key: 'academic-student-status' } });
+  });
+  it('uses the model shape: optional codes, effective dates and extra fields', () => {
+    const sem = findAdminResourceByKey('academic-course-semester')!;
+    expect(parseAdminForm(sem, { name: 'Ganjil', is_odd: true })).toMatchObject({ ok: true, body: { code: null, alphabet_code: null, is_odd: true } });
+    expect(parseAdminForm(sem, { name: 'X', start_effective_date: '2025-02-01', end_effective_date: '2025-01-01' })).toMatchObject({ ok: false, errors: { end_effective_date: 'dateOrder' } });
+    const cat = findAdminResourceByKey('academic-campaign-scope')!;
+    expect(parseAdminForm(cat, { name: 'N' })).toMatchObject({ ok: false, errors: { code: 'required', alphabet_code: 'required' } });
+  });
+  it('every select field names an option source', () => {
+    for (const r of ADMIN_RESOURCES) for (const f of r.fields) if (f.input === 'select') expect(f.options).toBeTruthy();
+  });
+});

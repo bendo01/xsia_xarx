@@ -14,6 +14,8 @@ export interface MenuItem {
   icon: IconName;
   /** Match only this exact path (default: this path and everything under it). */
   exact?: boolean;
+  /** Section heading(s) in the navigation, outermost first (i18n keys). */
+  group?: string[];
 }
 
 export const CHANGE_PASSWORD_PATH = '/account/change-password';
@@ -95,7 +97,7 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
       // Master and reference data come from the CRUD registry; areas appear here as they are ported.
       return [
         { id: 'dashboard', href: home, labelKey: 'menu.administrator.adminDashboard', icon: 'home', exact: true },
-        ...ADMIN_RESOURCES.map((r): MenuItem => ({ id: `admin-${r.key}`, href: adminUrl(r), labelKey: r.titleKey, icon: r.path.includes('/reference/') ? 'tags' : 'library' })),
+        ...ADMIN_RESOURCES.map((r): MenuItem => ({ id: `admin-${r.key}`, href: adminUrl(r), labelKey: r.titleKey, icon: r.path.includes('/reference/') ? 'tags' : 'library', group: r.group })),
         changePassword,
       ];
     default:
