@@ -3,7 +3,7 @@
 // error *codes* the UI translates. Pure, so it is tested without a DOM.
 import { isUuid } from './validation';
 
-export type FieldKind = 'text' | 'int' | 'number' | 'bool' | 'date' | 'time' | 'uuid';
+export type FieldKind = 'text' | 'int' | 'number' | 'bool' | 'date' | 'datetime' | 'time' | 'uuid';
 
 export interface FieldSpec {
   name: string;
@@ -36,6 +36,11 @@ function one(spec: FieldSpec, v: unknown): { value: unknown } | { error: FieldEr
       return typeof s === 'string' && isUuid(s) ? { value: s } : { error: 'invalid' };
     case 'date':
       return typeof s === 'string' && isRealDate(s) ? { value: s } : { error: 'invalid' };
+    case 'datetime': {
+      // "YYYY-MM-DDTHH:MM[:SS]" from a datetime-local input or the API; the API wants seconds.
+      const m = typeof s === 'string' ? /^(\d{4}-\d{2}-\d{2})[T ]([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?/.exec(s) : null;
+      return m && isRealDate(m[1]) ? { value: `${m[1]}T${m[2]}:${m[3]}:${m[4] ?? '00'}` } : { error: 'invalid' };
+    }
     case 'time': {
       // "HH:MM" from the browser or "HH:MM:SS" from the API; the API wants seconds.
       const m = typeof s === 'string' ? /^([01]\d|2[0-3]):([0-5]\d)(?::([0-5]\d))?$/.exec(s) : null;

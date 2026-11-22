@@ -4,7 +4,7 @@ import { env } from 'virtual:solid-env/client';
 
 import { t } from '../../i18n';
 import { adminUrl, type AdminResource } from '../../lib/admin-resources';
-import { getAdminForm, saveAdminRow } from '../../lib/admin-crud-data';
+import { getAdminForm, saveAdminRow, searchAdminOptions } from '../../lib/admin-crud-data';
 import PageHeader from '../student/PageHeader';
 import WriteForm from '../rectorat/WriteForm';
 
@@ -19,7 +19,7 @@ export default function AdminForm(props: { resource: AdminResource; id?: string 
       r().fields.map((f) => {
         if (f.input === 'check') return [f.name, rec ? rec[f.name] === true : f.name === 'is_active'];
         const v = rec?.[f.name];
-        return [f.name, v === null || v === undefined ? '' : String(v).slice(0, f.input === 'date' ? 10 : undefined)];
+        return [f.name, v === null || v === undefined ? '' : String(v).slice(0, f.input === 'date' ? 10 : f.input === 'datetime' ? 16 : undefined)];
       }),
     );
   };
@@ -36,9 +36,12 @@ export default function AdminForm(props: { resource: AdminResource; id?: string 
               label: f.label,
               kind: f.input ?? 'text',
               required: f.required,
-              options: f.options ? data().options[f.options] : undefined,
+              source: f.input === 'lookup' ? f.options : undefined,
+              options: f.input === 'select' && f.options ? data().options[f.options] : undefined,
             }))}
             initial={initial()}
+            labels={data().labels}
+            lookup={(source, q) => searchAdminOptions(r().key, source, q)}
             save={(v) => saveAdminRow(r().key, props.id ?? '', v)}
             backHref={adminUrl(r())}
           />

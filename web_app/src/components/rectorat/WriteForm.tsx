@@ -1,5 +1,5 @@
 import { revalidate, useNavigate } from '@solidjs/router';
-import { For, Show, createSignal } from 'solid-js';
+import { For, Show, createSignal, onCleanup } from 'solid-js';
 import { toast } from 'solid-sonner';
 
 import { t } from '../../i18n';
@@ -10,7 +10,9 @@ import type { WriteResult } from '../../lib/institution-write';
 export interface WriteField {
   name: string;
   label: string;
-  kind: 'text' | 'date' | 'select' | 'check';
+  kind: 'text' | 'date' | 'datetime' | 'select' | 'lookup' | 'check';
+  /** lookup: the option source searched by the form's `lookup` function. */
+  source?: string;
   required?: boolean;
   options?: { id: string; name: string }[];
 }
@@ -26,12 +28,56 @@ const ERR: Record<FieldError, string> = {
 };
 const control = 'h-9 w-full rounded-xs border border-input bg-card px-3 text-sm aria-[invalid=true]:border-destructive focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring';
 
+type Opt = { id: string; name: string };
+
+/** A search box that fills a select with the matches; the chosen option stays listed whatever the next search returns. */
+function Lookup(props: { id: string; name: string; value: string; label?: string; invalid: boolean; search: (q: string) => Promise<Opt[]>; onChange: (v: string) => void }) {
+  const [found, setFound] = createSignal<Opt[]>([]);
+  const [chosen, setChosen] = createSignal<Opt | null>(null);
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  onCleanup(() => clearTimeout(timer));
+  // The selected option: the one picked from the results, else the saved id with its label (edit).
+  const current = (): Opt | null => (props.value ? (chosen()?.id === props.value ? chosen() : { id: props.value, name: props.label || props.value }) : null);
+  const options = () => {
+    const c = current();
+    return [...(c ? [c] : []), ...found().filter((o) => o.id !== c?.id)];
+  };
+  const find = (q: string) => {
+    clearTimeout(timer);
+    if (!q.trim()) return;
+    timer = setTimeout(async () => {
+      try {
+        setFound(await props.search(q.trim()));
+      } catch {
+        /* keep the current options; the server's answer on save has the last word */
+      }
+    }, 300);
+  };
+  const pickValue = (v: string) => {
+    setChosen(found().find((o) => o.id === v) ?? chosen());
+    props.onChange(v);
+  };
+  return (
+    <div class="space-y-1">
+      <input type="search" placeholder={t('common.search')} onInput={(e) => find(e.currentTarget.value)} class={control} />
+      <select id={props.id} name={props.name} value={props.value} onChange={(e) => pickValue(e.currentTarget.value)} aria-invalid={props.invalid ? 'true' : 'false'} class={control}>
+        <option value="">{t('cd.selectOne')}</option>
+        <For each={options()}>{(o) => <option value={o.id} selected={props.value === o.id}>{o.name}</option>}</For>
+      </select>
+    </div>
+  );
+}
+
 /** A small controlled form for the rectorat's writes; the server's answer has the last word. */
 export default function WriteForm(props: {
   fields: WriteField[];
   initial: Values;
   save: (values: Values) => Promise<WriteResult>;
   backHref: string;
+  /** Searches the option source of a `lookup` field. */
+  lookup?: (source: string, q: string) => Promise<Opt[]>;
+  /** Labels of the ids already chosen in a `lookup` field (edit). */
+  labels?: Record<string, string>;
   /** Where to go after saving (default: back to the list). */
   children?: any;
 }) {
@@ -86,16 +132,20 @@ export default function WriteForm(props: {
                     {t(f.label)}
                     <Show when={f.required}><span class="text-destructive"> *</span></Show>
                   </label>
+                  <Show when={f.kind === 'lookup'} fallback={
                   <Show
                     when={f.kind === 'select'}
                     fallback={
-                      <input id={id} name={f.name} type={f.kind === 'date' ? 'date' : 'text'} value={String(values()[f.name] ?? '')} onInput={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control} />
+                      <input id={id} name={f.name} type={f.kind === 'date' ? 'date' : f.kind === 'datetime' ? 'datetime-local' : 'text'} value={String(values()[f.name] ?? '')} onInput={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control} />
                     }
                   >
                     <select id={id} name={f.name} value={String(values()[f.name] ?? '')} onChange={(e) => set(f.name, e.currentTarget.value)} aria-invalid={err() ? 'true' : 'false'} class={control}>
                       <option value="">{t('cd.selectOne')}</option>
                       <For each={f.options ?? []}>{(o) => <option value={o.id} selected={values()[f.name] === o.id}>{o.name}</option>}</For>
                     </select>
+                  </Show>
+                  }>
+                    <Lookup id={id} name={f.name} value={String(values()[f.name] ?? '')} label={props.labels?.[f.name]} invalid={!!err()} search={(q) => (props.lookup ? props.lookup(f.source ?? '', q) : Promise.resolve([]))} onChange={(v) => set(f.name, v)} />
                   </Show>
                   <Show when={err()}><p class="text-xs text-destructive">{t(ERR[err() as FieldError])}</p></Show>
                 </Show>

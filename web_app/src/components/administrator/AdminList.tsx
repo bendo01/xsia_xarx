@@ -34,7 +34,7 @@ export default function AdminList(props: { resource: AdminResource }) {
       <div class={['space-y-6 transition-opacity', { 'opacity-60': refreshing() }]} aria-busy={refreshing() ? 'true' : 'false'}>
         <PageHeader
           title={t(r().titleKey)}
-          actions={<Show when={!r().readOnly}><a href={adminUrl(r(), 'create')} class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a></Show>}
+          actions={<Show when={!r().readOnly && !r().noCreate}><a href={adminUrl(r(), 'create')} class="rounded-xs bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90">{t('cd.addNew')}</a></Show>}
         />
         <form method="get" class="flex flex-wrap items-center gap-2">
           <input type="search" name="q" value={one(q().q)} placeholder={t('common.search')} class="h-9 min-w-0 flex-1 rounded-xs border border-layer-line bg-layer px-3 text-sm sm:max-w-sm" />
@@ -53,7 +53,7 @@ export default function AdminList(props: { resource: AdminResource }) {
               <For each={data().data}>
                 {(row) => (
                   <TableRow>
-                    <For each={r().columns}>{(c, i) => <TableCell class={i() === 0 ? 'font-medium' : ''} label={t(c.label)}>{show(row[c.field])}</TableCell>}</For>
+                    <For each={r().columns}>{(c, i) => <TableCell class={i() === 0 ? 'font-medium' : ''} label={t(c.label)}>{i() === 0 ? <a href={adminUrl(r(), String(row.id))} class="text-primary hover:underline">{show(row[c.field]) || String(row.id).slice(0, 8)}</a> : show(row[c.field])}</TableCell>}</For>
                     <Show when={!r().readOnly}>
                       <TableCell class="text-end" label={t('ad.actions')}>
                         <span class="inline-flex gap-x-4">

@@ -34,6 +34,18 @@ const DASHBOARD_LABEL: Record<string, string> = {
   candidate: 'menu.candidate.candidateDashboard',
 };
 
+/** Keep the items of one group together (groups in order of first appearance, items in registry order). */
+export function groupAdminItems(items: MenuItem[]): MenuItem[] {
+  const order: string[] = [];
+  const by = new Map<string, MenuItem[]>();
+  for (const it of items) {
+    const g = (it.group ?? []).join('|');
+    if (!by.has(g)) { by.set(g, []); order.push(g); }
+    by.get(g)!.push(it);
+  }
+  return order.flatMap((g) => by.get(g)!);
+}
+
 /**
  * Menu for an active role (a key from normalizeRoleName). Roles whose full
  * menus are not ported yet get their dashboard plus change-password.
@@ -97,7 +109,10 @@ export function getMenuForRole(roleKey: string, ctx: DashboardContext = {}): Men
       // Master and reference data come from the CRUD registry; areas appear here as they are ported.
       return [
         { id: 'dashboard', href: home, labelKey: 'menu.administrator.adminDashboard', icon: 'home', exact: true },
-        ...ADMIN_RESOURCES.map((r): MenuItem => ({ id: `admin-${r.key}`, href: adminUrl(r), labelKey: r.titleKey, icon: r.path.includes('/reference/') ? 'tags' : 'library', group: r.group })),
+        ...groupAdminItems(ADMIN_RESOURCES.map((r): MenuItem => ({ id: `admin-${r.key}`, href: adminUrl(r), labelKey: r.titleKey, icon: r.path.includes('/reference/') ? 'tags' : 'library', group: r.group }))),
+        { id: 'admin-feeder', href: '/administrator/feeder', labelKey: 'ad.feederPDDikti', icon: 'library', group: ['ad.feederPDDikti'] },
+        { id: 'admin-chatbot', href: '/administrator/agent/chatbot', labelKey: 'ad.ragTitle', icon: 'users', group: ['ad.agent'] },
+        { id: 'admin-application-preference', href: '/administrator/preference/application', labelKey: 'ad.applicationPreference', icon: 'lock', group: ['ad.preference'] },
         changePassword,
       ];
     default:

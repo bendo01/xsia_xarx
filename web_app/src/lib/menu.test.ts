@@ -50,3 +50,18 @@ describe('isMenuItemActive', () => {
     expect(isMenuItemActive(home, '/student/person/master/individual/1/edit')).toBe(false);
   });
 });
+
+describe('administrator menu extras', () => {
+  it('links the chatbot and the application preference', () => {
+    const hrefs = getMenuForRole('administrator').map((i) => i.href);
+    expect(hrefs).toContain('/administrator/agent/chatbot');
+    expect(hrefs).toContain('/administrator/preference/application');
+  });
+});
+
+describe('administrator feeder entry', () => {
+  it('has one feeder link instead of a hundred table links', () => {
+    const m = getMenuForRole('administrator');
+    expect(m.filter((i) => i.href.startsWith('/administrator/feeder')).map((i) => i.href)).toEqual(['/administrator/feeder']);
+  });
+});

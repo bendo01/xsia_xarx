@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { ADMIN_RESOURCES, adminUrl, findAdminResourceByKey, matchAdminPath, parseAdminForm } from './admin-resources';
+import { adEn } from '../i18n/locales/administrator.en';
+import { adId } from '../i18n/locales/administrator.id';
+import { ADMIN_RESOURCES, adminUrl, findAdminResourceByKey, matchAdminPath, optionApi, parseAdminForm } from './admin-resources';
 
 const ID = '11111111-1111-4111-8111-111111111111';
 
@@ -13,7 +15,8 @@ describe('matchAdminPath', () => {
   it('ignores slashes and rejects unknown or malformed paths', () => {
     expect(matchAdminPath('/institution/master/staff/')).toMatchObject({ view: 'list', resource: { key: 'staff' } });
     expect(matchAdminPath('institution/master/nope')).toBeNull();
-    expect(matchAdminPath(`institution/master/unit/${ID}`)).toBeNull();
+    expect(matchAdminPath(`institution/master/unit/${ID}`)).toMatchObject({ view: 'show', id: ID });
+    expect(matchAdminPath('academic/student/reference/status/x/create')).toBeNull();
     expect(matchAdminPath(`institution/master/unit/${ID}/delete`)).toBeNull();
   });
 });
@@ -67,5 +70,54 @@ describe('academic reference tables', () => {
   });
   it('every select field names an option source', () => {
     for (const r of ADMIN_RESOURCES) for (const f of r.fields) if (f.input === 'select') expect(f.options).toBeTruthy();
+  });
+});
+
+describe('registry completeness', () => {
+  it('every select resolves to a list endpoint', () => {
+    for (const r of ADMIN_RESOURCES) for (const f of r.fields) if (f.input === 'select') expect(optionApi(f.options!), `${r.key}.${f.name} -> ${f.options}`).toBeTruthy();
+  });
+  it('every ad.* label and title has a translation in both languages', () => {
+    const missing = new Set<string>();
+    for (const r of ADMIN_RESOURCES) {
+      const keys = [r.titleKey, ...(r.group ?? []), ...r.columns.map((c) => c.label), ...r.fields.map((f) => f.label)];
+      for (const k of keys) if (k.startsWith('ad.') && !(k.slice(3) in adEn && k.slice(3) in adId)) missing.add(k.slice(3));
+    }
+    expect([...missing].sort()).toEqual([]);
+  });
+});
+
+describe('lookup fields', () => {
+  it('name an option source that resolves, and student/candidate are editable', () => {
+    for (const r of ADMIN_RESOURCES) for (const f of r.fields) if (f.input === 'lookup') expect(optionApi(f.options!), `${r.key}.${f.name}`).toBeTruthy();
+    expect(findAdminResourceByKey('academic-student-master-student')!.readOnly).toBe(false);
+    expect(findAdminResourceByKey('academic-candidate-master-candidate')!.readOnly).toBe(false);
+  });
+});
+
+describe('location resources', () => {
+  it('keeps the old urls and wires the candidate school regency to a picker', () => {
+    expect(matchAdminPath('location/regency')).toMatchObject({ resource: { api: 'regencies' } });
+    expect(matchAdminPath('location/sub-district/create')).toMatchObject({ view: 'create' });
+    const school = findAdminResourceByKey('academic-candidate-master-candidate')!.fields.find((f) => f.name === 'school_regency_id');
+    expect(school).toMatchObject({ input: 'lookup', options: 'location-regency' });
+    expect(optionApi('location-regency')).toBe('regencies');
+  });
+  it('requires a province and type for a regency', () => {
+    const r = parseAdminForm(findAdminResourceByKey('location-regency')!, { name: 'Kota X' });
+    expect(r).toMatchObject({ ok: false, errors: { province_id: 'required', regency_type_id: 'required' } });
+  });
+});
+
+describe('person, contact, auth', () => {
+  it('registers the person references on their singular endpoints and the secured user resource', () => {
+    expect(matchAdminPath('person/reference/gender')).toMatchObject({ resource: { api: 'person/reference/gender' } });
+    expect(matchAdminPath('auth/user/create')).toBeNull();
+    expect(matchAdminPath(`auth/user/${ID}/edit`)).toMatchObject({ view: 'edit' });
+    const user = findAdminResourceByKey('auth-user')!;
+    expect(user.fields.map((f) => f.name)).toEqual(['name', 'email', 'individual_id', 'is_active']);
+  });
+  it('never registers a secret as a form field', () => {
+    for (const r of ADMIN_RESOURCES) for (const f of r.fields) expect(f.name, `${r.key}.${f.name}`).not.toMatch(/password|api_key|token/i);
   });
 });

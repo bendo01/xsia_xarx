@@ -1,10 +1,14 @@
 // Registry of the administrator's master/reference CRUD pages. One entry drives the list, the
 // create/edit form and the server calls, so porting an area of the old client is data, not pages.
 // Pure (no server imports): shared by the routes, the menu and the server.
-import { parseForm, type FieldSpec, type ParseResult, type Raw } from './crud-schema';
+import { ACADEMIC_MASTERS } from './admin-academic';
+import { LOCATION_RESOURCES } from './admin-location';
+import { MISC_RESOURCES } from './admin-misc';
+import { check, date, reference, select, text, type AdminField, type AdminResource, type RefOpts } from './admin-fields';
+import { parseForm, type ParseResult, type Raw } from './crud-schema';
 
-/** Where a select field gets its options (a list endpoint). */
-export const OPTION_SOURCES = {
+/** Where a select field gets its options when it is not another registered resource. */
+export const OPTION_SOURCES: Record<string, string> = {
   variety: 'institution/reference/varieties',
   category: 'institution/reference/categories',
   unit_type: 'institution/reference/unit-types',
@@ -19,75 +23,12 @@ export const OPTION_SOURCES = {
   curriculum_type: 'academic/course/reference/curriculum-types',
   academic_year_category: 'academic/general/reference/academic-year-categories',
   stage: 'academic/student/final-assignment/reference/stages',
-} as const;
-export type OptionSource = keyof typeof OPTION_SOURCES;
-
-export interface AdminField extends FieldSpec {
-  /** i18n key of the label. */
-  label: string;
-  input?: 'text' | 'date' | 'select' | 'check';
-  options?: OptionSource;
-}
-
-export interface AdminColumn {
-  label: string;
-  field: string;
-}
-
-export interface AdminResource {
-  key: string;
-  /** URL path under /administrator (no leading slash). */
-  path: string;
-  /** API list endpoint. */
-  api: string;
-  titleKey: string;
-  /** Menu heading, outermost first (i18n keys). */
-  group?: string[];
-  columns: AdminColumn[];
-  fields: AdminField[];
-  /** Hide create/edit/delete (read-only resources). */
-  readOnly?: boolean;
-}
-
-
-const text = (name: string, label: string, over: Partial<AdminField> = {}): AdminField => ({ name, label, kind: 'text', input: 'text', ...over });
-const select = (name: string, label: string, options: OptionSource, over: Partial<AdminField> = {}): AdminField => ({ name, label, kind: 'uuid', input: 'select', options, ...over });
-const date = (name: string, label: string): AdminField => ({ name, label, kind: 'date', input: 'date' });
-const check = (name: string, label: string): AdminField => ({ name, label, kind: 'bool', input: 'check' });
-
-interface RefOpts {
-  /** 'required' (default), 'optional' or 'none' for the alphabet code column. */
-  alphabet?: 'required' | 'optional' | 'none';
-  /** The integer code is nullable in the model. */
-  codeOptional?: boolean;
-  /** Replaces the default name field(s). */
-  name?: AdminField[];
-  extra?: AdminField[];
-  columns?: AdminColumn[];
-  group?: string[];
-}
-
-const EFFECTIVE: AdminField[] = [date('start_effective_date', 'ad.effectiveFrom'), date('end_effective_date', 'ad.effectiveUntil')];
-
-/** The reference tables share one shape: an integer code, an alphabet code and a name. */
-const reference = (key: string, path: string, api: string, titleKey: string, o: RefOpts = {}): AdminResource => {
-  const alphabet = o.alphabet ?? 'required';
-  const fields: AdminField[] = [
-    { name: 'code', label: 'ad.code2', kind: 'int', input: 'text', required: !o.codeOptional, min: 0, max: 99999 },
-    ...(alphabet === 'none' ? [] : [text('alphabet_code', 'ad.alphabetCode', { required: alphabet === 'required', max: 20 })]),
-    ...(o.name ?? [text('name', 'ad.name', { required: true, max: 200 })]),
-    ...(o.extra ?? []),
-  ];
-  return {
-    key,
-    path,
-    api,
-    titleKey,
-    group: o.group,
-    columns: o.columns ?? [{ label: 'ad.code2', field: 'code' }, ...(alphabet === 'none' ? [] : [{ label: 'ad.alphabetCode', field: 'alphabet_code' }]), { label: 'ad.name', field: 'name' }],
-    fields,
-  };
+  individual: 'person/master/individual',
+  user: 'user',
 };
+
+export type { AdminColumn, AdminField, AdminResource, OptionSource } from './admin-fields';
+const EFFECTIVE: AdminField[] = [date('start_effective_date', 'ad.effectiveFrom'), date('end_effective_date', 'ad.effectiveUntil')];
 
 const INST = ['ad.institution'];
 const ACAD = (sub: string) => ['ad.academic', sub];
@@ -191,7 +132,7 @@ export const ADMIN_RESOURCES: AdminResource[] = [
       check('is_active', 'ad.operationalStatus'),
       select('variety_id', 'ad.variety', 'variety', { required: true }),
       select('category_id', 'ad.category', 'category', { required: true }),
-      select('country_id', 'ad.country', 'country', { required: true }),
+      select('country_id', 'ad.country', 'location-country', { required: true, input: 'lookup' }),
       select('parent_id', 'ad.parentInstitutionOptional', 'institution'),
       select('academic_year_id', 'ad.academicYear', 'academic_year'),
       { name: 'feeder_id', label: 'ad.feederID', kind: 'uuid', input: 'text' },
@@ -226,7 +167,7 @@ export const ADMIN_RESOURCES: AdminResource[] = [
       text('name', 'ad.name', { required: true, max: 200 }),
       text('code', 'ad.code2', { required: true, max: 50 }),
       select('institution_id', 'ad.institution', 'institution', { required: true }),
-      { name: 'individual_id', label: 'rt.person', kind: 'uuid', input: 'text', required: true },
+      { name: 'individual_id', label: 'rt.person', kind: 'uuid', input: 'lookup', options: 'individual', required: true },
       text('decree_number', 'cd.fDecreeNumber', { max: 100 }),
       date('decree_date', 'cd.fDecreeDate'),
       check('is_active', 'ad.active'),
@@ -240,7 +181,7 @@ export const ADMIN_RESOURCES: AdminResource[] = [
     titleKey: 'ad.staff',
     columns: [{ label: 'ad.code2', field: 'code' }, { label: 'ad.name', field: 'name' }, { label: 'ad.startDate', field: 'start_date' }, { label: 'ad.endDate', field: 'end_date' }],
     fields: [
-      { name: 'employee_id', label: 'ad.employee', kind: 'uuid', input: 'text', required: true },
+      { name: 'employee_id', label: 'ad.employee', kind: 'uuid', input: 'lookup', options: 'employee', required: true },
       select('unit_id', 'ad.unit', 'unit', { required: true }),
       select('position_type_id', 'ad.positionType', 'position_type'),
       text('name', 'ad.name', { max: 200 }),
@@ -256,9 +197,21 @@ export const ADMIN_RESOURCES: AdminResource[] = [
   reference('unit-type', 'institution/reference/unit-type', 'institution/reference/unit-types', 'ad.unitType', { group: INST }),
   reference('position-type', 'institution/reference/position-type', 'institution/reference/position-type', 'ad.positionType', { group: INST }),
   ...ACADEMIC_REFERENCES,
+  ...ACADEMIC_MASTERS,
+  ...LOCATION_RESOURCES,
+  ...MISC_RESOURCES,
 ];
 
-export type AdminView = { resource: AdminResource; view: 'list' } | { resource: AdminResource; view: 'create' } | { resource: AdminResource; view: 'edit'; id: string };
+/** The list endpoint behind a select's options: a static source or another registered resource. */
+export function optionApi(source: string): string | undefined {
+  return OPTION_SOURCES[source] ?? ADMIN_RESOURCES.find((r) => r.key === source)?.api;
+}
+
+export type AdminView =
+  | { resource: AdminResource; view: 'list' }
+  | { resource: AdminResource; view: 'create' }
+  | { resource: AdminResource; view: 'edit'; id: string }
+  | { resource: AdminResource; view: 'show'; id: string };
 
 export function findAdminResourceByKey(key: string): AdminResource | undefined {
   return ADMIN_RESOURCES.find((r) => r.key === key);
@@ -272,8 +225,9 @@ export function matchAdminPath(path: string): AdminView | null {
     if (parts.length < base.length || !base.every((s, i) => parts[i] === s)) continue;
     const rest = parts.slice(base.length);
     if (rest.length === 0) return { resource, view: 'list' };
+    if (rest.length === 1 && rest[0] !== 'create') return { resource, view: 'show', id: rest[0] };
     if (resource.readOnly) return null;
-    if (rest.length === 1 && rest[0] === 'create') return { resource, view: 'create' };
+    if (rest.length === 1) return resource.noCreate ? null : { resource, view: 'create' };
     if (rest.length === 2 && rest[1] === 'edit') return { resource, view: 'edit', id: rest[0] };
   }
   return null;

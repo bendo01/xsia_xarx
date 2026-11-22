@@ -7,12 +7,17 @@ import { apiFetch, apiPaginated } from './api';
 import type { AuthState } from './auth';
 import { requireAdministrator } from './administrator';
 import type { WriteResult } from './institution-write';
-import { OPTION_SOURCES, findAdminResourceByKey, parseAdminForm, type AdminResource } from '../lib/admin-resources';
+import { findAdminResourceByKey, optionApi, parseAdminForm, type AdminResource } from '../lib/admin-resources';
 import { isUuid } from '../lib/validation';
 
 type Raw = Record<string, any>;
 const enc = encodeURIComponent;
 const fail = (m: string, status?: number) => markSafeError(Object.assign(new Error(m), status ? { status } : {}));
+/** Credentials never leave the server: password hashes, api keys and one-time tokens. */
+const SECRET = /password|api_key|token|magic_link/i;
+export function redact<T extends Raw>(row: T): T {
+  return Object.fromEntries(Object.entries(row).filter(([k]) => !SECRET.test(k))) as T;
+}
 const body = (r: Raw | null) => ((r?.data ?? r) as Raw | null) ?? null;
 
 function resourceFor(auth: AuthState, key: string): AdminResource {
@@ -26,15 +31,43 @@ export async function listAdminRecords(auth: AuthState, key: string, page: numbe
   requireAdministrator(auth);
   const r = findAdminResourceByKey(key);
   if (!r) throw fail('Not found', 404);
-  return apiPaginated<Raw>(r.api, { page, per_page: pageSize, search });
+  const res = await apiPaginated<Raw>(r.api, { page, per_page: pageSize, search });
+  return { ...res, data: res.data.map(redact) };
+}
+
+const labelOf = (o: Raw) => [o.code, o.name ?? o.title].filter((x) => x !== undefined && x !== null && x !== '').join(' · ') || String(o.id);
+
+/** The display label of every id already chosen in a lookup field of the record being edited. */
+async function lookupLabels(r: AdminResource, record: Raw | null): Promise<Record<string, string>> {
+  if (!record) return {};
+  const pairs = await Promise.all(
+    r.fields
+      .filter((f) => f.input === 'lookup' && f.options && isUuid(String(record[f.name] ?? '')))
+      .map(async (f) => {
+        const api = optionApi(f.options!);
+        const one = api ? await apiFetch<Raw>(`${api}/${enc(String(record[f.name]))}`).then(body).catch(() => null) : null;
+        return [f.name, one?.id ? labelOf(one) : String(record[f.name])] as const;
+      }),
+  );
+  return Object.fromEntries(pairs);
+}
+
+/** Search one of the resource's lookup sources by name (first 30 matches). */
+export async function searchOptions(auth: AuthState, key: string, source: string, search: string): Promise<{ id: string; name: string }[]> {
+  const r = resourceFor(auth, key);
+  if (!r.fields.some((f) => f.input === 'lookup' && f.options === source)) throw fail('Not found', 404);
+  const api = optionApi(source);
+  if (!api || !search.trim()) return [];
+  const res = await apiPaginated<Raw>(api, { page: 1, per_page: 30, search: search.trim() });
+  return res.data.map((o) => ({ id: String(o.id), name: labelOf(o) }));
 }
 
 async function loadOptions(r: AdminResource): Promise<Record<string, { id: string; name: string }[]>> {
-  const sources = [...new Set(r.fields.flatMap((f) => (f.options ? [f.options] : [])))];
+  const sources = [...new Set(r.fields.flatMap((f) => (f.input === 'select' && f.options ? [f.options] : [])))];
   const lists = await Promise.all(
     sources.map((s) =>
-      apiPaginated<Raw>(OPTION_SOURCES[s], { page: 1, per_page: 200 })
-        .then((res) => res.data.map((o) => ({ id: String(o.id), name: [o.code, o.name].filter((x) => x !== undefined && x !== null && x !== '').join(' · ') || String(o.id) })))
+      apiPaginated<Raw>(optionApi(s) ?? '', { page: 1, per_page: 200 })
+        .then((res) => res.data.map((o) => ({ id: String(o.id), name: labelOf(o) })))
         .catch(() => []),
     ),
   );
@@ -50,11 +83,12 @@ export async function loadAdminForm(auth: AuthState, key: string, id: string) {
     loadOptions(r),
   ]);
   if (id && !record?.id) throw fail('Not found', 404);
-  return { record, options };
+  return { record: record ? redact(record) : null, options, labels: await lookupLabels(r, record) };
 }
 
 export async function saveAdminRecord(auth: AuthState, key: string, id: string | null, input: Raw): Promise<WriteResult> {
   const r = resourceFor(auth, key);
+  if (!id && r.noCreate) throw fail('Not found', 404);
   const parsed = parseAdminForm(r, input);
   if (!parsed.ok) return parsed;
   if (id) {
@@ -70,4 +104,14 @@ export async function removeAdminRecord(auth: AuthState, key: string, id: string
   const r = resourceFor(auth, key);
   if (!isUuid(id)) throw fail('Not found', 404);
   await apiFetch(`${r.api}/${enc(id)}`, { method: 'DELETE' });
+}
+
+/** One record for the detail page (read-only resources included). */
+export async function loadAdminRecord(auth: AuthState, key: string, id: string): Promise<Raw> {
+  requireAdministrator(auth);
+  const r = findAdminResourceByKey(key);
+  if (!r || !isUuid(id)) throw fail('Not found', 404);
+  const record = await apiFetch<Raw>(`${r.api}/${enc(id)}`).then(body).catch(() => null);
+  if (!record?.id) throw fail('Not found', 404);
+  return redact(record);
 }
