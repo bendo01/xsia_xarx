@@ -269,4 +269,6 @@ export const auId: Record<string, string> = {
     kataSandiBerhasilDiubah: 'Kata sandi berhasil diubah',
     tampilkanKataSandi: 'Tampilkan kata sandi',
     sembunyikanKataSandi: 'Sembunyikan kata sandi',
+    nikHarus16DigitAngka: 'NIK harus 16 digit angka',
+    prosedurPendaftaran: 'Prosedur Pendaftaran Calon Mahasiswa Baru',
 };

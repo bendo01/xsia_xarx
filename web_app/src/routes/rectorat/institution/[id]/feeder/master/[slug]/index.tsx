@@ -13,7 +13,7 @@ import { getFeederPage } from '../../../../../../../lib/institution-data';
 import { parsePage } from '../../../../../../../lib/url';
 
 type Query = Record<string, string | string[] | undefined>;
-const load = (id: string, slug: string, q: Query) => getFeederPage(id, slug, parsePage(q.page));
+const load = (id: string, slug: string, q: Query) => getFeederPage(id, 'master', slug, parsePage(q.page));
 
 export const route = {
   preload: ({ params, location }) => {

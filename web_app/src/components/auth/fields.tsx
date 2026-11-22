@@ -1,6 +1,6 @@
 import type { JSX } from '@solidjs/web';
 import { Eye, EyeOff, KeyRound, Lock, Mail, Phone } from '@lucide/solid';
-import { Show, createSignal } from 'solid-js';
+import { For, Show, createSignal } from 'solid-js';
 
 import { t } from '../../i18n';
 import { cn } from '../../lib/utils';
@@ -23,13 +23,16 @@ export function FieldIcon(props: { name: 'mail' | 'lock' | 'phone' | 'key' }) {
 /** Labelled input with a leading icon (`password` type gets a show/hide toggle). */
 export function AuthField(props: {
   label: string;
-  icon: 'mail' | 'lock' | 'phone' | 'key';
+  icon?: 'mail' | 'lock' | 'phone' | 'key';
   name: string;
   type?: string;
   value?: string;
   placeholder?: string;
   autocomplete?: string;
   required?: boolean;
+  inputmode?: 'numeric' | 'tel' | 'email' | 'text';
+  maxlength?: number;
+  minlength?: number;
   onInput?: (value: string) => void;
 }) {
   const [shown, setShown] = createSignal(false);
@@ -39,7 +42,7 @@ export function AuthField(props: {
     <label class="block space-y-1">
       <span class="block px-1 text-xs font-medium text-neutral-700 dark:text-white/80">{props.label}</span>
       <span class="relative flex items-center">
-        <FieldIcon name={props.icon} />
+        <Show when={props.icon}>{(icon) => <FieldIcon name={icon()} />}</Show>
         <input
           name={props.name}
           type={isPassword() && shown() ? 'text' : (props.type ?? 'text')}
@@ -48,7 +51,10 @@ export function AuthField(props: {
           autocomplete={props.autocomplete}
           required={props.required ?? true}
           onInput={(e) => props.onInput?.(e.currentTarget.value)}
-          class={cn(inputClass, isPassword() && 'pr-11')}
+          inputmode={props.inputmode}
+          maxlength={props.maxlength}
+          minlength={props.minlength}
+          class={cn(inputClass, !props.icon && 'pl-4', isPassword() && 'pr-11')}
         />
         <Show when={isPassword()}>
           <button
@@ -63,6 +69,31 @@ export function AuthField(props: {
           </button>
         </Show>
       </span>
+    </label>
+  );
+}
+
+/** Labelled <select> styled like AuthField (no icon). */
+export function AuthSelect(props: {
+  label: string;
+  name: string;
+  value: string;
+  placeholder: string;
+  options: { id: string; name: string }[];
+  onChange: (value: string) => void;
+}) {
+  return (
+    <label class="block space-y-1">
+      <span class="block px-1 text-xs font-medium text-neutral-700 dark:text-white/80">{props.label}</span>
+      <select
+        name={props.name}
+        required
+        onChange={(e) => props.onChange(e.currentTarget.value)}
+        class={cn(inputClass, 'pl-4')}
+      >
+        <option value="">{props.placeholder}</option>
+        <For each={props.options}>{(o) => <option value={o.id} selected={props.value === o.id}>{o.name}</option>}</For>
+      </select>
     </label>
   );
 }

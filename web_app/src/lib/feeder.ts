@@ -55,6 +55,43 @@ export const FEEDER_SLUGS: string[] = [
   'uji-mahasiswa',
 ];
 
+/** The Feeder reference tables (kept in step with REFERENSI_PATHS by a test). */
+export const REFERENSI_SLUGS: string[] = [
+  'agama',
+  'alat-transportasi',
+  'bentuk-pendidikan',
+  'ikatan-kerja-sumber-daya-manusia',
+  'jabatan-fungsional',
+  'jalur-masuk',
+  'jenis-aktifitas-mahasiswa',
+  'jenis-evaluasi',
+  'jenis-keluar',
+  'jenis-pendaftaran',
+  'jenis-prestasi',
+  'jenis-satuan-manajemen-sumberdaya',
+  'jenis-sertifikasi',
+  'jenis-substansi',
+  'jenis-tinggal',
+  'jenjang-pendidikan',
+  'kategori-kegiatan',
+  'kebutuhan-khusus',
+  'lembaga-pengangkat',
+  'level-wilayah',
+  'negara',
+  'pangkat-golongan',
+  'pekerjaan',
+  'pembiayaan',
+  'penghasilan',
+  'periode-lampau',
+  'semester',
+  'status-keaktifan-pegawai',
+  'status-kepegawaian',
+  'status-mahasiswa',
+  'tahun-ajaran',
+  'tingkat-prestasi',
+  'wilayah',
+];
+
 /** Bookkeeping columns that tell the reader nothing. */
 const HIDDEN = new Set(['id', 'created_at', 'updated_at', 'deleted_at', 'sync_at', 'created_by', 'updated_by']);
 

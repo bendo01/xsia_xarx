@@ -56,7 +56,9 @@ export async function apiFetch<T = unknown>(
   opts: ApiOptions = {},
 ): Promise<T> {
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (opts.body !== undefined) headers['Content-Type'] = 'application/json';
+  const isForm = typeof FormData !== 'undefined' && opts.body instanceof FormData;
+  // A FormData body sets its own multipart boundary header.
+  if (opts.body !== undefined && !isForm) headers['Content-Type'] = 'application/json';
 
   const wantsAuth = opts.auth !== false;
   if (wantsAuth) {
@@ -70,7 +72,7 @@ export async function apiFetch<T = unknown>(
     res = await fetch(buildApiUrl(path, opts.query), {
       method: opts.method ?? (opts.body !== undefined ? 'POST' : 'GET'),
       headers,
-      body: opts.body !== undefined ? JSON.stringify(opts.body) : undefined,
+      body: opts.body === undefined ? undefined : isForm ? (opts.body as FormData) : JSON.stringify(opts.body),
     });
   } catch {
     // Network failure: never leak the internal URL.

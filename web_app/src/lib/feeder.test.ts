@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 
-import { FEEDER_PATHS } from '../server/feeder';
-import { FEEDER_SLUGS, feederCell, feederColumns, feederLabel, feederTitle } from './feeder';
+import { FEEDER_PATHS, REFERENSI_PATHS } from '../server/feeder';
+import { FEEDER_SLUGS, REFERENSI_SLUGS, feederCell, feederColumns, feederLabel, feederTitle } from './feeder';
 
 describe('feeder helpers', () => {
   it('slug list matches the server allow-list', () => {
     expect([...FEEDER_SLUGS].sort()).toEqual(Object.keys(FEEDER_PATHS).sort());
     expect(FEEDER_SLUGS).toHaveLength(49);
+    expect([...REFERENSI_SLUGS].sort()).toEqual(Object.keys(REFERENSI_PATHS).sort());
+    expect(REFERENSI_SLUGS).toHaveLength(33);
   });
   it('humanises slugs and keys', () => {
     expect(feederTitle('kelas-kuliah')).toBe('Kelas Kuliah');

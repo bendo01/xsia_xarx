@@ -5,10 +5,10 @@ import { formAction, query } from '@solidjs/router';
 import { markSafeError, redirect } from '@solidjs/web';
 
 import { apiFetch } from '../server/api';
-import { getAuth, requireAuth, signIn, signOut, switchRole } from '../server/auth';
+import { getAuth, institutionIdFromEnv, registerCandidate, requireAuth, signIn, signOut, switchRole } from '../server/auth';
 import { getDashboardPathForRole, LOGIN_PATH } from './roles';
 import { safeReturnUrl } from './return-url';
-import { isUuid } from './validation';
+import { isUuid, validateAccountAcquisition, validateAdmission, type AdmissionForm } from './validation';
 
 /** Who is signed in, their roles and the active role. Cached per request/key. */
 export const getAuthState = query(async () => {
@@ -100,4 +100,61 @@ export async function changePassword(current_password: string, new_password: str
     method: 'POST',
     body: { current_password, new_password },
   });
+}
+
+/** A student claims a login: the API matches NIK + student code and sends the credentials link. */
+export async function requestAccount(form: {
+  nik: string;
+  student_code: string;
+  email: string;
+  phone_number: string;
+  password: string;
+}): Promise<AccountResult> {
+  'use server';
+  if (validateAccountAcquisition(form)) throw markSafeError(new Error('Invalid input'));
+  const institution_id = institutionIdFromEnv();
+  return apiFetch<AccountResult>('account_acquisition', {
+    method: 'POST',
+    auth: false,
+    body: {
+      nik: form.nik.trim(),
+      student_code: form.student_code.trim(),
+      email: form.email.trim(),
+      phone_number: form.phone_number.trim(),
+      password: form.password,
+      institution_id,
+    },
+  });
+}
+
+export interface OptionItem {
+  id: string;
+  name: string;
+}
+
+/** Gender and religion choices for the public admission form (no session needed). */
+export const getAdmissionOptions = query(async () => {
+  'use server';
+  const load = async (path: string): Promise<OptionItem[]> => {
+    // A failed lookup must not take the whole registration page down: show empty choices instead.
+    const rows = await apiFetch<OptionItem[]>(path, { method: 'POST', auth: false, body: {} }).catch(() => []);
+    return Array.isArray(rows) ? rows.map((r) => ({ id: r.id, name: r.name })) : [];
+  };
+  const [genders, religions] = await Promise.all([load('person/reference/gender/options'), load('person/reference/religion/options')]);
+  return { genders, religions };
+}, 'admission-options');
+
+/** Register a candidate; returns where to go (their dashboard) once signed in. */
+export async function registerCandidateAccount(form: AdmissionForm): Promise<{ redirectTo: string }> {
+  'use server';
+  if (validateAdmission(form)) throw markSafeError(new Error('Invalid input'));
+  const auth = await registerCandidate({ ...form });
+  return {
+    redirectTo: getDashboardPathForRole(auth.activeRole, {
+      role: auth.activeRoleItem,
+      roles: auth.roles,
+      user: auth.user,
+      defaultInstitutionId: auth.defaultInstitutionId,
+    }),
+  };
 }

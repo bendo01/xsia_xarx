@@ -1457,4 +1457,6 @@ export const rtEn: Record<string, string> = {
     sudahJadiMahasiswa: 'Enrolled as Student',
     belumJadiMahasiswa: 'Not Yet Enrolled',
     nomorKip: 'KIP Number',
+    feederMaster: 'Master tables',
+    feederReferensi: 'Reference tables',
 };

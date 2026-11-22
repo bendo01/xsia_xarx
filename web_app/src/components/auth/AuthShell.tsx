@@ -11,6 +11,8 @@ import ParticleCanvas from './ParticleCanvas';
 /** Shared frame of every /authentification page: ambient background, toggles, card, logo. */
 export default function AuthShell(props: {
   badge?: string;
+  /** Wider card for long forms. */
+  wide?: boolean;
   title: string;
   subtitle?: string;
   children: JSX.Element;
@@ -33,7 +35,7 @@ export default function AuthShell(props: {
         <LocaleToggle />
       </div>
 
-      <main class="relative z-10 flex w-full max-w-lg flex-col items-center rounded-xs border border-neutral-300 bg-white/95 p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] backdrop-blur-2xl sm:p-10 dark:border-emerald-500/20 dark:bg-slate-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]">
+      <main class={['relative z-10 flex w-full flex-col items-center rounded-xs border border-neutral-300 bg-white/95 p-8 shadow-[0_8px_32px_0_rgba(0,0,0,0.15)] backdrop-blur-2xl sm:p-10 dark:border-emerald-500/20 dark:bg-slate-900/60 dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.5)]', props.wide ? 'max-w-3xl' : 'max-w-lg']}>
         <Show when={props.badge}>
           <div class="mb-5 inline-flex items-center gap-2 rounded-xs border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-semibold tracking-wide text-emerald-700 dark:text-emerald-300">
             <span class="size-2 rounded-xs bg-emerald-400" />

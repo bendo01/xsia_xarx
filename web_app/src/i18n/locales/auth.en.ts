@@ -269,4 +269,6 @@ export const auEn: Record<string, string> = {
     kataSandiBerhasilDiubah: 'Password changed successfully',
     tampilkanKataSandi: 'Show passwords',
     sembunyikanKataSandi: 'Hide password',
+    nikHarus16DigitAngka: 'NIK must be 16 digits',
+    prosedurPendaftaran: 'New Student Registration Procedure',
 };

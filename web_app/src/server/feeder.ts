@@ -58,10 +58,50 @@ export const FEEDER_PATHS: Record<string, string> = {
   'uji-mahasiswa': 'feeder/master/uji-mahasiswa',
 };
 
-export const isFeederSlug = (slug: string) => Object.prototype.hasOwnProperty.call(FEEDER_PATHS, slug);
+// Reference (lookup) tables, same literal-path rule.
+export const REFERENSI_PATHS: Record<string, string> = {
+  'agama': 'feeder/referensi/agama',
+  'alat-transportasi': 'feeder/referensi/alat-transportasi',
+  'bentuk-pendidikan': 'feeder/referensi/bentuk-pendidikan',
+  'ikatan-kerja-sumber-daya-manusia': 'feeder/referensi/ikatan-kerja-sumber-daya-manusia',
+  'jabatan-fungsional': 'feeder/referensi/jabatan-fungsional',
+  'jalur-masuk': 'feeder/referensi/jalur-masuk',
+  'jenis-aktifitas-mahasiswa': 'feeder/referensi/jenis-aktifitas-mahasiswa',
+  'jenis-evaluasi': 'feeder/referensi/jenis-evaluasi',
+  'jenis-keluar': 'feeder/referensi/jenis-keluar',
+  'jenis-pendaftaran': 'feeder/referensi/jenis-pendaftaran',
+  'jenis-prestasi': 'feeder/referensi/jenis-prestasi',
+  'jenis-satuan-manajemen-sumberdaya': 'feeder/referensi/jenis-satuan-manajemen-sumberdaya',
+  'jenis-sertifikasi': 'feeder/referensi/jenis-sertifikasi',
+  'jenis-substansi': 'feeder/referensi/jenis-substansi',
+  'jenis-tinggal': 'feeder/referensi/jenis-tinggal',
+  'jenjang-pendidikan': 'feeder/referensi/jenjang-pendidikan',
+  'kategori-kegiatan': 'feeder/referensi/kategori-kegiatan',
+  'kebutuhan-khusus': 'feeder/referensi/kebutuhan-khusus',
+  'lembaga-pengangkat': 'feeder/referensi/lembaga-pengangkat',
+  'level-wilayah': 'feeder/referensi/level-wilayah',
+  'negara': 'feeder/referensi/negara',
+  'pangkat-golongan': 'feeder/referensi/pangkat-golongan',
+  'pekerjaan': 'feeder/referensi/pekerjaan',
+  'pembiayaan': 'feeder/referensi/pembiayaan',
+  'penghasilan': 'feeder/referensi/penghasilan',
+  'periode-lampau': 'feeder/referensi/periode-lampau',
+  'semester': 'feeder/referensi/semester',
+  'status-keaktifan-pegawai': 'feeder/referensi/status-keaktifan-pegawai',
+  'status-kepegawaian': 'feeder/referensi/status-kepegawaian',
+  'status-mahasiswa': 'feeder/referensi/status-mahasiswa',
+  'tahun-ajaran': 'feeder/referensi/tahun-ajaran',
+  'tingkat-prestasi': 'feeder/referensi/tingkat-prestasi',
+  'wilayah': 'feeder/referensi/wilayah',
+};
+
+export type FeederGroup = 'master' | 'referensi';
+
+export const isFeederSlug = (slug: string, group: FeederGroup = 'master') => Object.prototype.hasOwnProperty.call(group === 'referensi' ? REFERENSI_PATHS : FEEDER_PATHS, slug);
 
 /** One page of a Feeder master table; only slugs of the allow-list are fetched. */
-export async function loadFeederPage(slug: string, page: number, pageSize = 20) {
-  if (!isFeederSlug(slug)) throw markSafeError(new Error('Not found'));
+export async function loadFeederPage(group: FeederGroup, slug: string, page: number, pageSize = 20) {
+  if (!isFeederSlug(slug, group)) throw markSafeError(new Error('Not found'));
+  if (group === 'referensi') return apiPaginated<Raw>(REFERENSI_PATHS[slug], { page, per_page: pageSize });
   return apiPaginated<Raw>(FEEDER_PATHS[slug], { page, per_page: pageSize });
 }

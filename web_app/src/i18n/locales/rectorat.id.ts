@@ -1457,4 +1457,6 @@ export const rtId: Record<string, string> = {
     sudahJadiMahasiswa: 'Sudah Jadi Mahasiswa',
     belumJadiMahasiswa: 'Belum Jadi Mahasiswa',
     nomorKip: 'Nomor KIP',
+    feederMaster: 'Tabel master',
+    feederReferensi: 'Tabel referensi',
 };

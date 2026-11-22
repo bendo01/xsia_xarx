@@ -199,6 +199,42 @@ export async function signIn(email: string, password: string): Promise<AuthState
   return authStateFrom(session);
 }
 
+/** The configured institution's id (public pages cannot pick one). */
+export function institutionIdFromEnv(): string {
+  const id = env.VITE_CURRENT_INSTITUTION_ID;
+  if (!id) throw markSafeError(new Error('Institution is not configured'));
+  return id;
+}
+
+/**
+ * Public candidate self-registration. The institution comes from server config, never the
+ * browser. The API answers like a login (token + user), so the new candidate is signed in at once.
+ */
+export async function registerCandidate(form: Record<string, string>): Promise<AuthState> {
+  const res = await apiFetch<LoginResponse>('academic/candidate/admission/register', {
+    method: 'POST',
+    auth: false,
+    body: {
+      institution_code: env.VITE_INSTITUTION_CODE.replace(/^["']|["']$/g, '').trim(),
+      name: form.name.trim(),
+      nik: form.nik.trim(),
+      birth_place: form.birth_place.trim(),
+      birth_date: form.birth_date,
+      gender_id: form.gender_id,
+      religion_id: form.religion_id,
+      student_national_number: form.student_national_number.trim() || null,
+      school_name: form.school_name.trim() || null,
+      phone_number: form.phone_number.trim(),
+      email: form.email.trim(),
+      password: form.password,
+    },
+  });
+  const session = sessionFromLogin(res);
+  session.roles = await enrichRoles(session.roles ?? [], res.token);
+  await setSession(session);
+  return authStateFrom(session);
+}
+
 export async function signOut(): Promise<void> {
   await clearSession();
 }

@@ -79,8 +79,8 @@ export const getInstitutionCandidates = query(async (rawId: string, page: number
   return loadInstitutionCandidates(resolveMyInstitution(await requireAuth(), rawId), page, search);
 }, 'institution-candidates');
 
-export const getFeederPage = query(async (rawId: string, slug: string, page: number) => {
+export const getFeederPage = query(async (rawId: string, group: 'master' | 'referensi', slug: string, page: number) => {
   'use server';
   resolveMyInstitution(await requireAuth(), rawId);
-  return loadFeederPage(slug, page);
+  return loadFeederPage(group === 'referensi' ? 'referensi' : 'master', slug, page);
 }, 'institution-feeder');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { safeHttpsUrl, validateForgotPassword, validateResetPassword, validateVerifyToken } from './validation';
+import { safeHttpsUrl, validateAccountAcquisition, validateAdmission, validateForgotPassword, validateResetPassword, validateVerifyToken } from './validation';
 
 const uuid = '123e4567-e89b-42d3-a456-426614174000';
 
@@ -31,5 +31,27 @@ describe('safeHttpsUrl', () => {
     expect(safeHttpsUrl('javascript:alert(1)')).toBeNull();
     expect(safeHttpsUrl('not a url')).toBeNull();
     expect(safeHttpsUrl(undefined)).toBeNull();
+  });
+});
+
+describe('public registration validation', () => {
+  const acq = { nik: '1', student_code: 'A1', email: 'a@b.co', phone_number: '628123456789', password: 'secret1' };
+  it('account acquisition', () => {
+    expect(validateAccountAcquisition(acq)).toBeNull();
+    expect(validateAccountAcquisition({ ...acq, nik: ' ' })).toBe('au.semuaKolomHarusDiisi');
+    expect(validateAccountAcquisition({ ...acq, email: 'nope' })).toBe('au.emailTidakValid');
+    expect(validateAccountAcquisition({ ...acq, phone_number: '12' })).toBe('au.nomorWhatsAppTidakValid');
+    expect(validateAccountAcquisition({ ...acq, password: '123' })).toBe('au.kataSandiMinimal6Karakter2');
+  });
+  const adm = {
+    name: 'Ani', nik: '1234567890123456', birth_place: 'Jakarta', birth_date: '2008-01-01', gender_id: 'g', religion_id: 'r',
+    student_national_number: '', school_name: '', phone_number: '628123456789', email: 'a@b.co', password: 'secret1', password_confirmation: 'secret1',
+  };
+  it('candidate admission', () => {
+    expect(validateAdmission(adm)).toBeNull();
+    expect(validateAdmission({ ...adm, name: '' })).toBe('au.semuaKolomHarusDiisi');
+    expect(validateAdmission({ ...adm, nik: '123' })).toBe('au.nikHarus16DigitAngka');
+    expect(validateAdmission({ ...adm, student_national_number: '12' })).toBe('au.nisnHarus10DigitAngka');
+    expect(validateAdmission({ ...adm, password_confirmation: 'x' })).toBe('au.konfirmasiKataSandiTidakSama');
   });
 });
