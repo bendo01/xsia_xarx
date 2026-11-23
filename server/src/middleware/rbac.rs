@@ -93,6 +93,30 @@ pub fn is_administrator(role: &role::Model) -> bool {
     role.position_type_id == Some(ADMINISTRATOR_POSITION_TYPE_ID)
 }
 
+/// Position types that may see every student of the institution (same ids as `AREA_POSITION_TYPES`
+/// in `utility_12_generate_permission_from_client.rs`): rector, vice rectors, deans, vice deans,
+/// heads of the general / finance / academic-and-student-affairs bureaus and BAAK staff.
+pub const INSTITUTION_WIDE_POSITION_TYPE_IDS: &[Uuid] = &[
+    uuid::uuid!("e34401db-84ec-450b-bdba-6b9640fc3ae8"), // Rektor
+    uuid::uuid!("5d2ad780-d6fe-4638-bffa-e541ff6266fe"), // Wakil Rektor I Akademik
+    uuid::uuid!("56213ba4-a787-4af2-ac41-8e20af88dd5f"), // Wakil Rektor II Keuangan
+    uuid::uuid!("c2b6243d-baf2-4b06-b6ed-f164c8f94361"), // Wakil Rektor III Kemahasiswaan
+    uuid::uuid!("fad3e789-ff39-4a9a-b8f9-ea5040114729"), // Dekan
+    uuid::uuid!("c524a5fe-f2d7-4763-9201-1494a21ae3cb"), // Wakil Dekan 1 Akademik
+    uuid::uuid!("898a7b11-4ed2-4853-8f9b-b8e33009eb9e"), // Wakil Dekan 2 Keuangan
+    uuid::uuid!("1692d7a7-6a1a-49df-b241-c950ba100aa3"), // Wakil Dekan 3 Kemahasiswaan
+    uuid::uuid!("b92fb48d-53c6-4219-a826-432bdae23ae5"), // Kepala Biro Administrasi Umum
+    uuid::uuid!("555f528f-aaeb-4275-8b66-23b0ce893bc5"), // Kepala Biro Administrasi Keuangan
+    uuid::uuid!("b3000c11-caf2-4a16-82d4-1907442bd089"), // Kepala Biro Administrasi Akademik dan Kemahasiswaan
+    uuid::uuid!("4c121c70-0e97-41af-a0f1-d2ad0ac963ac"), // Staff Biro Administrasi Akademik dan Kemahasiswaan
+];
+
+/// Position types limited to the students of their own unit (study program)
+pub const UNIT_SCOPED_POSITION_TYPE_IDS: &[Uuid] = &[
+    uuid::uuid!("b3ad82b8-520b-4b77-8cca-b487bf77a91c"), // Kepala Program Studi
+    uuid::uuid!("948b725e-675d-4497-acfd-67f11430d04a"), // Sekertaris Program Studi
+];
+
 pub struct RbacGuard;
 
 #[async_trait]
