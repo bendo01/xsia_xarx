@@ -14,3 +14,4 @@ pub mod utility_13_generate_permission_from_route;
 pub mod utility_14_generate_webhook_secret;
 pub mod utility_15_seed_weekdays;
 pub mod utility_16_fix_schedule_weekdays;
+pub mod utility_17_grant_assistant_permission;

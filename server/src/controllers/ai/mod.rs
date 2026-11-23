@@ -2,6 +2,7 @@ use salvo::prelude::*;
 use crate::middleware::rbac::{NamedRouterExt, is_administrator};
 use crate::models::auth::role;
 
+pub mod assistant;
 pub mod chunks;
 pub mod rag;
 pub mod regulations;
@@ -12,6 +13,9 @@ pub fn router() -> Router {
             Router::with_path("chunks").push(
                 Router::with_path("upload").post_named("ai.chunks.upload", chunks::upload),
             ),
+        )
+        .push(
+            Router::with_path("assistant").push(Router::with_path("ask").post_named("ai.assistant.ask", assistant::ask)),
         )
         .push(
             Router::with_path("regulations")

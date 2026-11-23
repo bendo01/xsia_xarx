@@ -4,6 +4,8 @@ pub mod generation;
 pub mod ingest;
 pub mod burn_qwen;
 pub mod knowledge;
+pub mod student_assistant;
+pub mod student_audit;
 pub mod student_data;
 pub mod student_scope;
 

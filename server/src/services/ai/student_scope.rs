@@ -5,9 +5,10 @@
 //! over facts gathered from the database ([`authorize_student`]), so every rule is unit-tested without one.
 
 use salvo::http::StatusError;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QuerySelect};
+use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, DbBackend, EntityTrait, QueryFilter, QuerySelect, Statement};
 use uuid::Uuid;
 
+use crate::services::ai::student_assistant;
 use crate::middleware::rbac::{INSTITUTION_WIDE_POSITION_TYPE_IDS, UNIT_SCOPED_POSITION_TYPE_IDS, is_administrator};
 use crate::models::academic::campaign::transaction::teach_lecturers;
 use crate::models::academic::student::adviser::counsellors;
@@ -16,9 +17,9 @@ use crate::models::academic::student::master::students;
 use crate::models::auth::role;
 use crate::models::institution::master::staffes;
 
-const STUDENT_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Student\\Master\\Student";
-const LECTURER_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Lecturer\\Master\\Lecturer";
-const STAFF_ROLEABLE_TYPE: &str = "App\\Models\\Institution\\Master\\Staff";
+pub const STUDENT_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Student\\Master\\Student";
+pub const LECTURER_ROLEABLE_TYPE: &str = "App\\Models\\Academic\\Lecturer\\Master\\Lecturer";
+pub const STAFF_ROLEABLE_TYPE: &str = "App\\Models\\Institution\\Master\\Staff";
 
 /// The categories of a student's data the caller may read, and for classes the classes they are limited to
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -204,6 +205,52 @@ async fn shared_classes(db: &DatabaseConnection, lecturer_id: Uuid, student_id: 
         .await
         .map_err(internal)?;
     Ok(enrolled.into_iter().flatten().collect())
+}
+
+/// Students looked at when a name or number matches several
+pub const MAX_CANDIDATES: u64 = 10;
+
+/// Students a person without a student role may be asking about, at most [`MAX_CANDIDATES`]. A student number in the
+/// question wins, then a full name (any case, punctuation ignored), then the student the conversation carried on
+/// about. Only the existence of students is looked up here; whether the caller may see them is decided afterwards,
+/// per student, by [`authorize_student`].
+pub async fn candidates(db: &DatabaseConnection, question: &str, carried_over: Option<Uuid>) -> Result<Vec<Uuid>, StatusError> {
+    let codes = student_assistant::student_codes(question);
+    if !codes.is_empty() {
+        let found: Vec<Uuid> = students::Entity::find()
+            .filter(students::Column::Code.is_in(codes))
+            .filter(students::Column::DeletedAt.is_null())
+            .limit(MAX_CANDIDATES)
+            .all(db)
+            .await
+            .map_err(internal)?
+            .into_iter()
+            .map(|s| s.id)
+            .collect();
+        if !found.is_empty() {
+            return Ok(found);
+        }
+    }
+
+    // Plain parameterised SQL: the name of every student is normalised the same way as the question (lower case,
+    // runs of anything but letters and digits become one space) and must appear in it as whole words
+    let normalized = format!(" {} ", student_assistant::normalized(question));
+    let rows = db
+        .query_all_raw(Statement::from_sql_and_values(
+            DbBackend::Postgres,
+            "SELECT id FROM academic_student_master.students \
+             WHERE deleted_at IS NULL AND length(name) >= 5 \
+               AND strpos($1, ' ' || trim(regexp_replace(lower(name), '[^[:alnum:]]+', ' ', 'g')) || ' ') > 0 \
+             LIMIT $2",
+            [normalized.into(), (MAX_CANDIDATES as i64).into()],
+        ))
+        .await
+        .map_err(internal)?;
+    let named: Vec<Uuid> = rows.iter().filter_map(|row| row.try_get::<Uuid>("", "id").ok()).collect();
+    if !named.is_empty() {
+        return Ok(named);
+    }
+    Ok(carried_over.into_iter().collect())
 }
 
 #[cfg(test)]

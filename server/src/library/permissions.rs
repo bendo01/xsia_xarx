@@ -171,5 +171,11 @@ pub fn get_system_permissions() -> Vec<PermissionDefinition> {
             is_open: false,
             description: "Upload PDF knowledge documents as embedded chunks (administrators only)",
         },
+        PermissionDefinition {
+            name: "ai.assistant.ask",
+            uri: "api/v1/ai/assistant/ask",
+            is_open: false,
+            description: "Ask the chatbot about a student's data; what is returned depends on the active role",
+        },
     ]
 }

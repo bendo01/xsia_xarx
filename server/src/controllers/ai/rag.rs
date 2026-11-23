@@ -184,10 +184,10 @@ pub async fn retrieve(req: &mut Request, depot: &mut Depot) -> Result<Json<Retri
 }
 
 /// One server-sent event: a name and a JSON payload
-struct Event(&'static str, serde_json::Value);
+pub(super) struct Event(pub(super) &'static str, pub(super) serde_json::Value);
 
 impl Event {
-    fn into_sse(self) -> SseEvent {
+    pub(super) fn into_sse(self) -> SseEvent {
         SseEvent::default().name(self.0).text(self.1.to_string())
     }
 }
@@ -382,7 +382,7 @@ async fn start_exchange(
     Ok(conversation_id)
 }
 
-async fn insert_message(
+pub(super) async fn insert_message(
     db: &DatabaseConnection,
     conversation_id: Uuid,
     role: &str,

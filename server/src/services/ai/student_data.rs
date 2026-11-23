@@ -7,7 +7,7 @@
 use std::collections::HashMap;
 
 use salvo::http::StatusError;
-use sea_orm::{ColumnTrait, DatabaseConnection, EntityTrait, QueryFilter, QueryOrder};
+use sea_orm::{ColumnTrait, ConnectionTrait, DatabaseConnection, DbBackend, EntityTrait, QueryFilter, QueryOrder, Statement};
 use serde::Serialize;
 use uuid::Uuid;
 
@@ -67,11 +67,14 @@ pub struct Profile {
 pub struct Semester {
     pub name: String,
     /// Index and credits of the semester itself
-    pub index: f64,
+    pub index: Option<f64>,
     pub credit: Option<f64>,
     /// Cumulative index and credits up to this semester
-    pub cumulative_index: f64,
+    pub cumulative_index: Option<f64>,
     pub cumulative_credit: Option<f64>,
+    /// The stored indexes are empty for most semesters, so an empty one is worked out from the grades. True when
+    /// any of the numbers above was worked out
+    pub computed: bool,
 }
 
 #[derive(Debug, Serialize)]
@@ -79,8 +82,11 @@ pub struct Grade {
     pub course_code: String,
     pub course: String,
     pub credit: Option<f64>,
+    /// Numeric mark; most grades have none, only a letter
     pub mark: Option<f64>,
     pub letter: Option<String>,
+    /// Grade points of the letter (4.00 for A)
+    pub points: Option<f64>,
 }
 
 #[derive(Debug, Serialize)]
@@ -121,9 +127,12 @@ pub struct Relative {
     pub relation: String,
 }
 
+/// Personal data. Most students have little of it: the national id comes from the Feeder biodata, which only a
+/// small share of students has, and addresses and phones are filled in for a few percent. Missing is normal
 #[derive(Debug, Serialize)]
 pub struct Sensitive {
-    pub identity_number: String,
+    /// NIK, from the Feeder biodata when the student has one
+    pub national_id: Option<String>,
     pub gender: String,
     pub religion: String,
     pub birth_place: String,
@@ -131,6 +140,7 @@ pub struct Sensitive {
     pub addresses: Vec<String>,
     pub phones: Vec<String>,
     pub emails: Vec<String>,
+    /// Only a real 16-digit number; the default `0` means none was recorded
     pub family_card_number: Option<String>,
     pub relatives: Vec<Relative>,
 }
@@ -146,7 +156,7 @@ macro_rules! name_of {
     };
 }
 
-/// Loads what was asked for and what `scope` allows. `semester` is a part of a semester name
+/// Loads what was asked for and what `scope` allows. `semester` is words of a semester name
 /// (e.g. "2023/2024 Ganjil"); without it the grades of the latest semester are returned
 pub async fn load(
     db: &DatabaseConnection,
@@ -256,36 +266,70 @@ async fn load_academic(
 
     // Which semester the grades are for: the one the question names, else the latest
     let chosen = match semester.map(str::trim).filter(|q| !q.is_empty()) {
-        Some(q) => ordered.iter().rev().find(|e| semester_name(e).to_lowercase().contains(&q.to_lowercase())).copied(),
+        // Every word must appear in the name, in any order: "2023/2024 ganjil" matches "Ganjil 2023/2024"
+        Some(q) => {
+            let q = q.to_lowercase();
+            ordered
+                .iter()
+                .rev()
+                .find(|e| {
+                    let name = semester_name(e).to_lowercase();
+                    q.split_whitespace().all(|word| name.contains(word))
+                })
+                .copied()
+        }
         None => ordered.last().copied(),
     };
 
+    // A lecturer who only teaches the student reads those classes' grades of one semester and nothing else; whoever
+    // may read the whole record also needs every semester's grades to work out the indexes
+    let all_details = match teach_ids {
+        Some(teach_ids) => match chosen {
+            Some(chosen) => detail_activities::Entity::find()
+                .filter(detail_activities::Column::ActivityId.eq(chosen.id))
+                .filter(detail_activities::Column::TeachId.is_in(teach_ids.to_vec()))
+                .filter(detail_activities::Column::DeletedAt.is_null())
+                .order_by_asc(detail_activities::Column::CuriculumDetailSequence)
+                .all(db)
+                .await
+                .map_err(internal)?,
+            None => vec![],
+        },
+        None => detail_activities::Entity::find()
+            .filter(detail_activities::Column::ActivityId.is_in(enrolments.iter().map(|e| e.id).collect::<Vec<_>>()))
+            .filter(detail_activities::Column::DeletedAt.is_null())
+            .order_by_asc(detail_activities::Column::CuriculumDetailSequence)
+            .all(db)
+            .await
+            .map_err(internal)?,
+    };
+    let grade_ids: Vec<Uuid> = all_details.iter().filter_map(|d| d.grade_id).collect();
+    let grade_by_id: HashMap<Uuid, grades::Model> = grades::Entity::find()
+        .filter(grades::Column::Id.is_in(grade_ids))
+        .all(db)
+        .await
+        .map_err(internal)?
+        .into_iter()
+        .map(|g| (g.id, g))
+        .collect();
+
     let mut grade_rows = Vec::new();
     if let Some(chosen) = chosen {
-        let mut query = detail_activities::Entity::find()
-            .filter(detail_activities::Column::ActivityId.eq(chosen.id))
-            .filter(detail_activities::Column::DeletedAt.is_null())
-            .order_by_asc(detail_activities::Column::CuriculumDetailSequence);
-        if let Some(teach_ids) = teach_ids {
-            query = query.filter(detail_activities::Column::TeachId.is_in(teach_ids.to_vec()));
-        }
-        for d in query.all(db).await.map_err(internal)? {
+        for d in all_details.iter().filter(|d| d.activity_id == chosen.id) {
             let course = courses::Entity::find_by_id(d.course_id).one(db).await.map_err(internal)?;
-            let letter = match d.grade_id {
-                Some(id) => grades::Entity::find_by_id(id).one(db).await.map_err(internal)?.and_then(|g| g.alphabet_code),
-                None => None,
-            };
+            let grade = d.grade_id.and_then(|id| grade_by_id.get(&id));
             grade_rows.push(Grade {
                 course_code: course.as_ref().map(|c| c.code.clone()).unwrap_or_default(),
                 course: course.map(|c| c.name).unwrap_or_default(),
                 credit: d.credit,
-                mark: d.mark,
-                letter,
+                mark: d.mark.filter(|m| *m > 0.0),
+                // `alphabet_code` is blank for most scales; the letter is the grade's name
+                letter: grade.map(|g| g.name.clone()).filter(|n| !n.is_empty()),
+                points: grade.map(|g| g.grade),
             });
         }
     }
 
-    // A lecturer who only teaches the student sees those classes' grades, never the whole record
     if teach_ids.is_some() {
         return Ok(Academic {
             semesters: vec![],
@@ -297,14 +341,35 @@ async fn load_academic(
         });
     }
 
+    // Credits and grade points of each semester's graded courses, then running totals in semester order
+    let mut graded: HashMap<Uuid, (f64, f64)> = HashMap::new();
+    for d in &all_details {
+        if let (Some(credit), Some(grade)) = (d.credit, d.grade_id.and_then(|id| grade_by_id.get(&id))) {
+            let entry = graded.entry(d.activity_id).or_default();
+            entry.0 += credit;
+            entry.1 += credit * grade.grade;
+        }
+    }
+    let (mut running_credit, mut running_points) = (0.0, 0.0);
     let semesters: Vec<Semester> = ordered
         .iter()
-        .map(|e| Semester {
-            name: semester_name(e),
-            index: e.cumulative_index,
-            credit: e.total_credit,
-            cumulative_index: e.grand_cumulative_index,
-            cumulative_credit: e.grand_total_credit,
+        .map(|e| {
+            let (credit, points) = graded.get(&e.id).copied().unwrap_or_default();
+            running_credit += credit;
+            running_points += points;
+            let stored = |v: f64| (v > 0.0).then_some(v);
+            let worked_out = |total: f64, weight: f64| (weight > 0.0).then(|| total / weight);
+            let index = stored(e.cumulative_index).or_else(|| worked_out(points, credit));
+            let cumulative_index = stored(e.grand_cumulative_index).or_else(|| worked_out(running_points, running_credit));
+            Semester {
+                name: semester_name(e),
+                computed: (index.is_some() && stored(e.cumulative_index).is_none())
+                    || (cumulative_index.is_some() && stored(e.grand_cumulative_index).is_none()),
+                index,
+                credit: e.total_credit.and_then(stored).or((credit > 0.0).then_some(credit)),
+                cumulative_index,
+                cumulative_credit: e.grand_total_credit.and_then(stored).or((running_credit > 0.0).then_some(running_credit)),
+            }
         })
         .collect();
 
@@ -316,8 +381,8 @@ async fn load_academic(
         .map_err(internal)?;
 
     Ok(Academic {
-        latest_cumulative_index: semesters.last().map(|x| x.cumulative_index),
-        latest_cumulative_credit: semesters.last().and_then(|x| x.cumulative_credit),
+        latest_cumulative_index: semesters.iter().rev().find_map(|x| x.cumulative_index),
+        latest_cumulative_credit: semesters.iter().rev().find_map(|x| x.cumulative_credit),
         semesters,
         grades_semester: chosen.map(semester_name),
         grades: grade_rows,
@@ -345,6 +410,15 @@ async fn load_finance(db: &DatabaseConnection, s: &students::Model) -> Result<Fi
         per_semester.push(FeePerSemester { semester: name, fee: e.finance_fee });
     }
     Ok(Finance { category, fee: s.finance_fee, per_semester })
+}
+
+/// Adds `value` unless it is blank or already there
+fn push_unique(list: &mut Vec<String>, value: Option<String>) {
+    if let Some(v) = value.map(|v| v.trim().to_owned()).filter(|v| !v.is_empty())
+        && !list.iter().any(|x| x.eq_ignore_ascii_case(&v))
+    {
+        list.push(v);
+    }
 }
 
 async fn load_sensitive(db: &DatabaseConnection, s: &students::Model) -> Result<Sensitive, StatusError> {
@@ -377,29 +451,66 @@ async fn load_sensitive(db: &DatabaseConnection, s: &students::Model) -> Result<
         if let Some(id) = r.province_id {
             parts.push(name_of!(db, crate::models::location::provinces::Entity, id, |m| m.name.unwrap_or_default()));
         }
-        addresses.push(parts.into_iter().filter(|p| !p.is_empty()).collect::<Vec<_>>().join(", "));
+        push_unique(&mut addresses, Some(parts.into_iter().filter(|p| !p.is_empty()).collect::<Vec<_>>().join(", ")));
     }
 
-    let phone_numbers = phones::Entity::find()
+    let mut phone_numbers: Vec<String> = Vec::new();
+    for p in phones::Entity::find()
         .filter(phones::Column::PhoneableType.eq(owner_types::INDIVIDUAL))
         .filter(phones::Column::PhoneableId.eq(person.id))
         .filter(phones::Column::DeletedAt.is_null())
         .all(db)
         .await
         .map_err(internal)?
-        .into_iter()
-        .map(|p| p.phone_number)
-        .collect();
-    let email_addresses = electronic_mails::Entity::find()
+    {
+        push_unique(&mut phone_numbers, Some(p.phone_number));
+    }
+    let mut email_addresses: Vec<String> = Vec::new();
+    for e in electronic_mails::Entity::find()
         .filter(electronic_mails::Column::ElectronicMailableType.eq(owner_types::INDIVIDUAL))
         .filter(electronic_mails::Column::ElectronicMailableId.eq(person.id))
         .filter(electronic_mails::Column::DeletedAt.is_null())
         .all(db)
         .await
         .map_err(internal)?
-        .into_iter()
-        .map(|e| e.email_address)
-        .collect();
+    {
+        push_unique(&mut email_addresses, Some(e.email_address));
+    }
+
+    // The Feeder biodata (linked by `students.id_mahasiswa`) holds the national id and the parents' names
+    let mut national_id = None;
+    let mut relatives: Vec<Relative> = Vec::new();
+    if let Some(feeder_id) = s.id_mahasiswa {
+        let row = db
+            .query_one_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                "SELECT nik, handphone, telepon, email, jalan, rt, rw, kelurahan, nama_wilayah, nama_ayah, nama_ibu_kandung, nama_wali \
+                 FROM feeder_master.biodata_mahasiswa WHERE id_mahasiswa = $1 LIMIT 1",
+                [feeder_id.into()],
+            ))
+            .await
+            .map_err(internal)?;
+        if let Some(row) = row {
+            let text = |column: &str| row.try_get::<Option<String>>("", column).ok().flatten().map(|v| v.trim().to_owned()).filter(|v| !v.is_empty());
+            national_id = text("nik");
+            push_unique(&mut phone_numbers, text("handphone"));
+            push_unique(&mut phone_numbers, text("telepon"));
+            push_unique(&mut email_addresses, text("email"));
+            let street = text("jalan");
+            if let Some(street) = street {
+                let number = |column: &str| row.try_get::<Option<i32>>("", column).ok().flatten().unwrap_or(0);
+                let mut parts = vec![format!("{street} RT {}/RW {}", number("rt"), number("rw"))];
+                parts.extend(text("kelurahan"));
+                parts.extend(text("nama_wilayah"));
+                push_unique(&mut addresses, Some(parts.join(", ")));
+            }
+            for (column, relation) in [("nama_ayah", "ayah"), ("nama_ibu_kandung", "ibu kandung"), ("nama_wali", "wali")] {
+                if let Some(name) = text(column) {
+                    relatives.push(Relative { name, relation: relation.to_owned() });
+                }
+            }
+        }
+    }
 
     let card = family_card::Entity::find()
         .filter(family_card::Column::IndividualId.eq(person.id))
@@ -407,7 +518,6 @@ async fn load_sensitive(db: &DatabaseConnection, s: &students::Model) -> Result<
         .one(db)
         .await
         .map_err(internal)?;
-    let mut relatives = Vec::new();
     if let Some(card) = &card {
         let members = family_card_member::Entity::find()
             .filter(family_card_member::Column::FamilyCardId.eq(card.id))
@@ -426,7 +536,7 @@ async fn load_sensitive(db: &DatabaseConnection, s: &students::Model) -> Result<
     }
 
     Ok(Sensitive {
-        identity_number: person.code.clone(),
+        national_id,
         gender: name_of!(db, gender::Entity, person.gender_id, |m| m.name),
         religion: name_of!(db, religion::Entity, person.religion_id, |m| m.name),
         birth_place: person.birth_place.clone(),
@@ -434,7 +544,10 @@ async fn load_sensitive(db: &DatabaseConnection, s: &students::Model) -> Result<
         addresses,
         phones: phone_numbers,
         emails: email_addresses,
-        family_card_number: card.and_then(|c| c.code),
+        // The default `0000000000000000` and the one-character `0` mean no number was recorded
+        family_card_number: card
+            .and_then(|c| c.code)
+            .filter(|code| code.len() == 16 && code.chars().all(|c| c.is_ascii_digit()) && code.chars().any(|c| c != '0')),
         relatives,
     })
 }

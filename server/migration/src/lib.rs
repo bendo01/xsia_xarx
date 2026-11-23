@@ -305,6 +305,7 @@ impl MigratorTrait for Migrator {
             Box::new(ai::m20261022_100500_schema_ai_table_ingest_runs::Migration),
             Box::new(ai::m20261022_100600_schema_ai_table_message_citations::Migration),
             Box::new(ai::m20261022_100700_schema_ai_index_chunks_metadata::Migration),
+            Box::new(ai::m20261123_100000_schema_ai_table_assistant_audits::Migration),
             Box::new(academic::student::campaign::m20261030_100000_schema_academic_student_campaign_index_detail_activities_unique_course::Migration),
             Box::new(academic::campaign::transaction::m20261111_100000_schema_academic_campaign_transaction_table_teach_meetings::Migration),
             Box::new(academic::campaign::transaction::m20261111_100100_schema_academic_campaign_transaction_table_teach_attendances::Migration),
