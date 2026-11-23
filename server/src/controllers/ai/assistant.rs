@@ -26,7 +26,7 @@ use crate::models::academic::student::master::students;
 use crate::models::ai::conversation;
 use crate::models::auth::role;
 use crate::services::ai::generation::{GenParams, LlmKind, LlmService};
-use crate::services::ai::student_assistant::{self, Intent, Limits};
+use crate::services::ai::student_assistant::{self, Intent, Limits, Viewpoint};
 use crate::services::ai::student_audit;
 use crate::services::ai::student_data::{self, StudentData};
 use crate::services::ai::student_scope::{self, Actor, DataScope};
@@ -135,13 +135,13 @@ async fn regulation_sources(db: &DatabaseConnection, question: &str) -> Vec<Hit>
 
 /// Builds the prompt and shrinks the student's record, then the regulations, until it fits the model's token budget.
 /// It loads the model's tokenizer, so it is blocking.
-fn fit_prompt(kind: LlmKind, question: &str, data: &StudentData, mut regulations: Vec<Hit>) -> anyhow::Result<String> {
+fn fit_prompt(kind: LlmKind, viewpoint: Viewpoint, question: &str, data: &StudentData, mut regulations: Vec<Hit>) -> anyhow::Result<String> {
     let llm = LlmService::global(kind)?;
     let budget = kind.max_prompt_tokens();
     let mut limits = Limits::START;
     loop {
         let context = student_assistant::render_context(data, limits);
-        let prompt = student_assistant::build_prompt(kind, question, &context, &regulations);
+        let prompt = student_assistant::build_prompt(kind, viewpoint, question, &context, &regulations);
         if llm.count_tokens(&prompt)? <= budget {
             return Ok(prompt);
         }
@@ -305,11 +305,12 @@ pub async fn ask(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Re
         "guessed": guessed,
     });
     let stores_answer = data.sensitive.is_none();
+    let viewpoint = if matches!(actor, Actor::Student(_)) { Viewpoint::Own } else { Viewpoint::Other };
     let user_id = who.user_id;
 
     let (tx, rx) = mpsc::unbounded_channel::<Event>();
     tokio::spawn(async move {
-        match run_ask(kind, params, &question, data, regulations, student_event, tx.clone()).await {
+        match run_ask(kind, viewpoint, params, &question, data, regulations, student_event, tx.clone()).await {
             Ok(answer) => {
                 let stored = if stores_answer { answer.trim().to_owned() } else { SENSITIVE_PLACEHOLDER.to_owned() };
                 if let Err(e) = insert_message(&db, conversation_id, "assistant", &stored, None, user_id).await {
@@ -330,6 +331,7 @@ pub async fn ask(req: &mut Request, depot: &mut Depot, res: &mut Response) -> Re
 /// Builds the prompt, streams the answer and returns its text
 async fn run_ask(
     kind: LlmKind,
+    viewpoint: Viewpoint,
     params: GenParams,
     question: &str,
     data: StudentData,
@@ -339,7 +341,7 @@ async fn run_ask(
 ) -> anyhow::Result<String> {
     let started = Instant::now();
     let q = question.to_owned();
-    let prompt = tokio::task::spawn_blocking(move || fit_prompt(kind, &q, &data, regulations)).await??;
+    let prompt = tokio::task::spawn_blocking(move || fit_prompt(kind, viewpoint, &q, &data, regulations)).await??;
     let _ = tx.send(Event("student", student_event));
 
     let stream_tx = tx.clone();

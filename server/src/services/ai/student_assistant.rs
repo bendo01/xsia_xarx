@@ -192,8 +192,9 @@ impl Limits {
     }
 }
 
+/// Two decimals with the decimal comma used in Indonesian (`3,45`); `-` when there is no value
 fn number(value: Option<f64>) -> String {
-    value.map_or_else(|| "-".to_owned(), |v| format!("{v:.2}"))
+    value.map_or_else(|| "-".to_owned(), |v| format!("{v:.2}").replace('.', ","))
 }
 
 fn render_profile(p: &Profile) -> String {
@@ -207,7 +208,7 @@ fn render_profile(p: &Profile) -> String {
 fn render_academic(a: &Academic, limits: Limits) -> String {
     let mut out = String::from("AKADEMIK:\n");
     if let Some(ipk) = a.latest_cumulative_index {
-        out.push_str(&format!("IPK terakhir {ipk:.2} dari {} SKS.\n", number(a.latest_cumulative_credit)));
+        out.push_str(&format!("IPK terakhir {} dari {} SKS.\n", number(Some(ipk)), number(a.latest_cumulative_credit)));
     } else if !a.semesters.is_empty() {
         out.push_str("IPK belum tersedia: belum ada nilai yang tercatat.\n");
     }
@@ -322,11 +323,32 @@ pub fn render_context(data: &StudentData, limits: Limits) -> String {
 }
 
 const SYSTEM: &str = "Kamu adalah asisten akademik perguruan tinggi. \
-Jawab dalam Bahasa Indonesia, singkat dan tepat, HANYA berdasarkan DATA MAHASISWA dan ATURAN yang diberikan. \
-Salin angka, nama, dan tanggal persis seperti di data; jangan menghitung ulang, membulatkan, atau menebak. \
-Jika yang ditanyakan tidak ada di data, katakan bahwa informasinya tidak tersedia. \
+Jawab dalam Bahasa Indonesia, HANYA berdasarkan DATA MAHASISWA dan ATURAN yang diberikan. \
+Jawab dengan satu atau dua kalimat lengkap yang langsung menjawab pertanyaan dan menyebut hal yang ditanyakan, \
+dengan bentuk seperti 'IPK terakhir Anda adalah X dari Y SKS.' di mana X dan Y diambil dari data. \
+Untuk daftar, misalnya nilai beberapa mata kuliah, tulis satu butir singkat per baris. \
+Salin angka, nama, dan tanggal persis seperti di data, termasuk tanda koma pada angka desimal; jangan menghitung ulang, membulatkan, atau menebak. \
+Jika yang ditanyakan tidak ada di data, katakan dengan sopan bahwa informasinya belum tercatat. \
 Jika data ditandai TIDAK DIIZINKAN, katakan bahwa penanya tidak berhak melihatnya dan jangan menyebut isinya. \
-Jangan menambahkan pengetahuan di luar data.";
+Jangan mengulang pertanyaan, jangan menyapa panjang, dan jangan menambahkan pengetahuan di luar data.";
+
+/// Who the answer is addressed to
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum Viewpoint {
+    /// The student asking about themselves: "Anda"
+    Own,
+    /// A lecturer or staff member asking about a student: "mahasiswa tersebut"
+    Other,
+}
+
+impl Viewpoint {
+    const fn rule(self) -> &'static str {
+        match self {
+            Viewpoint::Own => " Penanya adalah mahasiswa itu sendiri, jadi sebut dia dengan 'Anda'.",
+            Viewpoint::Other => " Penanya bukan mahasiswa itu, jadi sebut 'mahasiswa tersebut' atau namanya dan jangan memakai 'Anda'.",
+        }
+    }
+}
 
 /// Added only when regulations are in the prompt: a rule that never applies still leaks into a small model's answer
 const REGULATION_RULE: &str = " Untuk pernyataan yang berasal dari ATURAN, sebutkan nomor sumbernya, misalnya [1].";
@@ -345,9 +367,10 @@ fn clip(text: &str, max: usize) -> String {
 const REGULATION_BODY_CHARS: usize = 500;
 
 /// Chat prompt in the format of `kind`: instructions, the student's data, optional regulations, then the question
-pub fn build_prompt(kind: LlmKind, question: &str, student_context: &str, regulations: &[Hit]) -> String {
+pub fn build_prompt(kind: LlmKind, viewpoint: Viewpoint, question: &str, student_context: &str, regulations: &[Hit]) -> String {
     let mut context = format!("DATA MAHASISWA:\n{student_context}\n");
     let mut system = SYSTEM.to_owned();
+    system.push_str(viewpoint.rule());
     if !regulations.is_empty() {
         system.push_str(REGULATION_RULE);
         context.push_str("ATURAN:\n");
@@ -490,10 +513,10 @@ mod tests {
 
     #[test]
     fn prompt_has_the_chat_format_of_each_model() {
-        let qwen = build_prompt(LlmKind::Qwen3, "IPK saya?", "PROFIL: x\n", &[]);
+        let qwen = build_prompt(LlmKind::Qwen3, Viewpoint::Own, "IPK saya?", "PROFIL: x\n", &[]);
         assert!(qwen.starts_with("<|im_start|>system") && qwen.ends_with("</think>\n\n"));
         assert!(qwen.contains("DATA MAHASISWA:\nPROFIL: x") && !qwen.contains("ATURAN:"));
-        let gemma = build_prompt(LlmKind::Gemma, "IPK saya?", "PROFIL: x\n", &[]);
+        let gemma = build_prompt(LlmKind::Gemma, Viewpoint::Own, "IPK saya?", "PROFIL: x\n", &[]);
         assert!(gemma.starts_with("<bos><start_of_turn>user") && gemma.ends_with("<start_of_turn>model\n"));
     }
 
@@ -602,5 +625,29 @@ mod tests {
         };
         let text = render_sensitive(&sensitive, Limits::START);
         assert!(text.contains("NIK tidak tercatat") && text.contains("telepon tidak tercatat"));
+    }
+
+    #[test]
+    fn numbers_use_the_decimal_comma() {
+        assert_eq!(number(Some(3.5)), "3,50");
+        assert_eq!(number(None), "-");
+        let academic = Academic {
+            semesters: vec![],
+            latest_cumulative_index: Some(3.456),
+            latest_cumulative_credit: Some(100.0),
+            grades_semester: None,
+            grades: vec![],
+            final_assignment: vec![],
+        };
+        assert!(render_academic(&academic, Limits::START).contains("IPK terakhir 3,46 dari 100,00 SKS"));
+    }
+
+    #[test]
+    fn the_prompt_addresses_the_asker_correctly() {
+        let own = build_prompt(LlmKind::Qwen, Viewpoint::Own, "IPK saya?", "x\n", &[]);
+        assert!(own.contains("mahasiswa itu sendiri") && !own.contains("jangan memakai 'Anda'"));
+        let other = build_prompt(LlmKind::Qwen, Viewpoint::Other, "IPK dia?", "x\n", &[]);
+        assert!(other.contains("mahasiswa tersebut") && other.contains("jangan memakai 'Anda'"));
+        assert!(own.contains("satu atau dua kalimat lengkap") && other.contains("satu atau dua kalimat lengkap"));
     }
 }

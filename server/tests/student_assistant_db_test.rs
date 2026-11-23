@@ -396,7 +396,7 @@ async fn the_local_model_repeats_the_numbers_in_the_data() {
         .await
         .expect("students with a stored IPK");
     let llm = LlmService::global(kind).expect("model loads");
-    let params = GenParams { temperature: 0.0, max_new_tokens: 120, ..GenParams::default() };
+    let params = GenParams { temperature: 0.0, max_new_tokens: 140, ..GenParams::default() };
 
     for id in ids {
         let data = student_data::load(&db, id, &everything(), Wanted { profile: false, academic: true, finance: false, sensitive: false }, None)
@@ -404,7 +404,7 @@ async fn the_local_model_repeats_the_numbers_in_the_data() {
             .expect("load");
         let ipk = data.academic.as_ref().and_then(|a| a.latest_cumulative_index).expect("a cumulative index");
         let context = student_assistant::render_context(&data, Limits::START);
-        let prompt = student_assistant::build_prompt(kind, "Berapa IPK saya?", &context, &[]);
+        let prompt = student_assistant::build_prompt(kind, student_assistant::Viewpoint::Own, "Berapa IPK saya?", &context, &[]);
         let tokens = llm.count_tokens(&prompt).expect("count");
         let answer = llm.generate(&prompt, &params, |_| true).expect("generate").text;
         let exact = format!("{ipk:.2}");
@@ -414,4 +414,120 @@ async fn the_local_model_repeats_the_numbers_in_the_data() {
         assert!(tokens <= kind.max_prompt_tokens() + 200, "the prompt is far over the model's budget");
         assert!(answer.contains(&exact) || answer.contains(&with_comma), "the answer must repeat IPK {exact}");
     }
+}
+
+fn model_answer(llm: &LlmService, kind: LlmKind, viewpoint: student_assistant::Viewpoint, question: &str, data: &student_data::StudentData) -> String {
+    let params = GenParams { temperature: 0.0, max_new_tokens: 140, ..GenParams::default() };
+    let context = student_assistant::render_context(data, Limits::START);
+    let prompt = student_assistant::build_prompt(kind, viewpoint, question, &context, &[]);
+    llm.generate(&prompt, &params, |_| true).expect("generate").text.trim().to_owned()
+}
+
+fn show(label: &str, answer: &str) {
+    let flat = answer.replace('\n', " | ");
+    println!("  [{label}] {}", flat.chars().take(300).collect::<String>());
+}
+
+/// Needs the model files; run with `-- --ignored --nocapture`. Prints each answer so the wording can be read, and
+/// checks what can be checked mechanically: whole sentences, the right numbers, the right person, and no invented
+/// numbers when data is withheld or missing
+#[tokio::test]
+#[ignore]
+async fn the_local_model_answers_in_sentences() {
+    use student_assistant::Viewpoint::{Other, Own};
+    let kind = LlmKind::default();
+    if !kind.model_path().is_file() || !kind.tokenizer_path().is_file() {
+        println!("SKIPPED: model files are missing");
+        return;
+    }
+    let db = db().await;
+    let llm = LlmService::global(kind).expect("model loads");
+    let ids: Vec<Uuid> = student_activities::Entity::find()
+        .filter(student_activities::Column::DeletedAt.is_null())
+        .select_only()
+        .column(student_activities::Column::StudentId)
+        .distinct()
+        .limit(40)
+        .into_tuple()
+        .all(&db)
+        .await
+        .expect("students with activities");
+    let only = |academic: bool, finance: bool, sensitive: bool| Wanted { profile: false, academic, finance, sensitive };
+    let words = |text: &str| text.split_whitespace().count();
+    let has_digit = |text: &str| text.chars().any(|c| c.is_ascii_digit());
+    let mut failures: Vec<String> = Vec::new();
+
+    // A student with an IPK and grades in the latest semester
+    let mut graded = None;
+    for id in &ids {
+        let data = student_data::load(&db, *id, &everything(), only(true, false, false), None).await.expect("load");
+        let has = data.academic.as_ref().is_some_and(|a| a.latest_cumulative_index.is_some() && !a.grades.is_empty());
+        if has {
+            graded = Some((*id, data));
+            break;
+        }
+    }
+    let Some((id, data)) = graded else {
+        println!("SKIPPED: no student with an IPK and grades among the first 40");
+        return;
+    };
+    let academic = data.academic.as_ref().expect("academic");
+    let ipk = academic.latest_cumulative_index.expect("ipk");
+    let ipk_text = format!("{ipk:.2}").replace('.', ",");
+
+    println!("IPK, asked by the student");
+    let answer = model_answer(llm, kind, Own, "Berapa IPK saya?", &data);
+    show("own", &answer);
+    if !answer.contains(&ipk_text) { failures.push(format!("own IPK: {ipk_text} missing")); }
+    if words(&answer) < 4 { failures.push("own IPK: not a sentence".into()); }
+    if !answer.contains("Anda") { failures.push("own IPK: does not address the student as Anda".into()); }
+
+    println!("IPK, asked by a lecturer");
+    let answer = model_answer(llm, kind, Other, "Berapa IPK mahasiswa ini?", &data);
+    show("other", &answer);
+    if !answer.contains(&ipk_text) { failures.push(format!("other IPK: {ipk_text} missing")); }
+    if words(&answer) < 4 { failures.push("other IPK: not a sentence".into()); }
+    if answer.contains("Anda") { failures.push("other IPK: calls the student Anda".into()); }
+
+    println!("grades of the latest semester");
+    let answer = model_answer(llm, kind, Own, "Apa saja nilai saya semester ini?", &data);
+    show("grades", &answer);
+    let codes: Vec<&str> = academic.grades.iter().take(5).map(|g| g.course_code.as_str()).collect();
+    let named = codes.iter().filter(|c| !c.is_empty() && answer.contains(**c)).count();
+    let names_named = academic.grades.iter().take(5).filter(|g| !g.course.is_empty() && answer.to_lowercase().contains(&g.course.to_lowercase())).count();
+    if named.max(names_named) < codes.len().min(3) { failures.push(format!("grades: only {} of the first {} courses named", named.max(names_named), codes.len())); }
+
+    println!("a fee the caller may not see");
+    let blocked = DataScope { profile: true, academic: true, finance: false, sensitive: false, teach_ids: None };
+    let withheld = student_data::load(&db, id, &blocked, only(false, true, false), None).await.expect("load");
+    assert_eq!(withheld.withheld, vec!["finance"]);
+    let answer = model_answer(llm, kind, Other, "Berapa biaya kuliah mahasiswa ini?", &withheld);
+    show("withheld", &answer);
+    if !answer.to_lowercase().contains("tidak") { failures.push("withheld: does not say it is not allowed".into()); }
+    if has_digit(&answer) { failures.push("withheld: invented a number".into()); }
+
+    println!("personal data that was never recorded");
+    let mut empty = None;
+    for id in &ids {
+        let data = student_data::load(&db, *id, &everything(), only(false, false, true), None).await.expect("load");
+        let s = data.sensitive.as_ref().expect("sensitive");
+        if s.national_id.is_none() && s.addresses.is_empty() && s.phones.is_empty() && s.emails.is_empty() {
+            empty = Some(data);
+            break;
+        }
+    }
+    match empty {
+        Some(data) => {
+            let answer = model_answer(llm, kind, Own, "Apa nomor HP dan alamat saya?", &data);
+            show("missing", &answer);
+            let lower = answer.to_lowercase();
+            if !(lower.contains("belum tercatat") || lower.contains("tidak tercatat") || lower.contains("tidak tersedia")) {
+                failures.push("missing: does not say it is not recorded".into());
+            }
+            if has_digit(&answer) { failures.push("missing: invented a number".into()); }
+        }
+        None => println!("  skip: every student among the first 40 has some personal data"),
+    }
+
+    assert!(failures.is_empty(), "answer quality problems:\n{}", failures.join("\n"));
 }

@@ -22,7 +22,6 @@ use xsia_xarx::middleware::rbac::{INSTITUTION_WIDE_POSITION_TYPE_IDS, UNIT_SCOPE
 use xsia_xarx::models::academic::student::master::students;
 use xsia_xarx::models::auth::role;
 use xsia_xarx::models::institution::master::staffes;
-use xsia_xarx::services::ai::student_assistant;
 use xsia_xarx::services::ai::student_data::{self, Wanted};
 use xsia_xarx::services::ai::student_scope::{self, DataScope, LECTURER_ROLEABLE_TYPE, STAFF_ROLEABLE_TYPE, STUDENT_ROLEABLE_TYPE};
 
@@ -205,7 +204,7 @@ async fn the_assistant_endpoint_end_to_end() {
     let mut run = Run { failures: vec![] };
     let mut used_users: BTreeSet<Uuid> = BTreeSet::new();
 
-    let question_params = |question: &str| json!({ "question": question, "max_new_tokens": 80 });
+    let question_params = |question: &str| json!({ "question": question, "max_new_tokens": 140 });
 
     // ── Student ──────────────────────────────────────────────────────────────────────────────────────────────
     println!("student");
@@ -255,7 +254,7 @@ async fn the_assistant_endpoint_end_to_end() {
         }
 
         if let Some(other) = &other {
-            let forged = json!({ "question": format!("Berapa IPK mahasiswa {}?", other.code), "student_id": other.id, "max_new_tokens": 60 });
+            let forged = json!({ "question": format!("Berapa IPK mahasiswa {}?", other.code), "student_id": other.id, "max_new_tokens": 100 });
             let reply = ask(&service, Some(&student.token), forged).await;
             run.check(
                 "a student naming another student by number and id still gets only themselves",
