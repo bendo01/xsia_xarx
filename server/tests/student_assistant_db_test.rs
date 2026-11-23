@@ -308,6 +308,26 @@ async fn names_and_numbers_find_the_student() {
         println!("SKIPPED: no student with a unique name among the first 30");
         return;
     }
+    // Numbers stored in groups (`2021 01 123`) are found however the question writes them: as stored, with dots, joined
+    let grouped = students::Entity::find()
+        .filter(students::Column::DeletedAt.is_null())
+        .filter(sea_orm::sea_query::Expr::cust("code ~ '^[0-9]+( [0-9]+)+$'"))
+        .limit(3)
+        .all(&db)
+        .await
+        .expect("students with grouped numbers");
+    for student in &grouped {
+        let same = students::Entity::find().filter(students::Column::Code.eq(student.code.clone())).all(&db).await.expect("same code").len();
+        if same != 1 {
+            continue;
+        }
+        for written in [student.code.clone(), student.code.replace(' ', "."), student.code.replace(' ', "")] {
+            let found = student_scope::candidates(&db, &format!("Berapa IPK mahasiswa {written}?"), None).await.expect("candidates");
+            assert!(found.contains(&student.id), "a grouped student number must be found when written with {written:?} style");
+        }
+    }
+    println!("OK: {} students with grouped numbers found in three writings", grouped.len());
+
     // Nobody is found in a question that names nobody, and the carried-over student is used instead
     let carried = Uuid::new_v4();
     let nobody = student_scope::candidates(&db, "berapa ipk saya", Some(carried)).await.expect("candidates");

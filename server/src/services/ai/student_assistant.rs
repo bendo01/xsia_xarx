@@ -141,6 +141,37 @@ pub fn student_codes(question: &str) -> Vec<String> {
     found
 }
 
+/// The student numbers in a question with everything but letters and digits removed, lower-cased, so they can be
+/// compared with stored numbers written with spaces, dots or dashes (`2021 01 123`, `2021.01.123` and `202101123`
+/// are one number). A number split into groups of digits is joined from 2 to 5 consecutive groups. Candidates are
+/// only compared for equality, so extra ones cost nothing but a longer list
+pub fn compact_codes(question: &str) -> Vec<String> {
+    let compact = |text: &str| text.chars().filter(|c| c.is_alphanumeric()).collect::<String>().to_lowercase();
+    let mut found: Vec<String> = Vec::new();
+    let mut add = |candidate: String| {
+        if candidate.chars().count() >= 5 && candidate.chars().any(|c| c.is_ascii_digit()) && !found.contains(&candidate) {
+            found.push(candidate);
+        }
+    };
+    for code in student_codes(question) {
+        add(compact(&code));
+    }
+    let tokens: Vec<&str> = question.split(|c: char| !c.is_alphanumeric()).filter(|t| !t.is_empty()).collect();
+    for start in 0..tokens.len() {
+        let mut joined = String::new();
+        for (taken, token) in tokens[start..].iter().enumerate() {
+            if !token.chars().all(|c| c.is_ascii_digit()) {
+                break;
+            }
+            joined.push_str(token);
+            if taken >= 1 && taken < 5 {
+                add(joined.clone());
+            }
+        }
+    }
+    found
+}
+
 /// How much of a student's record goes into the prompt; shrunk until the prompt fits the model
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Limits {
@@ -355,6 +386,17 @@ mod tests {
         let dotted = student_codes("IPK 12.34.56789?");
         assert!(dotted.contains(&"12.34.56789".to_owned()), "{dotted:?}");
         assert!(student_codes("IPK 2021-0123, ya").contains(&"2021-0123".to_owned()));
+    }
+
+    #[test]
+    fn numbers_written_in_groups_are_joined() {
+        assert!(compact_codes("Berapa IPK mahasiswa 2021 01 123?").contains(&"202101123".to_owned()));
+        assert!(compact_codes("nilai 2021.01.123 ya").contains(&"202101123".to_owned()));
+        assert!(compact_codes("nim 202101123").contains(&"202101123".to_owned()));
+        assert!(compact_codes("Siapa A12345?").contains(&"a12345".to_owned()));
+        // Words and short numbers alone are not numbers
+        assert!(compact_codes("tahun 2023 semester 5").is_empty());
+        assert!(compact_codes("berapa ipk saya").is_empty());
     }
 
     #[test]

@@ -232,6 +232,30 @@ pub async fn candidates(db: &DatabaseConnection, question: &str, carried_over: O
         }
     }
 
+    // Stored numbers are often written in groups (`2021 01 123`), so compare them without spaces, dots and dashes
+    let compact = student_assistant::compact_codes(question);
+    if !compact.is_empty() {
+        let placeholders = (1..=compact.len()).map(|i| format!("${i}")).collect::<Vec<_>>().join(", ");
+        let mut values: Vec<sea_orm::Value> = compact.into_iter().map(Into::into).collect();
+        let limit_placeholder = values.len() + 1;
+        values.push((MAX_CANDIDATES as i64).into());
+        let rows = db
+            .query_all_raw(Statement::from_sql_and_values(
+                DbBackend::Postgres,
+                format!(
+                    "SELECT id FROM academic_student_master.students WHERE deleted_at IS NULL \
+                     AND lower(regexp_replace(code, '[^[:alnum:]]', '', 'g')) IN ({placeholders}) LIMIT ${limit_placeholder}"
+                ),
+                values,
+            ))
+            .await
+            .map_err(internal)?;
+        let found: Vec<Uuid> = rows.iter().filter_map(|row| row.try_get::<Uuid>("", "id").ok()).collect();
+        if !found.is_empty() {
+            return Ok(found);
+        }
+    }
+
     // Plain parameterised SQL: the name of every student is normalised the same way as the question (lower case,
     // runs of anything but letters and digits become one space) and must appear in it as whole words
     let normalized = format!(" {} ", student_assistant::normalized(question));
