@@ -1,9 +1,0 @@
-/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/gpui_ce_parley/3761286cd7ac5c07/out/gpui_ce_parley-3761286cd7ac5c07.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/catalog.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/store.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system/paragraphs.rs
-
-/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/gpui_ce_parley/3761286cd7ac5c07/out/libgpui_ce_parley-3761286cd7ac5c07.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/catalog.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/store.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system/paragraphs.rs
-
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/lib.rs:
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/catalog.rs:
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/store.rs:
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system.rs:
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_parley-0.3.0/src/text_system/paragraphs.rs:

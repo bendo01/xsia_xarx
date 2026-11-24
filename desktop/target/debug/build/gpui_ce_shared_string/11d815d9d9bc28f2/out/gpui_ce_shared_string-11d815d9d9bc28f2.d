@@ -1,5 +1,0 @@
-/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/gpui_ce_shared_string/11d815d9d9bc28f2/out/gpui_ce_shared_string-11d815d9d9bc28f2.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_shared_string-0.3.0/gpui_shared_string.rs
-
-/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/gpui_ce_shared_string/11d815d9d9bc28f2/out/libgpui_ce_shared_string-11d815d9d9bc28f2.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_shared_string-0.3.0/gpui_shared_string.rs
-
-/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/gpui_ce_shared_string-0.3.0/gpui_shared_string.rs:
