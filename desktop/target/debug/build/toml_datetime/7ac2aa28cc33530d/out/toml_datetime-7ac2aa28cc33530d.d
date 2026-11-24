@@ -1,0 +1,10 @@
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/toml_datetime/7ac2aa28cc33530d/out/toml_datetime-7ac2aa28cc33530d.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/datetime.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/de.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/ser.rs
+
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/toml_datetime/7ac2aa28cc33530d/out/libtoml_datetime-7ac2aa28cc33530d.rlib: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/datetime.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/de.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/ser.rs
+
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/toml_datetime/7ac2aa28cc33530d/out/libtoml_datetime-7ac2aa28cc33530d.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/datetime.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/de.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/ser.rs
+
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/lib.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/datetime.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/de.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-1.1.3+spec-1.1.0/src/ser.rs:

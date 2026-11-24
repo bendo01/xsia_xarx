@@ -1,0 +1,12 @@
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/27256a5ec44b1787/out/thiserror-27256a5ec44b1787.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/2f80a0fcee3fd2ed/out/private.rs
+
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/27256a5ec44b1787/out/libthiserror-27256a5ec44b1787.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/2f80a0fcee3fd2ed/out/private.rs
+
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/lib.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/aserror.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/display.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/var.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/thiserror-2.0.21/src/private.rs:
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/2f80a0fcee3fd2ed/out/private.rs:
+
+# env-dep:OUT_DIR=/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/thiserror/2f80a0fcee3fd2ed/out

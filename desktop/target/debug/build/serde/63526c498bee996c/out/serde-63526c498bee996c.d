@@ -1,0 +1,12 @@
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/63526c498bee996c/out/serde-63526c498bee996c.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/246bf0d0e8fef65d/out/private.rs
+
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/63526c498bee996c/out/libserde-63526c498bee996c.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/246bf0d0e8fef65d/out/private.rs
+
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/lib.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/integer128.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/mod.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/de.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/serde-1.0.229/src/private/ser.rs:
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/246bf0d0e8fef65d/out/private.rs:
+
+# env-dep:OUT_DIR=/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/serde/246bf0d0e8fef65d/out

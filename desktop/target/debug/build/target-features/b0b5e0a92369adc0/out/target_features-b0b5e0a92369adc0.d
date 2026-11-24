@@ -1,0 +1,11 @@
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b0b5e0a92369adc0/out/target_features-b0b5e0a92369adc0.d: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.md /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/docs.rs
+
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b0b5e0a92369adc0/out/libtarget_features-b0b5e0a92369adc0.rmeta: /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs /home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.md /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.rs /home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/docs.rs
+
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/lib.rs:
+/home/bendo01/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/target-features-0.1.6/src/simd.rs:
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.md:
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/generated.rs:
+/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out/docs.rs:
+
+# env-dep:OUT_DIR=/home/bendo01/Projects/xsia_xarx/desktop/target/debug/build/target-features/b36a1c05b9cbb924/out
