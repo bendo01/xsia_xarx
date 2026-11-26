@@ -12,3 +12,5 @@ bagaimana menunjukkan deteksi hasil yang evaluasi oleh machine learning
 hilangkan Percentile rank + soft vote pada gambar
 
 pisahkan penjalanan Rule-based detection dan Machine Learning
+
+periksa `server/src/services/compliance/anomaly`

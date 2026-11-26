@@ -23,23 +23,30 @@ OUT = Path(__file__).parent / "results"
 
 
 # ---------------------------------------------------------------- data
+# Every query ends in "order by id": injection picks rows by position, so a
+# fixed order is needed to reproduce the results. The created_at limit keeps the
+# student-semester extract at the 3,948 records described in the paper.
 QUERIES = {
     "student_semester": """
         select ips, ipk, sks_semester, sks_total,
                (nama_status_mahasiswa = 'Aktif')::int as aktif
-        from feeder_master.perkuliahan_mahasiswa""",
+        from feeder_master.perkuliahan_mahasiswa
+        where created_at < '2026-11-07'
+        order by id""",
     "course": """
         select sks_mata_kuliah, coalesce(sks_tatap_muka,0) as sks_tm,
                coalesce(sks_praktek,0) as sks_prak,
                coalesce(sks_praktek_lapangan,0) as sks_lap,
                coalesce(sks_simulasi,0) as sks_sim
-        from feeder_master.matakuliah""",
+        from feeder_master.matakuliah
+        order by id""",
     "teaching": """
         select rencana_minggu_pertemuan as rencana,
                realisasi_minggu_pertemuan as realisasi
         from feeder_master.aktifitas_mengajar_dosen
         where rencana_minggu_pertemuan is not null
-          and realisasi_minggu_pertemuan is not null""",
+          and realisasi_minggu_pertemuan is not null
+        order by id""",
 }
 
 
@@ -153,10 +160,6 @@ def ml_scores(X, seed):
     return {"isolation_forest": iforest, "lof": lof, "autoencoder": err}
 
 
-def rank01(x):
-    return pd.Series(x).rank(pct=True).to_numpy()
-
-
 def evaluate(score, flag, label, kind):
     k = int(label.sum())
     top = np.argsort(-score, kind="stable")[:k]
@@ -182,11 +185,6 @@ def run_once(clean, entity, frac, seed):
     results = {"rules": evaluate(flag.astype(float), flag, label, kind)}
     for name, s in ml.items():
         results[name] = evaluate(s, None, label, kind)
-    # combined: rule violations first, then ML ensemble rank
-    ens = np.mean([rank01(s) for s in ml.values()], axis=0)
-    comb = flag * 10.0 + ens
-    results["combined"] = evaluate(comb, flag | (ens >= np.sort(ens)[-int(label.sum())]),
-                                   label, kind)
     return results
 
 

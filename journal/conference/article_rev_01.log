@@ -1,9 +1,9 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  23 NOV 2026 12:40
+This is pdfTeX, Version 3.141592653-2.6-1.40.29 (TeX Live 2026/Arch Linux) (preloaded format=pdflatex 2026.11.1)  26 NOV 2026 21:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**/home/bendo01/Projects/xsia_xarx/journal/conference/article_rev_01.tex
-(/home/bendo01/Projects/xsia_xarx/journal/conference/article_rev_01.tex
+**article_rev_01.tex
+(./article_rev_01.tex
 LaTeX2e <2025-11-01>
 L3 programming layer <2026-01-19>
 (./IEEEtran.cls
@@ -740,7 +740,13 @@ LaTeX Font Info:    Trying to load font information for U+msb on input line 100
 
 (/usr/share/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
-) [2] [3] [4] [5]
+) [2] [3] [4]
+<fig_scatter_ae.pdf, id=205, 249.3315pt x 224.037pt>
+File: fig_scatter_ae.pdf Graphic file (type pdf)
+<use fig_scatter_ae.pdf>
+Package pdftex.def Info: fig_scatter_ae.pdf  used on input line 314.
+(pdftex.def)             Requested size: 252.0pt x 226.43623pt.
+ [5 <./fig_scatter_ae.pdf>]
 
 ** Conference Paper **
 Before submitting the final camera ready copy, remember to:
@@ -761,30 +767,29 @@ Package rerunfilecheck Info: File `article_rev_01.out' has not changed.
 (rerunfilecheck)             Checksum: 681B648ACE17296BF3E932899BDA9114;3528.
  ) 
 Here is how much of TeX's memory you used:
- 21894 strings out of 469515
- 404638 string characters out of 5470807
- 816249 words of memory out of 5000000
- 50137 multiletter control sequences out of 15000+600000
+ 21895 strings out of 469515
+ 404601 string characters out of 5470807
+ 813582 words of memory out of 5000000
+ 50138 multiletter control sequences out of 15000+600000
  668039 words of font info for 114 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 84i,11n,94p,1513b,738s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/
-texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/fonts/type1/public
-/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cm
-r10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/sh
-are/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/publi
-c/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr
-/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/te
-xmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/fonts/type1/ur
-w/times/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></u
-sr/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on article_rev_01.pdf (6 pages, 206027 bytes).
+ 84i,11n,94p,1533b,738s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/
+texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></usr/share/texmf-dist/font
+s/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/
+amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr
+6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/shar
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmsy7.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/c
+msy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
+</usr/share/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></usr/share/texmf-dist/
+fonts/type1/urw/times/utmbi8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/
+utmr8a.pfb></usr/share/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on article_rev_01.pdf (6 pages, 263258 bytes).
 PDF statistics:
- 297 PDF objects out of 1000 (max. 8388607)
- 254 compressed objects within 3 object streams
- 58 named destinations out of 1000 (max. 500000)
- 181 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 316 PDF objects out of 1000 (max. 8388607)
+ 259 compressed objects within 3 object streams
+ 59 named destinations out of 1000 (max. 500000)
+ 186 words of extra memory for PDF output out of 10000 (max. 10000000)
 

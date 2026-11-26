@@ -1,6 +1,5 @@
 # Fdb version 4
-["pdflatex"] 1795408823.96862 "/home/bendo01/Projects/xsia_xarx/journal/conference/article_rev_01.tex" "article_rev_01.pdf" "article_rev_01" 1795408824.98482 0
-  "/home/bendo01/Projects/xsia_xarx/journal/conference/article_rev_01.tex" 1795408822.98884 38430 2957a04ac63661ace175d37fa26f1e69 ""
+["pdflatex"] 1795700988.30549 "article_rev_01.tex" "article_rev_01.pdf" "article_rev_01" 1795700991.43634 0
   "/usr/share/texmf-dist/fonts/enc/dvips/base/8r.enc" 1775415801 4850 80dc9bab7f31fb78a000ccfed0e27cab ""
   "/usr/share/texmf-dist/fonts/map/fontname/texfonts.map" 1775415801 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/share/texmf-dist/fonts/tfm/adobe/times/ptmb7t.tfm" 1775415801 2172 fd0c924230362ff848a33632ed45dc23 ""
@@ -26,7 +25,6 @@
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmr8.tfm" 1775415801 1292 21c1c5bfeaebccffdb478fd231a0997d ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy6.tfm" 1775415801 1116 933a60c408fc0a863a92debe84b2d294 ""
   "/usr/share/texmf-dist/fonts/tfm/public/cm/cmsy8.tfm" 1775415801 1120 8b7d695260f3cff42e636090a8002094 ""
-  "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb" 1775415801 30251 6afa5cb1d0204815a708a080681d4674 ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb" 1775415801 36299 5f9df58c2139e7edcf37c8fca4bd384d ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb" 1775415801 36281 c355509802a035cadc5f15869451dcee ""
   "/usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb" 1775415801 35469 70d41d2b9ea31d5d813066df7c99281c ""
@@ -168,9 +166,10 @@
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1793499881 5385779 47c0c393a77fd4a098bacfd57d66b88a ""
   "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1793499685 2328188 c9608c77c511b30a339d01369613397a ""
   "IEEEtran.cls" 1793603631.86422 288304 b67b6fc6c2abb39f9b461923f5199343 ""
-  "article_rev_01.aux" 1795408824.85987 6944 56b32e57ab12ef41b2f26b304cc9866f "pdflatex"
-  "article_rev_01.out" 1795408824.86087 3528 681b648ace17296bf3e932899bda9114 "pdflatex"
-  "article_rev_01.tex" 1795408822.98884 38430 2957a04ac63661ace175d37fa26f1e69 ""
+  "article_rev_01.aux" 1795700991.01934 7723 ef0f0bfe1d96ce382e43fd044130e1de "pdflatex"
+  "article_rev_01.out" 1795700991.02334 3528 681b648ace17296bf3e932899bda9114 "pdflatex"
+  "article_rev_01.tex" 1795700907.85387 38224 aa01c0f50a8b05675fd4490f7611d85a ""
+  "fig_scatter_ae.pdf" 1795700860.17866 67835 c75ae66b0957477c42cc38ee00651792 ""
   (generated)
   "article_rev_01.aux"
   "article_rev_01.log"
