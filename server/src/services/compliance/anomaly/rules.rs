@@ -59,7 +59,7 @@ pub fn class_over_capacity(classes: &[ClassEnrolment]) -> Vec<Detection> {
                 rule_code: Some("CLASS_CAPACITY_MAX"),
                 score,
                 severity: Severity::from_score(score),
-                evidence: json!({ "capacity": c.capacity, "enrolled": c.enrolled }),
+                evidence: json!({ "semester": c.semester, "capacity": c.capacity, "enrolled": c.enrolled }),
             }
         })
         .collect()

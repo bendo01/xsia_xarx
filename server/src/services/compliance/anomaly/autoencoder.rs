@@ -1,6 +1,7 @@
 //! Dense autoencoder (burn, CPU/ndarray). Rows are z-scored, squeezed through a bottleneck and
 //! reconstructed; the per-row reconstruction error is the outlier score.
 
+use super::features::column_stats;
 use burn::{
     backend::{Autodiff, NdArray},
     module::{AutodiffModule, Module},
@@ -58,14 +59,7 @@ impl Autoencoder {
         if d == 0 || rows.len() < 2 {
             return None;
         }
-        let n = rows.len() as f64;
-        let mean: Vec<f64> = (0..d).map(|j| rows.iter().map(|r| r[j]).sum::<f64>() / n).collect();
-        let std: Vec<f64> = (0..d)
-            .map(|j| {
-                let s = (rows.iter().map(|r| (r[j] - mean[j]).powi(2)).sum::<f64>() / n).sqrt();
-                if s > 1e-9 { s } else { 1.0 }
-            })
-            .collect();
+        let (mean, std) = column_stats(rows);
 
         let step = rows.len().div_ceil(max_train_rows.max(1));
         let sample: Vec<Vec<f64>> = rows.iter().skip((seed as usize) % step).step_by(step).cloned().collect();

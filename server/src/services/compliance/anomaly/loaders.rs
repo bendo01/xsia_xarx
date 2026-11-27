@@ -1,7 +1,7 @@
 //! Builds anomaly-detection inputs from `feeder_master`. Reads FEEDER data only.
 
 use super::{ClassEnrolment, LecturerLoad, StudentSpan, StudentTerm};
-use crate::models::feeder::master::{aktifitas_kuliah_mahasiswa, dosen_pengajar_kelas_kuliah, kelas_kuliah, mahasiswa, nilai_perkuliahan_kelas};
+use crate::models::feeder::master::{dosen_pengajar_kelas_kuliah, kelas_kuliah, mahasiswa, nilai_perkuliahan_kelas, perkuliahan_mahasiswa};
 use chrono::{Datelike, NaiveDate};
 use sea_orm::{ConnectionTrait, DbErr, EntityTrait};
 use std::collections::HashMap;
@@ -60,23 +60,40 @@ pub async fn class_enrolments<C: ConnectionTrait>(db: &C) -> Result<Vec<ClassEnr
         .collect())
 }
 
-/// One row per (student, semester) from `aktifitas_kuliah_mahasiswa`; rows missing any grade/credit/tuition value are skipped.
+/// Builds a term from the columns of one `perkuliahan_mahasiswa` row, ordered
+/// `[ips, ipk, sks_semester, sks_total, biaya_kuliah_smt]`. `students` maps a registration id to
+/// `mahasiswa.id`. `None` if the registration is unknown or any value is missing.
+fn student_term(registration: Option<Uuid>, semester: Option<String>, values: [Option<f32>; 5], students: &HashMap<Uuid, Uuid>) -> Option<StudentTerm> {
+    let [ips, ipk, sks_semester, sks_total, tuition] = values;
+    Some(StudentTerm {
+        student_id: *students.get(&registration?)?,
+        semester: semester?,
+        ips: f64::from(ips?),
+        ipk: f64::from(ipk?),
+        sks_semester: f64::from(sks_semester?),
+        sks_total: f64::from(sks_total?),
+        tuition: f64::from(tuition?),
+    })
+}
+
+/// One row per (student, semester) from `perkuliahan_mahasiswa`. The student id is `mahasiswa.id`,
+/// the same one [`student_spans`] uses; rows without a matching student or missing a value are skipped.
 pub async fn student_terms<C: ConnectionTrait>(db: &C) -> Result<Vec<StudentTerm>, DbErr> {
-    Ok(aktifitas_kuliah_mahasiswa::Entity::find()
+    let students: HashMap<Uuid, Uuid> = mahasiswa::Entity::find()
         .all(db)
         .await?
         .into_iter()
-        .filter(|a| a.deleted_at.is_none())
-        .filter_map(|a| {
-            Some(StudentTerm {
-                student_id: a.id_mahasiswa?,
-                semester: a.id_semester?,
-                ips: f64::from(a.ips?),
-                ipk: f64::from(a.ipk?),
-                sks_semester: f64::from(a.sks_semester?),
-                sks_total: f64::from(a.sks_total?),
-                tuition: f64::from(a.biaya_kuliah_smt?),
-            })
+        .filter(|m| m.deleted_at.is_none())
+        .filter_map(|m| Some((m.id_registrasi_mahasiswa?, m.id)))
+        .collect();
+    Ok(perkuliahan_mahasiswa::Entity::find()
+        .all(db)
+        .await?
+        .into_iter()
+        .filter(|p| p.deleted_at.is_none())
+        .filter_map(|p| {
+            let values = [p.ips, p.ipk, p.sks_semester, p.sks_total, p.biaya_kuliah_smt];
+            student_term(p.id_registrasi_mahasiswa, p.id_semester, values, &students)
         })
         .collect())
 }
@@ -112,6 +129,20 @@ pub async fn student_spans<C: ConnectionTrait>(db: &C, today: NaiveDate) -> Resu
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn student_term_uses_the_student_id_of_the_registration() {
+        let (registration, student) = (Uuid::new_v4(), Uuid::new_v4());
+        let students = HashMap::from([(registration, student)]);
+        let values = [Some(3.0), Some(3.5), Some(20.0), Some(40.0), Some(1_000_000.0)];
+        let term = |registration, values| student_term(registration, Some("20231".into()), values, &students);
+
+        let found = term(Some(registration), values).unwrap();
+        assert_eq!((found.student_id, found.ipk, found.tuition), (student, 3.5, 1_000_000.0));
+        assert!(term(Some(Uuid::new_v4()), values).is_none());
+        assert!(term(None, values).is_none());
+        assert!(term(Some(registration), [None, values[1], values[2], values[3], values[4]]).is_none());
+    }
 
     #[test]
     fn period_year_reads_year_and_semester() {

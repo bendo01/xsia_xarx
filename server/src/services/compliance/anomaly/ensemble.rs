@@ -1,6 +1,7 @@
 //! Soft voting: weighted mean of detector scores that were first normalised to `[0, 1]`.
 
-/// Percentile rank in `[0, 1]` (ties share their average rank); constant input maps to all 0.0.
+/// Percentile rank in `[0, 1]` (ties share their average rank), so constant input maps to all 0.5.
+/// Fewer than two values give 0.0.
 pub fn percentile_rank(values: &[f64]) -> Vec<f64> {
     let n = values.len();
     if n < 2 {

@@ -12,6 +12,26 @@ pub struct FeatureSet {
     pub rows: Vec<Vec<f64>>,
 }
 
+/// Mean and standard deviation per column; a constant column gets deviation 1 so it can be divided by.
+pub fn column_stats(rows: &[Vec<f64>]) -> (Vec<f64>, Vec<f64>) {
+    let d = rows.first().map_or(0, Vec::len);
+    let n = rows.len() as f64;
+    let mean: Vec<f64> = (0..d).map(|j| rows.iter().map(|r| r[j]).sum::<f64>() / n).collect();
+    let std = (0..d)
+        .map(|j| {
+            let s = (rows.iter().map(|r| (r[j] - mean[j]).powi(2)).sum::<f64>() / n).sqrt();
+            if s > 1e-9 { s } else { 1.0 }
+        })
+        .collect();
+    (mean, std)
+}
+
+/// Z-scores every column, so distance-based detectors weigh features equally regardless of their units.
+pub fn zscore(rows: &[Vec<f64>]) -> Vec<Vec<f64>> {
+    let (mean, std) = column_stats(rows);
+    rows.iter().map(|r| r.iter().enumerate().map(|(j, v)| (v - mean[j]) / std[j]).collect()).collect()
+}
+
 pub fn lecturers(loads: &[LecturerLoad]) -> FeatureSet {
     FeatureSet {
         entity_type: "lecturer",

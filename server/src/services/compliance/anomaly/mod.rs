@@ -121,11 +121,13 @@ impl Default for EnsembleConfig {
 const MIN_GROUP_ROWS: usize = 20;
 
 /// Scores every row of one semester with the three detectors and returns the soft-voted score per row.
-/// Also returns the per-detector normalised scores (`[iforest, lof, autoencoder]`) for the evidence.
+/// Also returns the per-detector percentile ranks (`[iforest, lof, autoencoder]`) for the evidence;
+/// ranking puts the three detectors on one scale, so the vote weights mean what they say.
 fn score_group(rows: &[Vec<f64>], cfg: &EnsembleConfig, seed: u64) -> (Vec<f64>, [Vec<f64>; 3]) {
     let forest = IsolationForest::fit(rows, 100, 256, seed);
-    let iso: Vec<f64> = rows.iter().map(|r| forest.score(r)).collect();
-    let lof_score: Vec<f64> = lof::scores(rows, 20.min(rows.len() - 1)).into_iter().map(|l| (1.0 - 1.0 / l.max(1.0)).clamp(0.0, 1.0)).collect();
+    let iso = ensemble::percentile_rank(&rows.iter().map(|r| forest.score(r)).collect::<Vec<_>>());
+    // LOF measures distances, so it needs comparable feature scales
+    let lof_score = ensemble::percentile_rank(&lof::scores(&features::zscore(rows), 20.min(rows.len() - 1)));
     let ae = match autoencoder::Autoencoder::fit(rows, cfg.epochs, 0.01, cfg.max_train_rows, seed) {
         Some(model) => ensemble::percentile_rank(&model.errors(rows)),
         None => vec![0.0; rows.len()],
@@ -135,13 +137,13 @@ fn score_group(rows: &[Vec<f64>], cfg: &EnsembleConfig, seed: u64) -> (Vec<f64>,
 }
 
 /// Flags, within each semester, the `top_fraction` highest soft-voted rows as `hybrid` detections.
-/// Entities already flagged by a rule are skipped via `skip`.
+/// `(entity, semester)` pairs already flagged by a rule are skipped via `skip`.
 fn ml_detections(
     set: &features::FeatureSet,
     cfg: &EnsembleConfig,
     top_fraction: f64,
     seed: u64,
-    skip: &std::collections::HashSet<Uuid>,
+    skip: &std::collections::HashSet<(Uuid, String)>,
 ) -> Vec<Detection> {
     let mut by_group: std::collections::BTreeMap<&str, Vec<usize>> = std::collections::BTreeMap::new();
     for (i, g) in set.groups.iter().enumerate() {
@@ -159,7 +161,7 @@ fn ml_detections(
         order.sort_by(|&a, &b| vote[b].total_cmp(&vote[a]));
         for &k in order.iter().take(take) {
             let i = members[k];
-            if skip.contains(&set.ids[i]) {
+            if skip.contains(&(set.ids[i], semester.to_owned())) {
                 continue;
             }
             let features: serde_json::Map<String, Value> = set.names.iter().zip(&set.rows[i]).map(|(n, v)| ((*n).to_owned(), Value::from(*v))).collect();
@@ -191,13 +193,14 @@ pub struct Inputs {
 }
 
 /// Runs the rules, then the ML ensemble per semester on lecturers, classes and student terms.
-/// Lecturers and classes the rules already flagged are not flagged again; student terms are a
+/// A lecturer or class a rule flagged is not flagged again for that semester; student terms are a
 /// different granularity from the study-period rule, so they are scored independently.
 pub fn detect(inputs: &Inputs, rule_cfg: &RuleConfig, cfg: &EnsembleConfig, top_fraction: f64, seed: u64) -> Vec<Detection> {
     let mut out = rules::lecturer_overload(&inputs.loads, rule_cfg);
     out.extend(rules::class_over_capacity(&inputs.classes));
     out.extend(rules::study_period_exceeded(&inputs.students, rule_cfg));
-    let flagged: std::collections::HashSet<Uuid> = out.iter().map(|d| d.entity_id).collect();
+    let flagged: std::collections::HashSet<(Uuid, String)> =
+        out.iter().filter_map(|d| Some((d.entity_id, d.evidence["semester"].as_str()?.to_owned()))).collect();
     let none = std::collections::HashSet::new();
 
     out.extend(ml_detections(&features::lecturers(&inputs.loads), cfg, top_fraction, seed, &flagged));
@@ -228,5 +231,43 @@ mod tests {
         let found = detect(&inputs, &rule_cfg, &cfg, 0.05, 1);
         assert!(found.iter().any(|d| d.entity_id == outlier_id && d.detector == "hybrid"));
         assert!(found.iter().all(|d| d.evidence["scores"]["autoencoder"].is_number()));
+    }
+
+    #[test]
+    fn lof_is_not_dominated_by_a_large_scale_feature() {
+        // column 0 is a GPA-like value, column 1 a tuition-like value in the millions
+        let mut rows: Vec<Vec<f64>> = (0..60).map(|i| vec![3.0 + f64::from(i % 5) * 0.1, 1_000_000.0 + f64::from(i) * 50_000.0]).collect();
+        rows.push(vec![0.2, 2_500_000.0]);
+        let (_, [_, lof_score, _]) = score_group(&rows, &EnsembleConfig::default(), 1);
+        let top = (0..rows.len()).max_by(|&a, &b| lof_score[a].total_cmp(&lof_score[b])).unwrap();
+        assert_eq!(top, rows.len() - 1);
+    }
+
+    #[test]
+    fn detector_scores_share_the_percentile_scale() {
+        let rows: Vec<Vec<f64>> = (0..50).map(|i| vec![f64::from(i), f64::from(i * i % 17)]).collect();
+        let (_, parts) = score_group(&rows, &EnsembleConfig::default(), 1);
+        for part in parts {
+            // percentile ranks always average one half and reach 1.0 at the top
+            let mean = part.iter().sum::<f64>() / part.len() as f64;
+            assert!((mean - 0.5).abs() < 1e-9, "mean {mean}");
+            assert!(part.iter().any(|v| *v > 0.97));
+        }
+    }
+
+    #[test]
+    fn rule_hit_only_hides_the_same_semester() {
+        let repeat = load("20231", 20.0, 6);
+        let id = repeat.lecturer_id;
+        let mut loads: Vec<LecturerLoad> = (0..40).map(|i| load("20231", 8.0 + f64::from(i % 5), 3 + i % 2)).collect();
+        loads.extend((0..40).map(|i| load("20232", 8.0 + f64::from(i % 5), 3 + i % 2)));
+        loads.push(repeat);
+        // same lecturer, within the limit but unusual, in the next semester
+        loads.push(LecturerLoad { lecturer_id: id, semester: "20232".into(), credits: 15.0, classes: 12 });
+        let inputs = Inputs { loads, classes: vec![], students: vec![], student_terms: vec![] };
+        let found = detect(&inputs, &RuleConfig::default(), &EnsembleConfig::default(), 0.05, 1);
+        let hybrid: Vec<_> = found.iter().filter(|d| d.entity_id == id && d.detector == "hybrid").collect();
+        assert_eq!(hybrid.len(), 1);
+        assert_eq!(hybrid[0].evidence["semester"], "20232");
     }
 }

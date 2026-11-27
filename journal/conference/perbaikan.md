@@ -14,3 +14,8 @@ hilangkan Percentile rank + soft vote pada gambar
 pisahkan penjalanan Rule-based detection dan Machine Learning
 
 periksa `server/src/services/compliance/anomaly`
+
+
+cd server
+cargo run -- task compliance:detect-anomalies --samples=3   # tanpa --save, hanya membaca
+cargo clippy --lib
