@@ -47,6 +47,13 @@ impl Severity {
     }
 }
 
+impl Severity {
+    /// Severity of an ML detection from its soft-voted percentile rank.
+    pub fn from_rank(score: f64) -> Self {
+        Self::from_score(score)
+    }
+}
+
 /// One flagged entity, ready to be persisted as an `anomaly_events` row.
 #[derive(Clone, Debug)]
 pub struct Detection {
@@ -231,6 +238,14 @@ mod tests {
         let found = detect(&inputs, &rule_cfg, &cfg, 0.05, 1);
         assert!(found.iter().any(|d| d.entity_id == outlier_id && d.detector == "hybrid"));
         assert!(found.iter().all(|d| d.evidence["scores"]["autoencoder"].is_number()));
+    }
+
+    #[test]
+    fn ml_severity_has_its_own_bands() {
+        let bands = [(1.0, Severity::High), (0.99, Severity::High), (0.989, Severity::Medium), (0.95, Severity::Medium), (0.949, Severity::Low), (0.86, Severity::Low)];
+        for (score, expected) in bands {
+            assert_eq!(Severity::from_rank(score), expected, "score {score}");
+        }
     }
 
     #[test]

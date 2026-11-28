@@ -18,16 +18,21 @@ pub async fn lecturer_loads<C: ConnectionTrait>(db: &C) -> Result<Vec<LecturerLo
         let slot = per_class.entry((lecturer, semester, class)).or_insert(0.0);
         *slot = slot.max(sks);
     }
+    Ok(sum_loads(per_class))
+}
+
+/// Sums the SKS of each class, keyed `(lecturer, semester, class)`, into one load per (lecturer, semester).
+fn sum_loads(per_class: HashMap<(Uuid, String, Uuid), f64>) -> Vec<LecturerLoad> {
     let mut totals: HashMap<(Uuid, String), (f64, u32)> = HashMap::new();
     for ((lecturer, semester, _), sks) in per_class {
         let t = totals.entry((lecturer, semester)).or_default();
         t.0 += sks;
         t.1 += 1;
     }
-    Ok(totals
+    totals
         .into_iter()
         .map(|((lecturer_id, semester), (credits, classes))| LecturerLoad { lecturer_id, semester, credits, classes })
-        .collect())
+        .collect()
 }
 
 /// Classes with their enrolment and, when `nilai_perkuliahan_kelas` has the class, the share of KRS students graded.
@@ -142,6 +147,18 @@ mod tests {
         assert!(term(Some(Uuid::new_v4()), values).is_none());
         assert!(term(None, values).is_none());
         assert!(term(Some(registration), [None, values[1], values[2], values[3], values[4]]).is_none());
+    }
+
+    #[test]
+    fn loads_are_summed_in_a_fixed_order() {
+        let per_class: HashMap<_, _> = (0..60u128)
+            .map(|i| ((Uuid::from_u128(i % 30), format!("2023{}", 1 + i / 30), Uuid::from_u128(100 + i)), 2.0))
+            .collect();
+        let keys: Vec<_> = sum_loads(per_class).into_iter().map(|l| (l.semester, l.lecturer_id)).collect();
+        let mut sorted = keys.clone();
+        sorted.sort();
+        assert_eq!(keys.len(), 60);
+        assert_eq!(keys, sorted);
     }
 
     #[test]
